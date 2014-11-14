@@ -1,0 +1,26 @@
+<apex:page controller="TrialUserReport">
+  <apex:form >
+  
+        <apex:pageBlock >
+          <apex:variable var="i" value="{!1}"/>
+          <apex:variable var="ip" value="{!1}"/>
+            <apex:repeat value="{!Contacts}" var="c">
+                <apex:outputPanel rendered="{!c.decision.Decision__c != null}">
+                    <apex:variable var="i" value="{!i+1}"/>
+                </apex:outputPanel>
+                
+                
+            </apex:repeat>
+            <apex:repeat value="{!Contacts}" var="c">
+                <apex:outputPanel rendered="{!c.decision.Plan__c != null}">
+                    <apex:variable var="ip" value="{!ip+1}"/>
+                </apex:outputPanel>
+                
+                
+            </apex:repeat>
+           <b> Count of Current Log in User Last 30 days created Records :</b> <br/> 
+           Last 30 days created Decision : <apex:outputText value="{!i}" /><br/>
+           Last 30 days created Plan: <apex:outputText value="{!ip}" />
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

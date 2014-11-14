@@ -1,0 +1,1321 @@
+<apex:component controller="KanbanBoardAndCards" id="workBenchTaskView" allowDML="true">
+
+    <apex:stylesheet value="{!$Page.cardStyles}" /> 
+    
+
+    <apex:outputPanel id="kanBanBoardForm" >
+           <style type="text/css">
+                #todo .container{
+                    height: 300px; width: 200px;padding-left:10px;
+                }
+                
+                .classicviewlink{
+                    display: block;
+                    position: absolute;
+                    top: 12px;
+                    z-index: 220000000;
+                    margin-left: 916px;
+                    float: right;
+                    font-family : Arial,Helvetica,sans-serif;
+                    
+                 } 
+           </style>
+        <script>
+        var id;
+        var priorirty;
+        var dropdownlist;
+        var taskStatus;
+        var ddl;
+            ListSize = '{!kanBanTaskWrapperList.size}';
+          
+            function getPopupDetailsWithLoader(e,taskId,recAccess,chatPermission){
+               
+                showLoader();
+                getTaskDetails(taskId,recAccess,chatPermission);
+                 e.preventdefault();
+                return false;
+            }
+            taskStatus  =  JSON.parse( '['+$('<div/>').html('{!HTMLENCODE(taskStatusPicklist)}').text() +']');
+          function callForIndex(status,i,count, readOnly){
+            var index ;
+            if(status == 'Not Started')
+                index = 0;
+            else if (status == 'In Progress') {
+                index = 1;
+            }
+            else if (status == 'Waiting on someone else') {
+                index = 2;
+            }
+            else if (status == 'Deferred') {
+                index = 3;
+            }
+            else if (status == 'Completed') {
+                index = 4;
+            }
+            else if (status == 'Rejected') {
+                index = 5;
+            }
+            else if (status == 'N/A') {
+                index = 6;
+            }
+            //  optionLabel: status,value:status,
+              ddl = $("#statusDropDownId"+count).kendoDropDownList({                                                                     
+                      dataTextField: "StatusName",
+                      dataSource: taskStatus,
+                      change: onChange,
+                      open: function(e) {
+                          readAccess(readOnly);
+                      },
+                      index: index
+                });
+           }
+           
+           function readAccess(readOnly){
+                if(!readOnly){
+                    ddl.readonly(ddl.element.prop("readonly"));
+                }
+            }
+           
+           function onChange(e) {   
+                 priorirty=this.text();
+                  $(this).blur();
+             }
+            
+           function onChangeCall(recId,e) {
+                id=recId;
+                calRemote();
+            }
+                        
+            function calRemote(){
+             KanbanBoardAndCards.getTaskById( id,priorirty,function(result, event){          
+                       if (event.status && event.result) { 
+                             searchRecordsFromGo();
+                       } else {
+                     }
+                 }, {escape:true}); 
+                 
+            }
+            
+            //Scroll Bar script
+            
+             $(".container").customScrollbar({
+              skin: "default-skin", 
+              hScroll: false
+              
+              });
+              
+              $(document).ready(function(){
+                 $('.thumb').hide();
+              });
+              
+              function showScroll(x){$(x).find('.thumb').show()}
+              function hideScroll(x){$(x).find('.thumb').hide()}
+              
+            
+              
+         </script>
+        <apex:outputPanel id="cardsrerender" >   
+        <script>
+            $(".container").customScrollbar({
+              skin: "default-skin", 
+              hScroll: false
+              
+              });
+              
+              $(document).ready(function(){
+                 $('.thumb').hide();
+              });
+              
+              function showScroll(x){$(x).find('.thumb').show()}
+              function hideScroll(x){$(x).find('.thumb').hide()}
+              
+            
+              
+         </script>
+        <table border="0" width="1120px" cellspacing = "0" cellpadding = "0" id="totalTab">
+            <tr>
+                <td align="center" class="todo-td" width="210px">
+                <div class="floatLeft todo-Color"></div>
+                    <div class="todo-div floatLeft">
+                        To Do
+                    </div>
+                </td>
+                <td align="center" class="doing-td" width="436px">
+                <div class="floatLeft doing-Color"></div>
+                    <div class="doing-div floatLeft">
+                        Doing
+                    </div>
+                </td>
+                <td align="center" class="done-td" width="432px">
+                <div class="floatLeft done-Color"></div>
+                    <div class="done-div floatLeft">
+                        Done 
+                    </div>
+                </td>
+            </tr>
+            <tr id="dragContainer">
+                <apex:variable value="{!0}" var="count"/>
+                <td class="drop" id="todo">
+                <!-- scroll bar-->
+                   <div class="container default-skin" style="" onmouseover="showScroll(this)" onmouseout="hideScroll(this)">  
+                    <apex:repeat value="{!kanBanTaskWrapperList}" id="kanBanBoardPanel" var="task">
+                        <apex:outputPanel rendered="{!task.kanbanTask.status == 'Not Started'}">
+                            <div class="{!if(task.recordAccess,'cardContainer','noDrop')}" count="{!count}" id="{!task.Kanbantask.Id}">
+                                <div class="taskCardTop"> </div> <!-- blue top border-->
+                                <div class="taskCardIcon">&nbsp;</div>
+                                <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'High',true,false)}">
+                                    <div class="fontStyle fontWeightBold viewHighBtn">HIGH</div> <!-- Priority Button -->
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'Normal',false,false)}"> <!-- both the values made false to hide when priority is normal -->
+                                    <div class="fontStyle fontWeightBold viewNormalBtn">Normal</div> <!-- Priority Button -->
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'Low',true,false)}">
+                                    <div class="fontStyle fontWeightBold viewLowBtn">Low</div> <!-- Priority Button --> 
+                                </apex:outputPanel>
+                                <div class="accessLock" ><img src="/{!task.lockImg}" class="lock-icon"/></div>
+                                <div id="dropBtn{!count}" class="viewDropBtn" onclick="showBotton('{!count}')"></div>
+                                <div class="viewCardText fontWeightBold">
+                                    <a href="/{!task.kanbanTask.id}" onclick=" showLoader();getTaskDetails('{!task.kanbanTask.id}','{!task.recordAccess}','{!task.chatterPermission}');return false;">{!task.kanbanTask.Subject}</a>
+                                </div>
+                                <div class="dateBtns cardCellTopLine">
+                                    <div class="dueDate">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Due Date</div> 
+                                        <div class="fontCardContentText fontWeightBold secondLineTextPadding"><apex:outputField value="{!task.kanbanTask.ActivityDate}" /></div>
+                                    </div>
+                                    <div class="deadLine">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Deadline</div> 
+                                        <div class="fontCardContentText fontWeightBold secondLineTextPadding" style="{!if(task.deadlineState=='Positive','color:#66B02D','color:#FF3C03')}">{!task.deadlineNum}&nbsp;<apex:outputText value="days" rendered="{!if(task.deadlineNum != null,true,false)}" /></div> 
+                                    </div>
+                                </div>
+                                <div class="toClear"> 
+                                    <div class="cardBottom cardCellTopLine" id="cardBottom{!count}" style="display:none"> <!-- bottom of card hide / unhide -->
+                                    <div class="qualityDiv toClear">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Status</div>    
+                                    
+                                    <div class="secondLineTextPadding statusInput" >
+                                         <input data-role="dropdownlist" id="statusDropDownId{!count}"  data-text-field="StatusName"    data-value-field="StatusValue"   data-bind="source: taskStatus, value:{!task.kanbanTask.status}" onChange="onChangeCall('{!task.kanbanTask.id}',event);"></input>                                        
+                                        </div>                                              
+                                    </div>
+                                   <script>
+                                        callForIndex('{!task.kanbanTask.Status}','{!task.kanbanTask.Status}',{!count},{!task.recordAccess})
+                                        
+                                    </script>
+                                    <div class="cardCellTopLine">
+                                        <div id="relationBtn{!count}" class="relationBtn" onclick="showContents('relationBtn{!count}','relationTab{!count}','commentBtn{!count}','assignBtn{!count}','commentsTab{!count}','assignTab{!count}')"><div class="imgSizeTaskCardTab" style="background-position: -90px 0px;"></div></div>
+                                        <div id="commentBtn{!count}" class="commentBtn" onclick="showContents('commentBtn{!count}','commentsTab{!count}','relationBtn{!count}','assignBtn{!count}','relationTab{!count}','assignTab{!count}')" ><div class="imgSizeTaskCardTab"  ></div></div>
+                                        <div id="assignBtn{!count}" class="assignBtn" onclick="showContents('assignBtn{!count}','assignTab{!count}','relationBtn{!count}','commentBtn{!count}','relationTab{!count}','commentsTab{!count}')"><div class="imgSizeTaskCardTab" style="background-position: -106px 0px;"  ></div>   </div>
+                                        <div class="openState">
+                                            <div class="relationTab" id="relationTab{!count}">  <!-- relational drop down to hide / unhide -->
+                                                <div class="selectedContent">
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding">Related to</div>
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding" ><div style=""><a class="task-title" href="/{!task.relatedToId}" ><apex:outputText value="{!task.relatedTo}" style="font-size: 11px !important;"/></a></div></div>
+                                                </div>
+                                            </div> 
+                                            <div class="commentsTab" id="commentsTab{!count}" style="display:none"> <!-- comments drop down to hide / unhide -->
+                                                <div class="selectedContent ">
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding">Comments</div>
+                                                    <div class="approvalDescriptionStatement fontWeightBold"><div style=""><apex:outputText value="{!task.comments}" /></div></div>
+                                                </div>
+                                            </div> 
+                                            <div class="assignTab" id="assignTab{!count}" style="display:none"> <!-- assigned drop down to hide / unhide -->
+                                                <div class="selectedContent">
+                                                    <div>
+                                                        <div class="assignedby-task">
+                                                            <div  class="cardTitleText fontWeightBold ">Assigned By</div>
+                                                            <div class="assignedby-task-div">
+                                                                <div class="floatLeft"><img src="{!task.userAssignedImgUrl}" class="assignedby-img" /></div>
+                                                                <div style="width:70%" class="floatLeft commonCardPadding">
+                                                                    <div style="width:100%;padding-bottom:5px;" class="fontCardContentText fontWeightBold">{!task.userAssignedName}  </div>
+                                                                    <div class="fontCardContentText fontWeightBold">{!task.userAssignedDept}</div>
+                                                                </div> 
+                                                            </div> 
+                                                        </div>
+                                                        <div class="assignedto-task">
+                                                            <div style="margin-bottom:5px;" class="cardTitleText fontWeightBold floatRight">Assigned To</div>
+                                                            <div class="assignedto-task-div toClear">
+                                                                <div class="floatRight"><img src="{!task.userAssignImgUrl}"  class="assignedto-img" /></div>
+                                                                <div style="width:70%" class="floatLeft">
+                                                                    <div class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight">{!task.userAssigneeName}</div>
+                                                                    <div style="padding-top:5px" class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight">{!task.userAssigneeDept}</div>
+                                                                </div>
+                                                            </div> 
+                                                        </div>
+                                                    </div>
+                                                    <div style="clear:both" ></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </apex:outputPanel>
+                        <apex:variable var="count" value="{!count+ 1}"/>
+                    </apex:repeat>
+                    </div>   <!-- end of scrollbar -->
+                  </td>
+                  <td  class="drop" id="doing">
+                     <div class="container default-skin" style="height: 300px; width: 435px;" onmouseover="showScroll(this)" onmouseout="hideScroll(this)"> 
+                     <apex:variable var="cardcount" value="{!0}" />  
+                      <apex:repeat value="{!kanBanTaskWrapperList}" id="kanBanBoardPanel1" var="task">
+                        <apex:outputPanel rendered="{!And(task.kanbanTask.status != 'Not Started',Not(task.kanbanTask.isClosed))}">
+                            <div class="{!if(task.recordAccess,'cardContainer','noDrop')}" count="{!count}" id="{!task.Kanbantask.Id}" style="float:{!IF(MOD(cardcount,2)==1,'right','left')};margin-left: 15px;margin-right:5px;margin-bottom:0px;">   
+                               <apex:variable var="cardcount" value="{!cardcount+1}" />
+                               <div class="taskCardTop"> </div> <!-- blue top border-->  
+                               <div class="taskCardIcon">&nbsp;</div>
+                               <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'High',true,false)}">
+                                   <div class="fontStyle fontWeightBold viewHighBtn">HIGH</div> <!-- Priority Button -->
+                               </apex:outputPanel>
+                               <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'Normal',false,false)}"> <!-- both the values made false to hide when priority is normal -->
+                                   <div class="fontStyle fontWeightBold viewNormalBtn">Normal</div> <!-- Priority Button -->
+                               </apex:outputPanel>
+                               <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'Low',true,false)}">
+                                   <div class="fontStyle fontWeightBold viewLowBtn">Low</div> <!-- Priority Button --> 
+                               </apex:outputPanel>
+                               <div class="accessLock" ><img src="/{!task.lockImg}" class="lock-icon"/></div>
+                               <div id="dropBtn{!count}" class="viewDropBtn" onclick="showBotton('{!count}')"></div>
+                               <div class="viewCardText fontWeightBold">
+                                   <a href="/{!task.kanbanTask.id}" onclick=" showLoader();getTaskDetails('{!task.kanbanTask.id}','{!task.recordAccess}','{!task.chatterPermission}');return false;">{!task.kanbanTask.Subject}</a>
+                               </div>
+                               <div class="dateBtns cardCellTopLine">
+                                   <div class="dueDate">
+                                       <div class="cardTitleText fontWeightBold commonCardPadding">Due Date</div> 
+                                       <div class="fontCardContentText fontWeightBold secondLineTextPadding"><apex:outputField value="{!task.kanbanTask.ActivityDate}" /></div>
+                                   </div>
+                                   <div class="deadLine">
+                                       <div class="cardTitleText fontWeightBold commonCardPadding">Deadline</div> 
+                                       <div class="fontCardContentText fontWeightBold secondLineTextPadding" style="{!if(task.deadlineState=='Positive','color:#66B02D','color:#FF3C03')}">{!task.deadlineNum}&nbsp;<apex:outputText value="days" rendered="{!if(task.deadlineNum != null,true,false)}" /></div> 
+                                   </div>
+                               </div>
+                               <div class="toClear"> 
+                                   <div class="cardBottom cardCellTopLine" id="cardBottom{!count}" style="display:none"> <!-- bottom of card hide / unhide -->
+                                   <div class="qualityDiv toClear">
+                                   <div class="cardTitleText fontWeightBold commonCardPadding">Status</div>    
+                                   
+                                      <div class="secondLineTextPadding statusInput" >
+                                         <input data-role="dropdownlist" id="statusDropDownId{!count}"  data-text-field="StatusName"    data-value-field="StatusValue"   data-bind="source: taskStatus, value:{!task.kanbanTask.status}" onChange="onChangeCall('{!task.kanbanTask.id}',event);"></input>                                        
+                                       </div>                                              
+                                   </div>
+                                  <script>
+                                       callForIndex('{!task.kanbanTask.Status}','{!task.kanbanTask.Status}',{!count},{!task.recordAccess})
+                                       
+                                   </script>
+                                   <div class="cardCellTopLine">
+                                       <div id="relationBtn{!count}" class="relationBtn" onclick="showContents('relationBtn{!count}','relationTab{!count}','commentBtn{!count}','assignBtn{!count}','commentsTab{!count}','assignTab{!count}')"><div class="imgSizeTaskCardTab" style="background-position: -90px 0px;"></div></div>
+                                       <div id="commentBtn{!count}" class="commentBtn" onclick="showContents('commentBtn{!count}','commentsTab{!count}','relationBtn{!count}','assignBtn{!count}','relationTab{!count}','assignTab{!count}')" ><div class="imgSizeTaskCardTab"  ></div></div>
+                                       <div id="assignBtn{!count}" class="assignBtn" onclick="showContents('assignBtn{!count}','assignTab{!count}','relationBtn{!count}','commentBtn{!count}','relationTab{!count}','commentsTab{!count}')"><div class="imgSizeTaskCardTab" style="background-position: -106px 0px;"  ></div>   </div>
+                                       <div class="openState">
+                                           <div class="relationTab" id="relationTab{!count}">  <!-- relational drop down to hide / unhide -->
+                                               <div class="selectedContent">
+                                                   <div class="cardTitleText fontWeightBold commonCardPadding">Related to</div>
+                                                   <div class="cardTitleText fontWeightBold commonCardPadding" ><div style=""><a class="task-title" href="/{!task.relatedToId}" ><apex:outputText value="{!task.relatedTo}" style="font-size: 11px !important;"/></a></div></div>
+                                               </div>
+                                           </div> 
+                                           <div class="commentsTab" id="commentsTab{!count}" style="display:none"> <!-- comments drop down to hide / unhide -->
+                                               <div class="selectedContent ">
+                                                   <div class="cardTitleText fontWeightBold commonCardPadding">Comments</div>
+                                                   <div class="approvalDescriptionStatement fontWeightBold"><div style=""><apex:outputText value="{!task.comments}" /></div></div>
+                                               </div>
+                                           </div> 
+                                           <div class="assignTab" id="assignTab{!count}" style="display:none"> <!-- assigned drop down to hide / unhide -->
+                                               <div class="selectedContent">
+                                                   <div>
+                                                       <div class="assignedby-task">
+                                                           <div  class="cardTitleText fontWeightBold ">Assigned By</div>
+                                                           <div class="assignedby-task-div">
+                                                               <div class="floatLeft"><img src="{!task.userAssignedImgUrl}" class="assignedby-img" /></div>
+                                                               <div style="width:70%" class="floatLeft commonCardPadding">
+                                                                   <div style="width:100%;padding-bottom:5px;" class="fontCardContentText fontWeightBold">{!task.userAssignedName}  </div>
+                                                                   <div class="fontCardContentText fontWeightBold">{!task.userAssignedDept}</div>
+                                                               </div> 
+                                                           </div> 
+                                                       </div>
+                                                       <div class="assignedto-task">
+                                                           <div style="margin-bottom:5px;" class="cardTitleText fontWeightBold floatRight">Assigned To</div>
+                                                           <div class="assignedto-task-div toClear">
+                                                               <div class="floatRight"><img src="{!task.userAssignImgUrl}"  class="assignedto-img" /></div>
+                                                               <div style="width:70%" class="floatLeft">
+                                                                   <div class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight">{!task.userAssigneeName}</div>
+                                                                   <div style="padding-top:5px" class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight">{!task.userAssigneeDept}</div>
+                                                               </div>
+                                                           </div> 
+                                                       </div>
+                                                   </div>
+                                                   <div style="clear:both" ></div>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           </div>
+                       </apex:outputPanel>    
+                       <apex:variable var="count" value="{!count+ 1}"/>
+                       </apex:repeat>
+                       </div>  <!--  End of scrollbar  -->
+                    </td>
+                    <td  class="drop" id="done">  
+                      <div class="container default-skin" style="height: 300px; width: 435px;" onmouseover="showScroll(this)" onmouseout="hideScroll(this)"> 
+                      <apex:variable var="cardcount" value="{!0}" />  
+                        <apex:repeat value="{!kanBanTaskWrapperList}" id="kanBanBoardPanel2" var="task">
+                            <apex:outputPanel rendered="{!task.kanbanTask.isClosed}">
+                                <div class="{!if(task.recordAccess,'cardContainer','noDrop')}" count="{!count}" id="{!task.Kanbantask.Id}" style="float:{!IF(MOD(cardcount,2)==1,'right','left')};margin-left: 15px;margin-right:5px;margin-bottom:0px;">
+                                <apex:variable var="cardcount" value="{!cardcount+1}" />  
+                                <div class="taskCardTop"> </div> <!-- blue top border-->
+                                <div class="taskCardIcon">&nbsp;</div>
+                                <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'High',true,false)}">
+                                    <div class="fontStyle fontWeightBold viewHighBtn">HIGH</div> <!-- Priority Button -->
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'Normal',false,false)}"> <!-- both the values made false to hide when priority is normal -->
+                                    <div class="fontStyle fontWeightBold viewNormalBtn">Normal</div> <!-- Priority Button -->
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(task.kanbanTask.Priority == 'Low',true,false)}">
+                                    <div class="fontStyle fontWeightBold viewLowBtn">Low</div> <!-- Priority Button --> 
+                                </apex:outputPanel>
+                                <div class="accessLock" ><img src="/{!task.lockImg}" class="lock-icon"/></div>
+                                <div id="dropBtn{!count}" class="viewDropBtn" onclick="showBotton('{!count}')"></div>
+                                <div class="viewCardText fontWeightBold">
+                                    <a href="/{!task.kanbanTask.id}" onclick=" showLoader();getTaskDetails('{!task.kanbanTask.id}','{!task.recordAccess}','{!task.chatterPermission}');return false;">{!task.kanbanTask.Subject}</a>
+                                </div>
+                                <div class="dateBtns cardCellTopLine">
+                                    <div class="dueDate">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Due Date</div> 
+                                        <div class="fontCardContentText fontWeightBold secondLineTextPadding"><apex:outputField value="{!task.kanbanTask.ActivityDate}" /></div>
+                                    </div>
+                                    <div class="deadLine">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Deadline</div> 
+                                        <div class="fontCardContentText fontWeightBold secondLineTextPadding" style="{!if(task.deadlineState=='Positive','color:#66B02D','color:#FF3C03')}">{!task.deadlineNum}&nbsp;<apex:outputText value="days" rendered="{!if(task.deadlineNum != null,true,false)}" /></div> 
+                                    </div>
+                                </div>
+                                <div class="toClear"> 
+                                    <div class="cardBottom cardCellTopLine" id="cardBottom{!count}" style="display:none"> <!-- bottom of card hide / unhide -->
+                                    <div class="qualityDiv toClear">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Status</div>    
+                                    
+                                    <div class="secondLineTextPadding statusInput" >
+                                         <input data-role="dropdownlist" id="statusDropDownId{!count}"  data-text-field="StatusName"    data-value-field="StatusValue"   data-bind="source: taskStatus, value:{!task.kanbanTask.status}" onChange="onChangeCall('{!task.kanbanTask.id}',event);"></input>                                        
+                                        </div>                                              
+                                    </div>
+                                   <script>
+                                        callForIndex('{!task.kanbanTask.Status}','{!task.kanbanTask.Status}',{!count},{!task.recordAccess})
+                                    </script>
+                                    <div class="cardCellTopLine">
+                                        <div id="relationBtn{!count}" class="relationBtn" onclick="showContents('relationBtn{!count}','relationTab{!count}','commentBtn{!count}','assignBtn{!count}','commentsTab{!count}','assignTab{!count}')"><div class="imgSizeTaskCardTab" style="background-position: -90px 0px;"></div></div>
+                                        <div id="commentBtn{!count}" class="commentBtn" onclick="showContents('commentBtn{!count}','commentsTab{!count}','relationBtn{!count}','assignBtn{!count}','relationTab{!count}','assignTab{!count}')" ><div class="imgSizeTaskCardTab"  ></div></div>
+                                        <div id="assignBtn{!count}" class="assignBtn" onclick="showContents('assignBtn{!count}','assignTab{!count}','relationBtn{!count}','commentBtn{!count}','relationTab{!count}','commentsTab{!count}')"><div class="imgSizeTaskCardTab" style="background-position: -106px 0px;"  ></div>   </div>
+                                        <div class="openState">
+                                            <div class="relationTab" id="relationTab{!count}">  <!-- relational drop down to hide / unhide -->
+                                                <div class="selectedContent">
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding">Related to</div>
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding" ><div style=""><a class="task-title" href="/{!task.relatedToId}" ><apex:outputText value="{!task.relatedTo}" style="font-size: 11px !important;"/></a></div></div>
+                                                </div>
+                                            </div> 
+                                            <div class="commentsTab" id="commentsTab{!count}" style="display:none"> <!-- comments drop down to hide / unhide -->
+                                                <div class="selectedContent ">
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding">Comments</div>
+                                                    <div class="approvalDescriptionStatement fontWeightBold"><div style=""><apex:outputText value="{!task.comments}" /></div></div>
+                                                </div>
+                                            </div> 
+                                            <div class="assignTab" id="assignTab{!count}" style="display:none"> <!-- assigned drop down to hide / unhide -->
+                                                <div class="selectedContent">
+                                                    <div>
+                                                        <div class="assignedby-task">
+                                                            <div  class="cardTitleText fontWeightBold ">Assigned By</div>
+                                                            <div class="assignedby-task-div">
+                                                                <div class="floatLeft"><img src="{!task.userAssignedImgUrl}" class="assignedby-img" /></div>
+                                                                <div style="width:70%" class="floatLeft commonCardPadding">
+                                                                    <div style="width:100%;padding-bottom:5px;" class="fontCardContentText fontWeightBold">{!task.userAssignedName}  </div>
+                                                                    <div class="fontCardContentText fontWeightBold">{!task.userAssignedDept}</div>
+                                                                </div> 
+                                                            </div> 
+                                                        </div>
+                                                        <div class="assignedto-task">
+                                                            <div style="margin-bottom:5px;" class="cardTitleText fontWeightBold floatRight">Assigned To</div>
+                                                            <div class="assignedto-task-div toClear">
+                                                                <div class="floatRight"><img src="{!task.userAssignImgUrl}"  class="assignedto-img" /></div>
+                                                                <div style="width:70%" class="floatLeft">
+                                                                    <div class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight">{!task.userAssigneeName}</div>
+                                                                    <div style="padding-top:5px" class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight">{!task.userAssigneeDept}</div>
+                                                                </div>
+                                                            </div> 
+                                                        </div>
+                                                    </div>
+                                                    <div style="clear:both" ></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+                            </apex:outputPanel>
+                      <apex:variable var="count" value="{!count+ 1}"/>
+                   </apex:repeat>
+                   </div> <!-- end of scroll bar-->
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    </apex:outputPanel>
+    <apex:outputPanel id="kanbanBoardOutputPanel"></apex:outputPanel>
+    <apex:form >
+<!--        <apex:actionPoller oncomplete="searchRecords();" reRender="kanbanBoardOutputPanel,dragContainer" interval="45"/>
+        <apex:actionPoller action="{!viewAllTasks}" reRender="kanBanBoardForm" oncomplete="" oncomplete="ToRefreshAfterPoller()" interval="300"/> -->
+        <apex:actionFunction name="searchFilter" action="{!searchFilter}" oncomplete="ToRefreshAfterPoller();   $('.preloader').hide(); $('.bg-fade').hide(); $('body').css('overflow','auto')" rerender="cardsrerender">
+            <apex:param name="searchTaskText" value="" />
+            <apex:param name="assignedId" value="" />
+            <apex:param name="dueDateSelected" value="" />
+            <apex:param name="userSelected"  value="" />
+            <apex:param name="dateField" value="" />
+            <apex:param name="startField" value="" />
+            <apex:param name="endField" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="searchFilterForClear" action="{!searchFilter}" oncomplete="ToRefreshAfterPoller();hideModalforTaskPopup();hideLoader();changecolDt('next7');" rerender="cardsrerender,taskFilterPanel" >
+            <apex:param name="searchTaskText" value="" />
+            <apex:param name="assignedId" value="" />
+            <apex:param name="dueDateSelected" value="" />
+            <apex:param name="userSelected"  value="" />
+            <apex:param name="dateField" value="" />
+            <apex:param name="startField" value="" />
+            <apex:param name="endField" value="" />
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="viewAllTasks" action="{!viewAllTasks}" rerender="kanBanBoardForm">
+        </apex:actionFunction>
+        
+        <apex:actionFunction action="{!taskDetails}" name="getTaskDetails" oncomplete="showModelforTaskPopup();setRelatedListValue();hideLoader();" rerender="TaskpopupComponantId">
+            <apex:param name="taskSelectedId"  value="" />
+            <apex:param name="recordAccess"  value="" />
+            <apex:param name="chatPermission"  value="" />
+        </apex:actionFunction>  
+        <apex:actionFunction name="hideTaskPopup" action="{!closeTaskPopup}" reRender="TaskpopupComponantId" oncomplete="$('body').css('overflow','auto'); hideLoaderAndFade();"/> 
+        <apex:actionFunction name="newTaskPopupComponentForClose"     action="{!newTaskPopupComponent}" reRender="NewTaskpopupComponantId"             oncomplete="searchRecords();" /> 
+      </apex:form>
+     
+    
+    <script>
+        function newTaskPopupComponentForClose1(){
+           $('.preloader').hide(); 
+           $('.bg-fade').hide();
+        }
+        function disabledate(e){
+            if(!e.checked){
+                document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:setReminderDate').value = '';
+                $('input[id$="setReminderDate"]').attr('disabled','disabled');
+            }
+            else
+            {
+              $('input[id$="setReminderDate"]').removeAttr('disabled');
+            }
+        }
+        function showBotton(count){
+        
+            if(document.getElementById("cardBottom"+count).style.display=="none"){
+                    //$( containerBottom ).slideDown( "slow" );
+                    document.getElementById("cardBottom"+count).style.display="block";
+                    document.getElementById("dropBtn"+count).style.backgroundPosition="-64px 0px";
+            }else{
+                document.getElementById("cardBottom"+count).style.display="none";
+                document.getElementById("dropBtn"+count).style.backgroundPosition="-64px -8px";
+            }
+           $(".container").customScrollbar("resize", true);
+
+        }
+        
+        function showContents(whiteBackground,contentShow,greyBackgroundA,greyBackgroundB,hideContent1,hideContent2){
+            document.getElementById(whiteBackground).style.backgroundColor="#fbfbfb";
+            document.getElementById(whiteBackground).style.borderBottom="1px solid #fbfbfb";
+            document.getElementById(contentShow).style.display="block";
+            document.getElementById(greyBackgroundA).style.backgroundColor="#f2f2f2";
+            document.getElementById(greyBackgroundB).style.backgroundColor="#f2f2f2";
+            document.getElementById(greyBackgroundA).style.borderBottom="1px solid #ccc";
+            document.getElementById(greyBackgroundB).style.borderBottom="1px solid #ccc";
+            document.getElementById(hideContent1).style.display="none";
+            document.getElementById(hideContent2).style.display="none"; 
+             $(".container").customScrollbar("resize", true);
+        }
+        
+        
+         var $div = $(window);
+             
+            var width = $div.width();
+            var ulWidth = 1530 - width;
+            var divLeft = 0;
+            $(document).ready(function(){
+              $div = $(window);
+             
+              width = $div.width();
+              ulWidth = 1730 - width;
+              divLeft = 0;
+            
+            dragModal();
+            var el = $.active;
+            var count = 0;
+            var inputs = new Array();
+            $(document).ready(function () {
+                $(".cardContainer").kendoDraggable({
+                    hint: function (e) { 
+                        return  '<div class="cardContainer" id="lblDrag0" data-role="draggable">'+e.html()+'</div>';
+                    },
+                    dragstart: draggableOnDragStart,
+                    dragend: draggableOnDragEnd,
+                    container: $("#dragContainer")
+                });
+                
+                  $(".drop").kendoDropTargetArea({
+                    filter: ".drop",
+                    dragenter: droptargetOnDragEnter,
+                    dragleave: droptargetOnDragLeave,
+                    drop: droptargetOnDrop
+                    
+                });
+                
+               
+                
+                
+            });
+            
+       
+            
+            function draggableOnDrag() {
+                
+            }
+            
+            function draggableOnDragStart(e) {  
+                $(".cardContainer").css('cursor','move');
+                inputs = document.getElementsByTagName('input');
+            }
+            
+            function draggableOnDragEnd(e) { 
+            }
+            
+            function droptargetOnDragEnter(e) {  
+               
+            }
+            
+            function droptargetOnDragLeave(e) {  }
+            
+            function droptargetOnDrop(e) {   
+               var newEl = $(e.draggable.currentTarget).clone();
+               var droppedCardId = e.draggable.currentTarget.context.id;
+               var droppedStatus = e.dropTarget.context.id;
+                
+              
+                                                                     
+                
+               e.dropTarget.append(newEl);      
+               newEl.kendoDraggable({ hint: function () { return '<div class="cardContainer" id="'+droppedCardId+'" data-role="draggable">'+e.draggable.currentTarget.context.innerHTML+'</div>' },dragstart: draggableOnDragStart,dragend: draggableOnDragEnd,container: $("#dragContainer")  });
+               $(e.draggable.currentTarget).remove(); 
+               if( e.dropTarget.attr('id') == 'doing'){
+                droppedStatus= 'In Progress';
+               }
+               else
+               if( e.dropTarget.attr('id') == 'done'){
+                droppedStatus= 'Completed';
+               }
+               else
+               if( e.dropTarget.attr('id') == 'todo'){
+                droppedStatus= 'Not Started';
+               } 
+               KanbanBoardAndCards.updateTask(droppedCardId, droppedStatus, function(result, event)
+               {     
+                    if (event.status)
+                    {  
+                       newEl.attr("id", droppedCardId);  
+                       count = $(document.getElementById(droppedCardId)).attr('count');
+                        
+                       $("#statusDropDownId"+count).kendoDropDownList({                                                                               
+                                        dataTextField: "StatusName",
+                                        dataSource: taskStatus,
+                                        optionLabel: droppedStatus,
+                                        change: onChange
+                        });
+                        
+                    }
+                    
+                    searchRecordsFromGo();
+               }, {escape:true});
+            }
+             
+            
+        });
+        
+        function ToRefreshAfterPoller(){
+        
+            var el = $.active;
+            var count = 0;
+            var inputs = new Array();
+          
+            $(document).ready(function () {
+                $(".cardContainer").kendoDraggable({
+                    hint: function (e) { 
+                        return  '<div class="cardContainer" id="lblDrag0" data-role="draggable">'+e.html()+'</div>';
+                    },
+                    dragstart: draggableOnDragStart,
+                    dragend: draggableOnDragEnd,
+                    container: $("#dragContainer"),
+                     holdToDrag: true,
+                    drag: function(e) { 
+                      // Drag and Scroll
+                      var windowX = $(window).innerWidth();
+                       var left = e.pageX - divLeft;
+                        var percent = left / width;                     
+                        window.scrollTo((percent * ulWidth),0);   
+                      }
+                   
+                });
+               
+                
+                  $(".drop").kendoDropTargetArea({
+                    filter: ".drop",
+                    dragenter: droptargetOnDragEnter,
+                    dragleave: droptargetOnDragLeave,
+                    drop: droptargetOnDrop,
+                 
+                });
+                
+                
+            });
+            
+             
+            
+            function draggableOnDrag() {
+                
+            }
+            
+            function draggableOnDragStart(e) {
+                $(".cardContainer").css('cursor','move');
+                inputs = document.getElementsByTagName('input');
+            }
+            
+            function draggableOnDragEnd(e) { 
+                
+            }
+            
+            function droptargetOnDragEnter(e) {  
+               
+            }
+            
+            function droptargetOnDragLeave(e) {  }
+            
+            function droptargetOnDrop(e) {
+                var newEl = $(e.draggable.currentTarget).clone();
+                var droppedCardId = e.draggable.currentTarget.context.id;
+                var droppedStatus = e.dropTarget.context.id;
+                e.dropTarget.append(newEl);
+                newEl.kendoDraggable({ hint: function () {  return '<div class="cardContainer" id="'+droppedCardId+'" data-role="draggable">'+e.draggable.currentTarget.context.innerHTML+'</div>' },dragstart: draggableOnDragStart,dragend: draggableOnDragEnd,container: $("#dragContainer") });
+                $(e.draggable.currentTarget).remove();
+                KanbanBoardAndCards.updateTask(droppedCardId, droppedStatus, function(result, event)
+                {    
+                    if (event.status)
+                    {  
+                        newEl.attr("id", droppedCardId);  
+                    }
+                }, {escape:true}); 
+            }
+        }
+        
+        
+        function searchRecords(){
+        
+        //var userSelected = document.getElementById('userSelected').value;
+        
+           var dueDateChkbox = document.getElementById('hideOverdue').checked;
+            var assignedId = document.getElementById('assignedId').value;
+            var dueDateSelected = document.getElementById('colDt_q').value;
+            var dateField;
+            var searchTaskText = $('#searchTaskText').val();
+             // console.log('@@@@@@@@@@@@@'+dueDateChkbox);
+           if(dueDateChkbox != true){
+            dateField = $('#colDt').val();                
+            document.getElementById('cardExpandChk').checked=false;
+            if(chkTaskUserId == 'no'){
+                $('#userErr').css('display','block');
+                return false;
+            } else if(dueDateSelected != 'custom'){
+                var userSelected = idArray.toString();//taskuserId;
+                 showLoader();
+                 userSelected = ''+$('#userName').val();
+                searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField);
+            }else if(dueDateSelected == 'custom'){
+                    
+                   var userSelected = idArray.toString();
+                   showLoader();
+                  
+                   // For custom start date 
+                   
+                  var selectStr = $("#sd").data("kendoDatePicker").value();
+                  if(selectStr != null){
+                      var datstrt = selectStr.getDate();
+                      var montstrt =selectStr.getMonth()+1;
+                      var yrstrt = selectStr.getFullYear();
+                      if(montstrt.toString().length == 1){
+                        montstrt ='0'+montstrt;
+                      }
+                      if(datstrt.toString().length == 1){
+                        datstrt = '0'+datstrt;
+                      }
+                      var modifyStartDate = yrstrt +'-'+montstrt+'-'+datstrt;
+                  }
+                  //For custom end date
+                  
+                  var selectEnd = $("#ed").data("kendoDatePicker").value();
+                  if(selectEnd != null){
+                  var datEnd = selectEnd.getDate();
+                      var montEnd =selectEnd.getMonth()+1;
+                      var yrEnd = selectEnd.getFullYear();
+                      if(montEnd.toString().length == 1){
+                        montEnd ='0'+montEnd;
+                      }
+                      if(datEnd.toString().length == 1){
+                        datEnd = '0'+datEnd;
+                      }
+                      var modifyEndDate = yrEnd +'-'+montEnd+'-'+datEnd;
+                  }
+                  userSelected = ''+$('#userName').val();
+                  searchFilter(searchTaskText,searchTaskText,assignedId,dueDateSelected,userSelected,dateField,modifyStartDate,modifyEndDate);
+               
+            }
+            if(dueDateSelected == 'All' || dueDateSelected == 'Overdue'){
+                //console.log(dueDateSelected );
+               // enableDatePicker();
+                 var datepicker = $("#sd").data("kendoDatePicker");
+                // detach events
+                datepicker.enable(false);
+                $("#sd").data("kendoDatePicker").value(null);
+                
+                var datepicker = $("#ed").data("kendoDatePicker");
+                // detach events
+                datepicker.enable(false);
+                $("#ed").data("kendoDatePicker").value(null);
+                document.getElementById("colDt").disabled=false;
+                document.getElementById("colDt_q").disabled=false;
+             }
+            
+          }else{
+            dateField = $('#colDt').val();
+           // console.log('dateField'+dateField);
+            if(dateField == 'DUE_DATE'){ 
+                dateField = 'Not_DUE_DATE';
+            }else if(dateField =='CREATED_DATE'){
+                dateField= 'Not_CREATED_DATE';
+            }else if(dateField =='LAST_UPDATE'){
+                dateField= 'Not_LAST_UPDATE';
+            } 
+                
+                if(chkTaskUserId == 'no'){
+                    $('#userErr').css('display','block');
+                    return false;
+                } else if(dueDateSelected != 'custom'){
+                    var userSelected = idArray.toString(); //taskuserId;
+                    showLoader();
+                    enableChk = document.getElementById('colDt_q').value; 
+                    //console.log(enableChk);
+                    if(dueDateSelected == 'All' || dueDateSelected == 'Overdue'){
+                        var datepicker = $("#sd").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                        $("#sd").data("kendoDatePicker").value(null);
+                        
+                        var datepicker = $("#ed").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                        $("#ed").data("kendoDatePicker").value(null);
+                       // document.getElementById("colDt").disabled=true;
+                       // document.getElementById("colDt_q").disabled=true;
+                    }
+                    userSelected = ''+$('#userName').val();
+                    searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField);
+               }else if(dueDateSelected == 'custom'){
+                   
+                   var userSelected =idArray.toString();//taskuserId;
+                   showLoader();
+                  
+                   // For custom start date 
+                   
+                  var selectStr = $("#sd").data("kendoDatePicker").value();
+                  if(selectStr != null){
+                      var datstrt = selectStr.getDate();
+                      var montstrt =selectStr.getMonth()+1;
+                      var yrstrt = selectStr.getFullYear();
+                      if(montstrt.toString().length == 1){
+                        montstrt ='0'+montstrt;
+                      }
+                      if(datstrt.toString().length == 1){ 
+                        datstrt = '0'+datstrt;
+                      }
+                      var modifyStartDate = yrstrt +'-'+montstrt+'-'+datstrt;
+                  }
+                  //For custom end date
+                  
+                  var selectEnd = $("#ed").data("kendoDatePicker").value();
+                  if(selectEnd != null){
+                  var datEnd = selectEnd.getDate();
+                      var montEnd =selectEnd.getMonth()+1;
+                      var yrEnd = selectEnd.getFullYear();
+                      if(montEnd.toString().length == 1){
+                        montEnd ='0'+montEnd;
+                      }
+                      if(datEnd.toString().length == 1){
+                        datEnd = '0'+datEnd;
+                      }
+                      var modifyEndDate = yrEnd +'-'+montEnd+'-'+datEnd;
+                  }
+                  userSelected = ''+$('#userName').val();
+                  searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField,modifyStartDate,modifyEndDate);
+                     
+                }
+          }    
+        }
+        function searchRecordsFromClear(){
+            
+           // $("#demo-input-pre-populated-with-tokenlimit-task").tokenInput("add", {id: x, name: '{}'});
+            document.getElementById('hideOverdue').checked = false;
+            var assignedId = document.getElementById('assignedId').value;
+            var dueDateSelected = 'next7';
+            var dateField;
+            var searchTaskText = $('#searchTaskText').val();
+            document.getElementById('cardExpandChk').checked=false;
+           
+                dateField = 'DUE_DATE'; 
+                 //console.log('dateField1 : '+dueDateSelected);
+                if(chkTaskUserId == 'no'){
+                   $('#userErr').css('display','block');
+                  //  return false;
+                } 
+                
+                 if(dueDateSelected != 'custom'){
+                    showLoader();
+                    var userSelected = '{!$User.Id}';    
+                     showLoader();
+                    var userName ='{!$User.FirstName}' +' '+ '{!$User.LastName}';
+                     
+                    //searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField);
+                    searchFilterForClear(searchTaskText,assignedId,dueDateSelected,userSelected,dateField);
+                    enableDatePicker();
+                    document.getElementById("colDt").disabled=false;
+                    document.getElementById("colDt_q").disabled=false;
+                    if(dueDateSelected == 'Overdue'){
+                        document.getElementById("hideOverdue").disabled = true;
+                    }else{
+                        document.getElementById("hideOverdue").disabled = false;
+                    }
+                    
+                 }
+                
+               
+        }
+        
+        function searchRecordsFromGo(){
+            if($('#userName').val() != null){
+                var dueDateChkbox = document.getElementById('hideOverdue').checked;
+                var assignedId = document.getElementById('assignedId').value;
+                var dueDateSelected = document.getElementById('colDt_q').value;
+                var dateField;
+                var searchTaskText = $('#searchTaskText').val();
+                document.getElementById('cardExpandChk').checked=false;
+                if(dueDateChkbox != true){ 
+                    dateField = $('#colDt').val(); 
+                    if(chkTaskUserId == 'no'){
+                       $('#userErr').css('display','block');
+                        return false;
+                    } 
+                    else if(dueDateSelected != 'custom'){
+                        var userSelected = idArray.toString(); //taskuserId;
+                        //console.log('hh'+userSelected);
+                         showLoader();
+                         userSelected = ''+$('#userName').val();
+                        searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField);
+                        
+                         document.getElementById("colDt").disabled=false;
+                        document.getElementById("colDt_q").disabled=false;
+                        if(dueDateSelected == 'Overdue'){
+                            document.getElementById("hideOverdue").disabled = true;
+                        }else{
+                            document.getElementById("hideOverdue").disabled = false;
+                        }
+                    }else if(dueDateSelected == 'custom'){
+                       
+                       var userSelected = idArray.toString();//taskuserId;
+                       showLoader();
+                      
+                       // For custom start date 
+                       
+                      var selectStr = $("#sd").data("kendoDatePicker").value();
+                      if(selectStr != null){
+                          var datstrt = selectStr.getDate();
+                          var montstrt =selectStr.getMonth()+1;
+                          var yrstrt = selectStr.getFullYear();
+                          if(montstrt.toString().length == 1){
+                            montstrt ='0'+montstrt;
+                          }
+                          if(datstrt.toString().length == 1){
+                            datstrt = '0'+datstrt;
+                          }
+                          var modifyStartDate = yrstrt +'-'+montstrt+'-'+datstrt;
+                      }
+                      //For custom end date
+                      
+                      var selectEnd = $("#ed").data("kendoDatePicker").value();
+                      if(selectEnd != null){
+                      var datEnd = selectEnd.getDate();
+                          var montEnd =selectEnd.getMonth()+1;
+                          var yrEnd = selectEnd.getFullYear();
+                          if(montEnd.toString().length == 1){
+                            montEnd ='0'+montEnd;
+                          }
+                          if(datEnd.toString().length == 1){
+                            datEnd = '0'+datEnd;
+                          }
+                          var modifyEndDate = yrEnd +'-'+montEnd+'-'+datEnd;
+                      }
+                      userSelected = ''+$('#userName').val();
+                      searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField,modifyStartDate,modifyEndDate);
+                         
+                    }
+                    //enableDatePicker();
+                   
+                 
+              }else{
+                //dueDateSelected = 'Not_Overdue';
+                dateField = $('#colDt').val();
+                if(dateField == 'DUE_DATE'){ 
+                    dateField = 'Not_DUE_DATE';
+                }else if(dateField =='CREATED_DATE'){
+                    dateField= 'Not_CREATED_DATE';
+                }else if(dateField =='LAST_UPDATE'){
+                    dateField= 'Not_LAST_UPDATE';
+                }   
+                    if(chkTaskUserId == 'no'){
+                       $('#userErr').css('display','block');
+                        return false;
+                    } else if(dueDateSelected != 'custom'){
+                        var userSelected = idArray.toString();//taskuserId;
+                        showLoader();
+                       /* var datepicker = $("#sd").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                        
+                        var datepicker = $("#ed").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                        document.getElementById("colDt").disabled=true;
+                        document.getElementById("colDt_q").disabled=true;*/
+                        userSelected = ''+$('#userName').val();
+                        searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField);
+                   }else if(dueDateSelected == 'custom'){
+                       
+                       var userSelected = idArray.toString(); //taskuserId;
+                       showLoader();
+                      
+                       // For custom start date 
+                       
+                      var selectStr = $("#sd").data("kendoDatePicker").value();
+                      if(selectStr != null){
+                          var datstrt = selectStr.getDate();
+                          var montstrt =selectStr.getMonth()+1;
+                          var yrstrt = selectStr.getFullYear();
+                          if(montstrt.toString().length == 1){
+                            montstrt ='0'+montstrt;
+                          }
+                          if(datstrt.toString().length == 1){
+                            datstrt = '0'+datstrt;
+                          }
+                          var modifyStartDate = yrstrt +'-'+montstrt+'-'+datstrt;
+                      }
+                      //For custom end date
+                      
+                      var selectEnd = $("#ed").data("kendoDatePicker").value();
+                      if(selectEnd != null){
+                      var datEnd = selectEnd.getDate();
+                          var montEnd =selectEnd.getMonth()+1;
+                          var yrEnd = selectEnd.getFullYear();
+                          if(montEnd.toString().length == 1){
+                            montEnd ='0'+montEnd;
+                          }
+                          if(datEnd.toString().length == 1){
+                            datEnd = '0'+datEnd;
+                          }
+                          var modifyEndDate = yrEnd +'-'+montEnd+'-'+datEnd;
+                      }
+                      userSelected = ''+$('#userName').val();
+                      searchFilter(searchTaskText,assignedId,dueDateSelected,userSelected,dateField,modifyStartDate,modifyEndDate);
+                  }
+              }   
+           } 
+       }
+        
+        function defaultRecords(){
+            document.getElementById('duedateId').value = '1Week';
+            document.getElementById('assignedId').value = 'AssignedTo';
+            searchRecords();
+        }
+        function showModal(header,body,footer){   
+            var scrollPosY = $(window).height();
+            var scrollPosX = $(window).width();
+            scrollPosY = (scrollPosY/2)-(($('.modal-window').height())/2);
+            scrollPosX = (scrollPosX/2)-(($('.modal-window').width())/2);
+            if(0>scrollPosY){
+                scrollPosY = scrollPosY*-1;
+            }
+            if(0>scrollPosX){
+                scrollPosX = scrollPosX*-1;
+            }         
+            $('.modal-plan-content').hide();
+            $('.modal-footer').hide();
+            $('.modal-plan-header').hide(); 
+            $('#'+header).show();
+            $('#'+body).show();
+            $('#'+footer).show();
+            $('body').css('overflow','hidden');
+            $('.bg-fade').fadeIn('slow');
+            $('.modal-window').slideDown('slow');
+            $('.modal-window').css('top',scrollPosY +'px');
+            $('.modal-window').css('right',scrollPosX +'px');
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:assignTo_lkid').value = '{!$User.Id}';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:assignTo').value = '{!$User.FirstName} {!$User.LastName}';
+            setTimeout(function(){  
+                document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:subjectForTask').focus();
+            }, 500);
+        }
+        function saveNewTask(){
+            var subject = document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:subjectForTask').value;
+            if(subject == ''){
+                alert('Please enter subject');
+                return false;
+            }
+            var assignTo = document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:assignTo').value;
+            if(assignTo == ''){
+                alert('Please select the user');
+                return false;
+            }
+            var sendingNotification = document.getElementById('sendingNotification').checked;
+            saveThisTask(sendingNotification);
+            hideModal();
+        }
+        function hideModal(){
+            setTextAreaSize();
+            $('.modal-window').css('display','none');                
+            $('.bg-fade').fadeOut('slow');
+            $('body').css('overflow','auto');
+        }
+        function setTextAreaSize(){
+           //document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:comments').style.height = '80px';
+           document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:comments').style.width = '583px';
+           return true;
+        }
+        function removeAllValues(){
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:subjectForTask').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:assignTo').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:dueDate').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:priority').value = 'Normal';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:status').value = 'Not Started';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:comments').value = '';
+            document.getElementById('sendingNotification').checked = false;
+            //document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:recId').value = '';
+            //document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:recName').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:setReminder').checked = true;
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:setReminderDate').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:complexityId').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:skilllevelId').value = '1';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:estimatedhourId').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:actualhour').value = '';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:whatId').value='';
+            document.getElementById('activityPage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:whoId').value='';
+            $('input[id$="setReminderDate"]').removeAttr('disabled');
+            //expandCollapse('taskDetails-view','taskDetails-btn');
+            $('#taskDetails-view').css('display','none');
+            $('#taskDetails-btn').css('backgroundPosition','0 -8px');
+        }
+        function expandCollapse(toBeExpandCollapse, expandCollapseImage) {
+            
+            var displayStyle = $('#'+toBeExpandCollapse).css('display');        
+            if(displayStyle == 'block'){
+                $('#'+expandCollapseImage).css('backgroundPosition','0 -8px');
+                $('#'+toBeExpandCollapse).css('display','none');
+            }else{
+                $('#'+expandCollapseImage).css('backgroundPosition','0 0');
+                $('#'+toBeExpandCollapse).css('display','block');
+            }
+            return true;
+        } 
+        
+        function isNumberKey(event){
+         var event = event || window.event //For IE
+         var key = event.target;
+        
+            if( key.value.length  == 16 )
+            {
+              //alert('Maximum number of digits is 16');
+              return false;
+            }
+         //  var charCode = (event.which) ? event.which : event.keyCode
+          var key = window.event ? event.keyCode : event.which;
+            if (event.keyCode == 8 || event.keyCode == 46 || event.keyCode == 37 || event.keyCode == 39) {
+                return true;
+            }
+            else if ( key < 48 || key > 57 ) {
+                return false;
+            }
+            else return true;
+            
+            
+           /*
+            if (charCode < 48 || charCode > 57   )
+                return false;
+    
+            return true;*/
+        }
+       function closeTaskPopup(){
+         searchRecords();
+        }
+    </script>
+    <!-- --------------------- -->
+        
+            <apex:stylesheet value="{!$Page.CommonStyles}" />
+            <apex:stylesheet value="{!$Page.PlanStyles}" />
+            <!--<apex:stylesheet value="{!$Page.OverrideStyles}" />--> 
+
+            <!--<apex:stylesheet value="{!URLFOR($Resource.JqueryUITabs, '/tabs/plan-jquery-ui.css')}"/>-->
+            
+          
+            <style>
+             /*================ overriding the style to avoid scroll bar in task care kendo drop down ====================*/
+             .k-list{
+                overflow: hidden !important;
+             }
+             
+           
+             
+           
+             
+             /* ====================== overriding ends here ================ */
+                .tasktabs-block {
+                    height : 370px; 
+                }
+                 #tabstask .ui-tabs .ui-widget-content {
+                    border: 1px solid #d4d4d4 !important;
+                }
+                #tabstask .ui-tabs .ui-widget-content{
+                    border-top: 1px solid #d4d4d4 !important;
+                }
+                
+               /* #tabstask .ui-tabs-nav > .ui-state-default a {
+                 border:none !important;
+                }
+                #tabstask .ui-tabs-nav .ui-state-default{
+                 padding-bottom: 1px !important;
+                }
+                #tabstask .ui-tabs-nav > .ui-state-active{
+                 border-bottom: 1px solid #fff !important;
+                } */
+                .tasktabs-block-head {
+                    text-align: left;
+                }
+                .wrapper{
+                    z-index: 11000;
+                    position: fixed;
+                    left: 50%;
+                    background-color : white;
+                    padding : 10px;
+                    border-radius : 5px;
+                    width : 75em;
+                }
+                .tasktabs-block{
+                    border-top-style : hidden;
+                    
+                }
+                .chatter-tableft
+                {
+                    height: 370px;
+                    display: table-cell;
+                }
+                .chatter-block {
+                    height: 370px;
+                }
+                .taskBtns {
+                    background-color: #DDDDDD;
+                    height: 25px;
+                    padding: 10px;
+                    padding-left: 375px;
+                    border-bottom-left-radius: 5px;
+                    border-bottom-right-radius: 5px;
+                    margin-top: 30px;
+                }
+                
+                .taskBtnsChatter {
+                    background-color: #DDDDDD;
+                    height: 25px;
+                    padding: 10px;
+                    padding-left: 375px;
+                    border-bottom-left-radius: 5px;
+                    border-bottom-right-radius: 5px;
+                }
+                
+                .taskBtnsWork {
+                    background-color: #DDDDDD;
+                    height: 25px;
+                    padding: 10px;
+                    padding-left: 375px;
+                    border-bottom-left-radius: 5px;
+                    border-bottom-right-radius: 5px;
+                    margin-top: 0px;
+                }
+                .popup-btn{
+                    width: 100px;
+                    height: 25px; 
+                }
+                .tabs-gen-block{
+                    margin-bottom : 20px;
+                }
+                .border-btm-taskview{
+                    border-bottom-color : #DDDDDD;
+                }
+                .gen-block-tbl{
+                    border-color: #d4d4d4;
+                    border-top-left-radius: 5px;
+                    border-top-right-radius: 5px;
+                }
+                
+                  
+                    
+                 #tskplanTab  .ui-state-active a  
+                 {
+                    border-color: #FFFFFF !important;
+                    background: #FFFFFF !important;
+                 }
+                 
+                  #tskplanTab     .ui-state-hover a 
+                 {
+                    border-color: #dddddd !important;
+                    background: #dddddd!important;
+                 } 
+                .border-taskview{
+                    border-top-color : #DDDDDD ;
+                }
+                .page-head {
+                    cursor : move;
+                }
+                
+                .k-header {
+                    background: #fff !important;
+                    background-color: #fff !important;
+                    }
+            </style> 
+            <!-- Component to call task popup -->
+            <apex:panelGroup id="TaskpopupComponantId">    
+                <apex:panelGroup rendered="{!showTaskPopup}" id="panelGroupId"> 
+                    <c:TaskViewPopup recId="{!taskId}" isEditable="{!editDisable}" typeOfMode="{!'Read'}" chatDisable="{!chatDisable}"  id="taskviewComponent"/> 
+                </apex:panelGroup>
+            </apex:panelGroup>
+           <apex:panelGroup id="NewTaskpopupComponantId">
+            <apex:panelGroup rendered="{!newShowTaskPopup}" id="NewpanelGroupId">
+                    <c:NewTaskViewPopup recId="" id="NewtaskviewComponent" />
+                </apex:panelGroup>
+            </apex:panelGroup>
+            <apex:form >
+                <apex:actionFunction name="newTaskPopupComponent"   action="{!newTaskPopupComponent}" reRender="NewTaskpopupComponantId"                     oncomplete="hideLoader();" /> 
+            </apex:form>
+           
+    <!-- --------------------- -->
+</apex:component>

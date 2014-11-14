@@ -1,0 +1,14 @@
+<apex:page controller="HomePage" sidebar="false" showheader="false">
+	<apex:panelGroup id="TaskpopupComponantId">  
+        <apex:panelGroup rendered="{!showTaskPopup}" id="panelGroupId"> 
+            <c:TaskViewPopup recId="{!taskId}" isEditable="{!taskEditable}" typeOfMode="{!modeType}" id="taskviewComponent"/>
+        </apex:panelGroup>
+    </apex:panelGroup>
+    <apex:form >
+		<apex:actionFunction name="editThisTask" action="{!toBeUpdatedTask}" immediate="true" reRender="TaskpopupComponantId" >
+	        <apex:param name="taskId" id="taskId" value="" />
+	        <apex:param name="isEditable" id="isEditableId" value="" />
+	        <apex:param name="modeType" id="modeTypeId" value="" />
+	    </apex:actionFunction>
+	</apex:form> 
+</apex:page>

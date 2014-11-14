@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>26.0</apiVersion>
+    <description>This page is view mode of a plan over-ridden from standard layout. Plan is shared among the respective people to discuss the list of Items.
+Plan can also be used to create tasks and get to know the completed activities.</description>
+    <label>PlanView</label>
+</ApexPage>

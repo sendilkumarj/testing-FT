@@ -1,0 +1,1539 @@
+<apex:page contentType="text/javascript">
+
+   $(function() {
+     dragModalApprove();
+     document.getElementById('searchUrgentTable').placeholder = 'Search Urgent...';
+     dragModaldecisionVetoRejectWarningonHome();
+     changeFooterText()
+ });
+
+ function onChange(e) {
+     status = this.text()
+ }
+
+ function onChangeCall(recId, e) {
+     status = $("#status" + recId).data("kendoDropDownList").value();
+     id = recId;
+     calRemote()
+ }
+
+ function calRemote() {
+     HomePage.getTaskById(id, status, function(result, event) {
+         if (event.status)
+             if (event.result) {
+                 updateColumns();
+                 changeTiming()
+             } else {}
+     }, {
+         buffer: false,
+         escape: false
+     })
+ }
+
+ function forIndexing(index, count, status) {
+     $("#statusDropDownId" + count).kendoDropDownList({
+         dataTextField: "StatusName",
+         dataSource: StatusData,
+         change: onChange
+     });
+     var dropdownlist = $("#statusDropDownId" + count).data("kendoDropDownList");
+     dropdownlist.select(index)
+ }
+
+ function disabledate(e) {
+     if (!e.checked) {
+         document.getElementById('workBenchHomePage:taskWorkBenchComponent:workBenchTaskView:newtaskForm:setReminderDate').value = '';
+         $('input[id$="setReminderDate"]').attr('disabled', 'disabled')
+     } else {
+         $('input[id$="setReminderDate"]').removeAttr('disabled')
+     }
+ }
+
+ function showContents(whiteBackground, contentShow, greyBackgroundA, greyBackgroundB, hideContent1, hideContent2) {
+     document.getElementById(whiteBackground).style.backgroundColor = "#fbfbfb";
+     document.getElementById(whiteBackground).style.borderBottom = "1px solid #fbfbfb";
+     document.getElementById(contentShow).style.display = "block";
+     document.getElementById(greyBackgroundA).style.backgroundColor = "#f2f2f2";
+     document.getElementById(greyBackgroundB).style.backgroundColor = "#f2f2f2";
+     document.getElementById(greyBackgroundA).style.borderBottom = "1px solid #ccc";
+     document.getElementById(greyBackgroundB).style.borderBottom = "1px solid #ccc";
+     document.getElementById(hideContent1).style.display = "none";
+     document.getElementById(hideContent2).style.display = "none";
+     $(".important_column_body").customScrollbar("resize", true)
+ }
+ 
+ $('#tabsImportant').css('display', 'block');
+
+ function onSelect(e) {}
+
+ function onActivate(e) {
+     $('#decisionHighlights .k-grid-content').css('height', '250px');
+     $('#decisionHighlights .k-grid-content').css('font-weight', 'normal')
+ }
+
+ function onContentLoad(e) {}
+ var contentLoadChkForDecisionHighlights = 'stateless';
+ var contentLoadChkForDashboards = 'stateless';
+ $("#panelbar").kendoPanelBar({
+     select: onSelect,
+     expand: onExpand,
+     collapse: onCollapse,
+     activate: onActivate,
+     contentLoad: onContentLoad
+ });
+
+ function decisionProgress() {
+     $("#DecisionProgress").kendoChart({
+         theme: $(document).data("kendoSkin") || "blueOpal",
+         dataSource: {
+             data: decisionProgressVal
+         },
+         title: {
+             text: "Decision Progress",
+             font: "14px Arial,Helvetica,sans-serif",
+             align: "left",
+             color: "black"
+         },
+         legend: {
+             position: "bottom"
+         },
+         seriesDefaults: {
+             type: "bar",
+             labels: {
+                 visible: true,
+                 format: "{0}"
+             }
+         },
+         series: [{
+             field: "yAxis",
+             name: "Total # of decisions at different stages"
+         }],
+         valueAxis: {
+             labels: {
+                 format: "{0}"
+             }
+         },
+         categoryAxis: {
+             field: "xAxis"
+         }
+     })
+ }
+
+ function SortByValue(x, y) {
+     return y.value - x.value
+ }
+
+ function decisionUser() {
+     $("#DecisionUserCreatedBy").kendoChart({
+         theme: $(document).data("kendoSkin") || "blueOpal",
+         dataSource: {
+             data: decisionUserCreatedBy
+         },
+         title: {
+             text: "Decisions Created By Users",
+             font: "14px Arial,Helvetica,sans-serif",
+             align: "left",
+             color: "black"
+         },
+         legend: {
+             position: "bottom"
+         },
+         seriesDefaults: {
+             type: "bar",
+             labels: {
+                 visible: true,
+                 format: "{0}"
+             }
+         },
+         series: [{
+             field: "yAxis",
+             name: "Total # of decisions created by different users"
+         }],
+         valueAxis: {
+             labels: {
+                 format: "{0}"
+             }
+         },
+         categoryAxis: {
+             field: "xAxis"
+         }
+     })
+ }
+
+ function createDecision() {
+     $("#Decision").kendoChart({
+         theme: $(document).data("kendoSkin") || "blueOpal",
+         dataSource: {
+             data: internetUsers
+         },
+         title: {
+             text: "Decisions Created",
+             font: "14px Arial,Helvetica,sans-serif",
+             align: "left",
+             color: "black"
+         },
+         legend: {
+             position: "bottom"
+         },
+         seriesDefaults: {
+             type: "bar",
+             labels: {
+                 visible: true,
+                 format: "{0}"
+             }
+         },
+         series: [{
+             field: "value",
+             name: "Total # of decisions created in the last month",
+             align: "left"
+         }],
+         valueAxis: {
+             max: 100,
+             labels: {
+                 format: "{0}"
+             }
+         },
+         categoryAxis: {
+             field: "year"
+         }
+     })
+ }
+
+ function kendoMyCollegueList(gridData) {
+     function SortByValue1(x, y) {
+         return x.DueDate - y.DueDate
+     }
+     data1 = gridData;
+     if (data1 != null) {}
+     var dataSource = new kendo.data.DataSource({
+         data: data1,
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.dueDateSort === "string") {
+                         elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     Name: {
+                         type: "string"
+                     },
+                     Status: {
+                         type: "string"
+                     },
+                     DueDate: {
+                         type: "string"
+                     },
+                     Priority: {
+                         type: "string"
+                     },
+                     AssignedName: {
+                         type: "string",
+                         editable: false
+                     },
+                     relatedToName: {
+                         type: "string",
+                         editable: false
+                     },
+                     typeOfTask: {
+                         type: "String",
+                         editable: false
+                     },
+                     dueDateSort: {
+                         type: "date"
+                     }
+                 }
+             }
+         },
+         pageSize: 13
+     });
+     viewModelmyCollegueTasks = new kendo.observable({
+         ds: dataSource
+     });
+     var grid = $("#myCollegueTasks").kendoGrid({
+         dataSource: dataSource,
+         resizable: true,
+         scrollable: true,
+         sortable: true,
+         editable: false,
+         pageable: true,
+         columns: [{
+             field: "Subject",
+             title: "Title",
+             template: '<a class="Id" href=/#:Id# target="_parent">#=Subject#</a>'
+         }, {
+             field: "relatedToName",
+             title: "Related To",
+             template: '<a class="Id" href=/#:relatedToId# target="_parent">#:relatedToName#</a>'
+         }, {
+             field: "dueDateSort",
+             title: "Due Date",
+             format: dateFormat,
+             width: 100
+         }, {
+             field: "Status",
+             title: "Status",
+             editor: statusDropDownEditor,
+             template: '<div>#:Status#<div>',
+             width: 100
+         }, {
+             field: "Priority",
+             editor: priporityDropDownEditor,
+             title: "Priority",
+             width: 70
+         }, {
+             field: "AssignedName",
+             title: "Assigned To",
+             template: '<a class="Id" href=/#:AssignedId# target="_parent">#:AssignedName#</a>'
+         }],
+     }).data("kendoGrid")
+ }
+
+ function kendoMyDecision(gridData) {
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {}
+     var dataSource = new kendo.data.DataSource({
+         data: data1,
+         transport: {
+             read: function(event) {
+                 dataSource.sync();
+                 event.success(gridData)
+             },
+             update: function(e) {}
+         },
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.dueDateSort === "string") {
+                         elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                     }
+                     if (typeof elem.lastModifiedDateSort === "string") {
+                         elem.lastModifiedDateSort = kendo.parseDate(elem.dueDateSort)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     Name: {
+                         type: "string",
+                         editable: false
+                     },
+                     phase: {
+                         type: "string",
+                         editable: false
+                     },
+                     lastModifiedDate: {
+                         type: "date",
+                         editable: false
+                     },
+                     dueDate: {
+                         type: "string",
+                         editable: false
+                     },
+                     lastModifiedDateSort: {
+                         type: "date",
+                         editable: false
+                     },
+                     dueDateSort: {
+                         type: "date",
+                         editable: false
+                     },
+                 }
+             }
+         },
+         pageSize: 5
+     });
+     var grid = $("#myDecisions").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         sortable: true,
+         resizable: true,
+         editable: false,
+         height: 250,
+         pageable: true,
+         columns: [{
+             field: "Name",
+             title: "Name/Title",
+             template: '<a href=/#:Id# target="_parent">#:Name#</a>'
+         }, {
+             field: "phase",
+             title: "Phase",
+             template: '<div align = "center"><img src=/#:phaseImg# title=#:phase# /><div>',
+             width: 60
+         }, {
+             field: "lastModifiedDateSort",
+             title: "Last Activity Date",
+             format: dateTimeFormat,
+             width: 130
+         }, {
+             field: "dueDateSort",
+             title: "Due Date",
+             format: dateTimeFormat,
+             width: 130
+         }],
+     }).data("kendoGrid")
+ }
+
+ function kendoMyTasks(gridData) {
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {
+         data1.sort(SortByValue1)
+     }
+     var dataSource = new kendo.data.DataSource({
+         data: gridData,
+         batch: true,
+         transport: {
+             read: function(event) {
+                 dataSource.sync();
+                 event.success(gridData)
+             },
+             parameterMap: function(data, type) {},
+             update: function(e) {
+                 var stringifiedData = JSON.stringify(e);
+                 var recodsId = e.data.models[0].Id;
+                 var recodsSubject = e.data.models[0].Subject;
+                 var recodsStatus = e.data.models[0].Status;
+                 var recodsPriority = e.data.models[0].Priority;
+                 var recodsDueDate = e.data.models[0].DueDate;
+                 recodsDueDate = kendo.toString(recodsDueDate, "MM,dd,yyyy");
+                 updateMyTask(recodsId, recodsSubject, recodsPriority, recodsStatus, recodsDueDate)
+             }
+         },
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.DueDate === "string") {
+                         elem.DueDate = kendo.parseDate(elem.DueDate)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     Subject: {
+                         type: "string",
+                         validation: {
+                             required: {
+                                 message: "is required"
+                             }
+                         }
+                     },
+                     Status: {
+                         type: "string"
+                     },
+                     Priority: {
+                         type: "string"
+                     },
+                     CreatedBy: {
+                         type: "string",
+                         editable: false
+                     },
+                     relatedTo: {
+                         type: "string",
+                         editable: false
+                     },
+                     DueDate: {
+                         type: "Date",
+                         editable: true
+                     },
+                     dateFormatToBeSet: {
+                         type: "string",
+                         editable: false
+                     }
+                 }
+             }
+         },
+         pageSize: 5
+     });
+     var isEdit = false;
+     var grid = $("#myTasks").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         sortable: true,
+         editable: true,
+         resizable: true,
+         height: 250,
+         pageable: true,
+         editable: "inline",
+         columns: [{
+             field: "Subject",
+             title: "Subject",
+             template: '<a href=/#:Id# target="_parent">#=Subject#</a>'
+         }, {
+             field: "relatedTo",
+             title: "Related To",
+             editable: false,
+             template: '<a href=/#:relatedToId# target="_parent">#=relatedTo#</a>'
+         }, {
+             field: "DueDate",
+             title: "Due Date",
+             editable: true,
+             editor: dateTimeEditor,
+             format: dateFormat,
+             width: 100
+         }, {
+             field: "Status",
+             title: "Status",
+             editor: statusDropDownEditor,
+             template: '<div>#:Status#<div>',
+             width: 125
+         }, {
+             field: "Priority",
+             title: "Priority",
+             editor: priporityDropDownEditor,
+             width: 100,
+             template: "#:Priority#"
+         }, {
+             command: ["edit"],
+             title: "&nbsp;",
+             width: "95px"
+         }],
+     }).data("kendoGrid")
+ }
+
+ function priporityDropDownEditor(container, options) {
+     $('<input data-text-field="PriorityName" data-value-field="PriorityName" data-bind="value:' + options.field + '"/>').appendTo(container).kendoDropDownList({
+         autoBind: false,
+         dataSource: priorities,
+         width: 200
+     })
+ }
+
+ function typesDropDownEditor(container, options) {
+     $('<input data-text-field="typesName" data-value-field="typesName" data-bind="value:' + options.field + '"/>').appendTo(container).kendoDropDownList({
+         autoBind: false,
+         dataSource: types
+     })
+ }
+
+ function statusDropDownEditor(container, options) {
+     $('<input data-text-field="StatusName" data-value-field="StatusName" data-bind="value:' + options.field + '"/>').appendTo(container).kendoDropDownList({
+         height: 240,
+         autoBind: false,
+         dataSource: statusValue
+     })
+ }
+
+ function dateTimeEditor(container, options) {
+     $('<input data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>').appendTo(container).kendoDatePicker({})
+ }
+
+ function kendoUrgentTasks(gridData) {
+     var dataSource = new kendo.data.DataSource({
+         data: gridData,
+         autoSync: true,
+         height: 530,
+         resizable: true,
+         batch: true,
+         transport: {
+             read: function(event) {
+                 dataSource.sync();
+                 event.success(gridData)
+             },
+             update: function(event) {
+                 var stringifiedData = JSON.stringify(event);
+                 var updatedData = parsingModifieData(stringifiedData);
+                 event.success()
+             }
+         },
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.dueDateSort === "string") {
+                         elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                     }
+                     if (typeof elem.DueDate === "string") {
+                         elem.DueDate = kendo.parseDate(elem.DueDate)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     title: {
+                         type: "string",
+                         validation: {
+                             required: {
+                                 message: "is required"
+                             }
+                         }
+                     },
+                     relatedTo: {
+                         type: "string",
+                         editable: false
+                     },
+                     status: {
+                         type: "string"
+                     },
+                     priority: {
+                         type: "string"
+                     },
+                     relatedToId: {
+                         type: "string",
+                         editable: false
+                     },
+                     CreatedById: {
+                         type: "string",
+                         editable: false
+                     },
+                     DueDate: {
+                         type: "date",
+                         editable: true
+                     },
+                     CreatedBy: {
+                         type: "string",
+                         editable: false
+                     },
+                     dueDateSort: {
+                         type: "date",
+                         editable: true
+                     },
+                 }
+             }
+         },
+         pageSize: 13
+     });
+     viewModel = new kendo.observable({
+         ds: dataSource
+     });
+     var isEdit = false;
+     var grid = $('#kendoUrgentTasks').kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         resizable: true,
+         sortable: true,
+         editable: true,
+         height: 530,
+         pageable: true,
+         toolbar: ["save", "cancel"],
+         columns: [{
+             field: "title",
+             title: "Subject",
+             template: '<a href="/#:Id#" target="_parent" >#=title#</a>'
+         }, {
+             field: "relatedTo",
+             title: "Related To",
+             template: '<a href="/#:relatedToId#" target="_parent" >#:relatedTo#</a>'
+         }, {
+             field: "dueDateSort",
+             title: "Due Date",
+             format: dateFormat,
+             width: 120
+         }, {
+             field: "status",
+             title: "Status",
+             editor: statusDropDownEditor,
+             template: '<div>#:status#<div>',
+             width: 175
+         }, {
+             field: "priority",
+             title: "Priority",
+             editor: priporityDropDownEditor,
+             width: 100,
+             template: "#:priority#"
+         }, {
+             field: "CreatedBy",
+             title: "Assigned By",
+             template: '<a href="/#:CreatedById#"  target="_parent" >#:CreatedBy#</a>'
+         }]
+     }).data("kendoGrid")
+ }
+
+ function kendoMyTeamTasks(gridData) {
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {
+         data1.sort(SortByValue1)
+     }
+     var dataSource = new kendo.data.DataSource({
+         data: data1,
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.DueDate === "string") {
+                         elem.DueDate = kendo.parseDate(elem.DueDate)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     Subject: {
+                         type: "string",
+                         editable: false
+                     },
+                     DueDate: {
+                         type: "date",
+                         editable: false
+                     },
+                     Status: {
+                         type: "string",
+                         editable: false
+                     },
+                     Priority: {
+                         type: "string",
+                         editable: false
+                     },
+                     CreatedBy: {
+                         type: "string",
+                         editable: false
+                     },
+                     AssignedTo: {
+                         type: "string",
+                         editable: false
+                     }
+                 }
+             }
+         },
+         pageSize: 15
+     });
+     var grid = $("#myTeamTasks").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         sortable: true,
+         editable: true,
+         resizable: true,
+         height: 250,
+         pageable: true,
+         columns: [{
+             field: "Subject",
+             title: "Subject",
+             template: '<a href=/#:Id# target="_parent">#=Subject#</a>'
+         }, {
+             field: "DueDate",
+             title: "Due Date",
+             format: 'dateFormat',
+             width: 80
+         }, {
+             field: "Status",
+             title: "Status",
+             template: '<div>#:Status#<div>',
+             width: 100,
+         }, {
+             field: "Priority",
+             title: "Priority",
+             template: "#:Priority#",
+             width: 65
+         }, {
+             field: "CreatedBy",
+             title: "Created By",
+             template: "#:CreatedBy#"
+         }, {
+             field: "AssignedTo",
+             title: "Assigned To",
+             template: "#:AssignedTo#"
+         }],
+     }).data("kendoGrid")
+ }
+
+ function kendoDecisionHighlights(gridData) {
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {
+         data1.sort(SortByValue1)
+     }
+     var dataSource = new kendo.data.DataSource({
+         data: data1,
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.DueDateSort === "string") {
+                         elem.DueDateSort = kendo.parseDate(elem.DueDateSort)
+                     }
+                     if (typeof elem.lastModifiedDateSort === "string") {
+                         elem.lastModifiedDateSort = kendo.parseDate(elem.lastModifiedDateSort)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     title: {
+                         type: "string",
+                         editable: false
+                     },
+                     phase: {
+                         type: "string",
+                         editable: false
+                     },
+                     lastModifiedDate: {
+                         type: "date",
+                         editable: false
+                     },
+                     DueDateSort: {
+                         type: "date",
+                         editable: false
+                     },
+                     lastModifiedDateSort: {
+                         type: "date",
+                         editable: false
+                     },
+                     owner: {
+                         type: "string",
+                         editable: false
+                     }
+                 }
+             }
+         },
+         pageSize: 10
+     });
+     viewModeldecisionHighlights = new kendo.observable({
+         ds: dataSource
+     });
+     var grid = $("#decisionHighlights").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         sortable: true,
+         editable: false,
+         height: 315,
+         pageable: true,
+         resizable: true,
+         pageable: {
+             refresh: true,
+             pageSizes: [5, 10, 25, 40]
+         },
+         columns: [{
+             field: "title",
+             title: "Title",
+             template: '<a href=/#:Id# target="_parent">#:title#</a>'
+         }, {
+             field: "phase",
+             title: "Phase",
+             template: '<div align = "center"><img src=/#:phaseImg# title=#:phase# ></img><div>',
+             width: 60
+         }, {
+             field: "lastModifiedDateSort",
+             title: "Last Modified Date",
+             format: dateTimeFormat,
+             width: 130
+         }, {
+             field: "DueDateSort",
+             title: "Due Date",
+             format: dateTimeFormat,
+             width: 130
+         }, {
+             field: "owner",
+             title: "Owner",
+             template: "#:owner#"
+         }, {
+             field: "likeValue",
+             title: "Like / Dislike",
+             template: '<div align = "center"><img src=/#:likeImg# title=#:likeValue# ></img></div>',
+             width: 95
+         }, {
+             field: "mood",
+             title: "Mood",
+             template: '<div align = "center"><div class=#:moodClass# title=#:mood# ></img></div>',
+             width: 55
+         }, {
+             field: "starValue",
+             title: "Relevancy",
+             template: '<div align = "center"><img src=/#:starImage# title=#:starValue# ></img></div>',
+             width: 100
+         }],
+     }).data("kendoGrid")
+ }
+
+ function kendoUrgentApprovals(gridData) {
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {}
+     var dataSource = new kendo.data.DataSource({
+         data: data1,
+         transport: {
+             read: function(event) {
+                 dataSource.sync();
+                 event.success(gridData)
+             },
+             update: function(event) {
+                 event.success()
+             }
+         },
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.dueDateSort === "string") {
+                         elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "id",
+                 fields: {
+                     id: {
+                         type: "string",
+                         editable: false
+                     },
+                     status: {
+                         type: "string",
+                         editable: false
+                     },
+                     Title: {
+                         type: "string",
+                         editable: false
+                     },
+                     DueDate: {
+                         type: "date",
+                         editable: false
+                     },
+                     Owner: {
+                         type: "string",
+                         editable: false
+                     },
+                     step: {
+                         type: "string",
+                         ediatble: false
+                     },
+                     myRole: {
+                         type: "string",
+                         ediatble: false
+                     },
+                     vetoRights: {
+                         type: "boolean",
+                         ediatble: false
+                     },
+                     backupRights: {
+                         type: "boolean",
+                         ediatble: false
+                     },
+                     titleHover: {
+                         type: "string",
+                         editable: false
+                     },
+                     dueDateSort: {
+                         type: "date",
+                         editable: false
+                     },
+                 }
+             }
+         },
+         sort: {
+             field: "dueDateSort",
+             dir: "desc"
+         },
+         pageSize: 13
+     });
+     viewModelApproval = new kendo.observable({
+         ds: dataSource
+     });
+     var grid = $("#kendoUrgentApprovals").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         resizable: true,
+         editable: false,
+         sortable: true,
+         pageable: true,
+         dataBound: onDataBound,
+         dataBinding: onDataBinding,
+         columns: [{
+             field: "step",
+             title: "Action",
+             template: kendo.template($("#action-template").html()),
+             width: 70,
+         }, {
+             field: "Title",
+             title: "Title",
+             template: '<a class="decisionLink" href=/#:decisionId# target="_parent">#:Title#</a><div id="decisionHidden" >#=problemStmt#</div><div id="decisionHidden" >#=decision#</div><div id="decisionHidden" >#=fieldTitle1#</div><div id="decisionHidden" >#=fieldTitle2#</div>',
+         }, {
+             field: "dueDateSort",
+             title: "Due Date",
+             format: dateTimeFormat,
+             width: 130,
+         }, {
+             field: "status",
+             title: "Status",
+             template: '<div align = "center"><img src=/#:statusImage# title=#:status# /><div>',
+             width: 55,
+         }, {
+             field: "myRole",
+             title: "My Role",
+             width: 100,
+             template: "#:myRole#",
+         }, {
+             field: "Owner",
+             title: "Owner of the Decision",
+             template: '<a href=/#:OwnerId# target="_parent">#:Owner#</a>',
+         }],
+     }).data("kendoGrid")
+ }
+
+ function kendoUrgentDecisions(gridData) {
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {}
+     var dataSource = new kendo.data.DataSource({
+         data: data1,
+         height: 530,
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.dueDateSort === "string") {
+                         elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     phaseImg: {
+                         type: "string",
+                         editable: false
+                     },
+                     phase: {
+                         type: "string",
+                         editable: false
+                     },
+                     decisionId: {
+                         type: "string",
+                         editable: false
+                     },
+                     decisionTitle: {
+                         type: "string",
+                         editable: false
+                     },
+                     problemStatement: {
+                         type: "string",
+                         ediatble: false
+                     },
+                     decisionTaken: {
+                         type: "string",
+                         ediatble: false
+                     },
+                     dueDate: {
+                         type: "string"
+                     },
+                     myRole: {
+                         type: "string"
+                     },
+                     ownerId: {
+                         type: "string"
+                     },
+                     ownerName: {
+                         type: "string"
+                     },
+                     dueDateSort: {
+                         type: "date"
+                     },
+                 }
+             }
+         },
+         pageSize: 13
+     });
+     viewModelUrgentDecision = new kendo.observable({
+         ds: dataSource
+     });
+     var grid = $("#kendoUrgentDecisions").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         resizable: true,
+         editable: false,
+         sortable: true,
+         height: 530,
+         pageable: true,
+         dataBound: onDataBound,
+         dataBinding: onDataBinding,
+         columns: [{
+             field: "decisionTitle",
+             title: "Title",
+             template: '<a  class="decisionLink" href=/#:decisionId# target="_parent">#=decisionTitle#</a><div id="decisionHidden" >#=problemStatement#</div><div id="decisionHidden" >#=decisionTaken#</div><div id="decisionHidden"  >#=fieldTitle1#</div><div id="decisionHidden" >#=fieldTitle2#</div>'
+         }, {
+             field: "phase",
+             title: "Phase",
+             template: '<div align = "center"><img src=/#:phaseImg# title=#:phase# /><div>',
+             width: 55
+         }, {
+             field: "dueDateSort",
+             title: "Due Date",
+             format: dateTimeFormat,
+             width: 130
+         }, {
+             field: "myRole",
+             title: "My Role",
+             width: 100,
+             template: "#:myRole#"
+         }, {
+             field: "Owner",
+             title: "Owner of Decision",
+             template: '<a href=/#:ownerId# target="_parent">#:ownerName#</a>'
+         }],
+     }).data("kendoGrid")
+ }
+
+ function kendoPendingApprovals(gridData) {
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {}
+     var dataSource = new kendo.data.DataSource({
+         data: data1,
+         schema: {
+             parse: function(response) {
+                 $.each(response, function(idx, elem) {
+                     if (typeof elem.dueDateSort === "string") {
+                         elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                     }
+                 });
+                 return response
+             },
+             model: {
+                 id: "Id",
+                 fields: {
+                     Id: {
+                         type: "string",
+                         editable: false
+                     },
+                     phaseImg: {
+                         type: "string",
+                         editable: false
+                     },
+                     phase: {
+                         type: "string",
+                         editable: false
+                     },
+                     priority: {
+                         type: "string",
+                         editable: false
+                     },
+                     title: {
+                         type: "string",
+                         editable: false
+                     },
+                     pendingApprovers: {
+                         type: "string",
+                         ediatble: false
+                     },
+                     myRole: {
+                         type: "string",
+                         ediatble: false
+                     },
+                     DueDate: {
+                         type: "string"
+                     },
+                     myRole: {
+                         type: "string"
+                     },
+                     status: {
+                         type: "string"
+                     },
+                     dueDateSort: {
+                         type: "date"
+                     },
+                 }
+             }
+         },
+         sort: {
+             field: "dueDateSort",
+             dir: "desc"
+         },
+         pageSize: 13
+     });
+     viewModelpendingApprovals = new kendo.observable({
+         ds: dataSource
+     });
+     var grid = $("#pendingApprovals").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         editable: false,
+         sortable: true,
+         pageable: true,
+         resizable: true,
+         dataBound: onDataBound,
+         dataBinding: onDataBinding,
+         columns: [{
+             field: "title",
+             title: "Title",
+             template: '<a class="decisionLink1" href=/#:Id# target="_parent">#=title#</a>'
+         }, {
+             field: "pendingApprovers",
+             title: "Pending Approvers"
+         }, {
+             field: "myRole",
+             title: "My Role",
+             width: 100
+         }, {
+             field: "dueDateSort",
+             title: "Due Date",
+             format: dateTimeFormat,
+             width: 130
+         }, {
+             field: "status",
+             title: "Status",
+             width: 80
+         }, {
+             field: "priority",
+             title: "Priority",
+             width: 80
+         }, {
+             field: "phase",
+             title: "Phase",
+             template: '<div align = "center"><img src=/#:phaseImg# title=#:phase# /><div>',
+             width: 65
+         }],
+     }).data("kendoGrid")
+ }
+
+ function kendoUrgentIssues(gridData) {
+     $('#urgentIssues').html('(' + gridData.length + ')');
+
+     function SortByValue1(x, y) {
+         return x.Position - y.Position
+     }
+     data1 = gridData;
+     if (data1 != null) {}
+     var dataSource = new kendo.data.DataSource({
+         data: gridData,
+         autoSync: true,
+         batch: true,
+         resizable: true,
+         transport: {
+             read: function(event) {
+                 dataSource.sync();
+                 event.success(gridData)
+             },
+             update: function(event) {
+                 var stringifiedData = JSON.stringify(event);
+                 var updatedData = updateModifieData(stringifiedData);
+                 event.success()
+             }
+         },
+         schema: {
+             model: {
+                 id: "issueId",
+                 fields: {
+                     issueId: {
+                         type: "string",
+                         editable: false
+                     },
+                     issueName: {
+                         type: "string",
+                         validation: {
+                             required: {
+                                 message: "is required"
+                             }
+                         }
+                     },
+                     assignTo: {
+                         type: "string",
+                         editable: false
+                     },
+                     type: {
+                         type: "string"
+                     },
+                     priority: {
+                         type: "string"
+                     },
+                     comments: {
+                         type: "string"
+                     },
+                     relatedToId: {
+                         type: "string",
+                         editable: false
+                     },
+                     ownerId: {
+                         type: "string",
+                         editable: false
+                     },
+                     relatedToObject: {
+                         type: "string",
+                         editable: false
+                     }
+                 }
+             }
+         },
+         pageSize: 15
+     });
+     var isEdit = false;
+     var grid = $("#kendoUrgentIssues").kendoGrid({
+         dataSource: dataSource,
+         scrollable: true,
+         sortable: true,
+         editable: true,
+         height: 250,
+         pageable: true,
+         resizable: true,
+         toolbar: ["save", "cancel"],
+         columns: [{
+             field: "issueName",
+             title: "Name",
+             template: '<a href="/#:issueId#" target="_parent" >#=issueName#</a>'
+         }, {
+             field: "assignTo",
+             title: "Assigned To",
+             template: '<a href="/#:ownerId#"  target="_parent" >#:assignTo#</a>'
+         }, {
+             field: "relatedToObject",
+             title: "Related To Object",
+             template: '<a href="/#:relatedToId#" target="_parent" >#:relatedToObject#</a>'
+         }, {
+             field: "type",
+             title: "Type",
+             editor: typesDropDownEditor,
+             template: "#:type#"
+         }, {
+             field: "priority",
+             title: "Priority",
+             editor: priporityDropDownEditor,
+             template: "#:priority#",
+             width: 100
+         }, {
+             field: "comments",
+             title: "Comments",
+             template: "#=comments#"
+         }]
+     }).data("kendoGrid")
+ }
+
+ function onDataBinding(arg) {}
+
+ function onDataBound(arg) {
+     $(function() {
+         $('.decisionLink').hover(function(e) {
+             var itemTitle = $(this).html();
+             var itemField1 = $(this).next().html();
+             var itemField2 = $(this).next().next().html();
+             var itemTitle1 = $(this).next().next().next().html();
+             var itemTitle2 = $(this).next().next().next().next().html();
+             $('.popover-title').html(itemTitle);
+             $('.fld-title1').html('Description');
+             $('.fld-title2').html(itemTitle2);
+             $('.fld-value1').html(itemField1);
+             $('.fld-value2').html(itemField2);
+             $('#item-call').show().css('top', e.pageY - 45).css('left', e.pageX + 30).appendTo('body')
+         }, function() {
+             $('#item-call').hide()
+         })
+     })
+ }
+
+ function parsingModifieData(t) {
+     var selectedTimeFrame = document.getElementById('chooseTime').value;
+     var searchValue = document.getElementById('searchUrgentTable').value;
+     parseModifiedData(t, selectedTimeFrame, searchValue)
+ }
+
+ function updateModifieData(t) {
+     var selectedTimeFrame = document.getElementById('chooseTime').value;
+     var searchValue = document.getElementById('searchUrgentTable').value;
+     updateModifiedData(t, selectedTimeFrame, searchValue)
+ }
+
+ function showhideImportant() {
+     var tabsimortant = document.getElementById('tabsImportant');
+     if (tabsimortant.style.display == 'none') {
+         $('#tabsImportant').show();
+         $('#dropBtnDecision').css('background-position', '0px 0px');
+         $('.important_container').css('height', '650px');
+         var active = $("#tabsImportant").tabs("option", "active");
+         if (active == 0) {
+             hideSearch()
+         } else {
+             showSearch()
+         }
+     } else if (tabsimortant.style.display == 'block') {
+         $('#tabsImportant').hide();
+         hideSearch();
+         $('#dropBtnDecision').css('background-position', '0px -11px');
+         $('.important_container').css('height', '20px')
+     }
+ }
+
+ function switchview() {}
+
+ function showSearch() {
+     document.getElementById('filterHide').style.display = 'block'
+ }
+
+ function hideSearch() {
+     document.getElementById('filterHide').style.display = 'none'
+ }
+ var selectedIndicatorID = "";
+
+ function showIndicator(e, num) {
+     var hoveredIndicator = document.getElementById("indicator" + num);
+     var mouseOverDropDown = document.getElementById("indicatorDropDownDisplay");
+     var containerPI = document.getElementById("PIholder" + num);
+     if (document.getElementById("indicatorDropDown").style.display == "none") {
+         hoveredIndicator.style.cursor = "default";
+         $(containerPI).append($('#indicatorDropDownDisplay'));
+         $('#indicatorDropDownDisplay').show()
+     }
+ }
+
+ function hideIndicator(num) {
+     document.getElementById("indicatorDropDownDisplay").style.display = "none";
+     var containerPI = document.getElementById("PIholder" + num);
+     if ($(containerPI).length > 0) {}
+ }
+ var globalDecisionId;
+
+ function openIndicator(e, decisionId, num, Role, Acc, Bac, Res, status) {
+     globalDecisionId = decisionId;
+     selectedIndicatorID = document.getElementById("indicator" + num);
+     var containerPI = document.getElementById("PIholder" + num);
+     $(containerPI).append($('#indicatorDropDown'));
+     var chkpermission = (convertStringToBoolean(Acc) || convertStringToBoolean(Bac) || convertStringToBoolean(Res)) ? true : false;
+     if (Role == 'Approved/Accepted') {
+         if (status != 'Closed') chkpermission = (chkpermission == true) ? true : false;
+         else chkpermission = false
+     } else chkpermission = false; if (chkpermission) {
+         if (document.getElementById("indicatorDropDown").style.display == "none") {
+             document.getElementById("indicatorDropDown").style.display = "block"
+         } else {
+             document.getElementById("indicatorDropDown").style.display = "none";
+             if ($(containerPI).length > 0) {}
+         }
+     }
+ };
+
+ function convertStringToBoolean(srcValue) {
+     var destinationValue;
+     if (srcValue == 'true') {
+         destinationValue = true
+     } else if (srcValue == 'True') {
+         destinationValue = true
+     } else if (srcValue == true) {
+         destinationValue = true
+     } else if (srcValue == '1') {
+         destinationValue = true
+     } else if (srcValue == '0') {
+         destinationValue = false
+     } else if (srcValue == 'false') {
+         destinationValue = false
+     } else if (srcValue == 'False') {
+         destinationValue = false
+     } else if (srcValue == false) {
+         destinationValue = false
+     }
+     return destinationValue
+ }
+
+ function showSearch() {
+     document.getElementById('filterHide').style.display = 'block'
+ }
+
+ function hideSearch() {
+     document.getElementById('filterHide').style.display = 'none'
+ }
+
+ function showBottonDecision(count) {
+     if (document.getElementById("cardBottomDecision" + count).style.display == "none") {
+         document.getElementById("cardBottomDecision" + count).style.display = "block";
+         document.getElementById("dropBtnDecision" + count).style.backgroundPosition = "-64px 0px";
+         if (document.getElementById("colorDivCurve" + count) != null) {
+             document.getElementById("colorDiv" + count).style.display = "block";
+             document.getElementById("colorDivCurve" + count).style.display = "none"
+         }
+     } else {
+         document.getElementById("cardBottomDecision" + count).style.display = "none";
+         document.getElementById("dropBtnDecision" + count).style.backgroundPosition = "-64px -8px";
+         if (document.getElementById("colorDiv" + count) != null) {
+             document.getElementById("colorDiv" + count).style.display = "none";
+             document.getElementById("colorDivCurve" + count).style.display = "block"
+         }
+     }
+     $(".important_column_body").customScrollbar("resize", true)
+ }
+
+ function updateColumns() {
+     showLoader();
+     columnUpdateNumber = 0;
+     cardTypes = document.getElementById('plancheckbox').checked ? 'P' : '';
+     cardTypes = cardTypes + (document.getElementById('decisioncheckbox').checked ? 'D' : '');
+     cardTypes = cardTypes + (document.getElementById('taskcheckbox').checked ? 'T' : '');
+     cardTypes = cardTypes + (document.getElementById('approvalcheckbox').checked ? 'A' : '');
+     updateToDoCount(cardTypes);
+     for (var col = 0; columns.length > col; col++) {
+         HomePage.viewImportantColumnCards(false, cardTypes, columnsRestore[col].columnTimeUpperBound, columnsRestore[col].columnTimeUpperBound, columnsRestore[col].columnTimeLowerBound, function(result, event) {
+             var cardsJson = removeQuotes(result);
+             cardsJson.importantWrapperList.sort(function(a, b) {
+                 if (a.lastmodifiedTime == b.lastmodifiedTime) return 0;
+                 return b.lastmodifiedTime > a.lastmodifiedTime ? 1 : -1
+             });
+             columns[cardsJson.columnId].columnTimeUpperBound = cardsJson.columnTimeUpperBound;
+             columns[cardsJson.columnId].dataSetUpperBound = cardsJson.dataSetUpperBound;
+             columns[cardsJson.columnId].columnTimeLowerBound = cardsJson.columnTimeLowerBound;
+             columns[cardsJson.columnId].done = cardsJson.done;
+             columns[cardsJson.columnId].viewModel = kendo.observable({
+                 cards: cardsJson.importantWrapperList,
+                 taskstatusData: taskstatusPicklistData
+             });
+             kendo.bind($("#bind" + cardsJson.columnId), columns[cardsJson.columnId].viewModel);
+             $('#' + cardsJson.columnId + '.important_column_body').customScrollbar("resize", true);
+             columnUpdateNumber++;
+             if (columnUpdateNumber == 5) {
+                 hideLoader();
+                 $('.bg-fade').fadeOut('slow')
+             }
+         })
+     }
+ }
+
+ function switchProblemStatement(count) {
+     document.getElementById('switchProblemStatement' + count).style.backgroundPosition = '-122px 0px';
+     document.getElementById('switchDecisionStatement' + count).style.backgroundPosition = '-132px 0px';
+     document.getElementById('problemstatement' + count).style.display = 'block';
+     document.getElementById('decisionstatement' + count).style.display = 'none'
+ }
+
+ function switchDecisionStatement(count) {
+     document.getElementById('switchProblemStatement' + count).style.backgroundPosition = '-132px 0px';
+     document.getElementById('switchDecisionStatement' + count).style.backgroundPosition = '-122px 0px';
+     document.getElementById('problemstatement' + count).style.display = 'none';
+     document.getElementById('decisionstatement' + count).style.display = 'block'
+ }
+</apex:page>

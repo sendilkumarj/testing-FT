@@ -1,0 +1,16 @@
+<apex:page standardController="Decision__c" recordSetVar="d" showHeader="false" sidebar="false">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  This is your new Page
+  <!-- End Default Content REMOVE THIS -->
+  <apex:form >
+   <apex:inputField value="{!Decision__c.Title__c}"/>
+  <apex:commandButton value="save" action="{!save}"/>
+   
+   
+  </apex:form>
+    <apex:repeat value="{!d}" var="s">
+       <apex:outputLink value="/apex/testVF?id={!s.id}"> {!s.Title__c} </apex:outputLink> <br/>
+      </apex:repeat>
+
+</apex:page>

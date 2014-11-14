@@ -1,0 +1,73 @@
+<apex:page Standardcontroller="Decision__c" extensions="DecisionController" showHeader="false" sidebar="false" Id="pageId">
+    <!-- <script type='text/javascript' src='/canvas/sdk/js/publisher.js'/> 
+    <style>
+        .requiredInput .requiredBlock, .requiredBlock {background-color: white;} 
+        .custompubblock div {display: inline-block;} 
+        .custompublabel {width:54px;} 
+    </style>
+    <script> 
+        function refreshFeed() { 
+            Sfdc.canvas.publisher.publish({name : 'publisher.refresh', payload : {feed:true}}); 
+        }
+    </script>  -->
+    <script>
+        function enableEditView(){
+            document.getElementById('pageId:formId:viewPanel').style.display = 'none';
+            document.getElementById('pageId:formId:editPanel').style.display = 'block';
+        }
+        function enableDetailView(){
+            document.getElementById('pageId:formId:viewPanel').style.display = 'Block';
+            document.getElementById('pageId:formId:editPanel').style.display = 'none';
+        }
+    </script>
+    <div>
+        <apex:form id="formId">
+            <apex:outputPanel id="dummyPanel" />
+            <apex:outputPanel id="viewPanel" >
+                <apex:pageblock id="out">
+                    <apex:pageblocksection columns="2" title="Classification" id="blockId">
+                        <apex:outputField value="{!decision.Decision_Type__c}" />
+                        <apex:outputField value="{!decision.Decision_Approach__c}" />
+                        <apex:outputField value="{!decision.Category__c}" />
+                        <apex:outputField value="{!decision.Decision_Making_Style__c}" />
+                        <apex:outputPanel id="priority">
+<!--                        	<apex:outputField value="{!decision.Priority__c}" />-->
+							Hi			
+                        </apex:outputPanel>
+                        <apex:inputField value="{!decision.Priority__c}" onchange="showDiv(this.value);"/>
+                        <script>
+                        	function showDiv(val){
+                        		//alert(val);
+                        		var val1 = ''+val;
+                        		if(val1 == 'High'){
+                        			//alert(1);
+                        			document.getElementById('pageId:formId:out:blockId:priority').style.display = 'none';
+                        		} else {
+                        			//alert(2);
+                        			document.getElementById('pageId:formId:out:blockId:priority').style.display = 'block';
+                        		}
+                        	}
+                        </script>
+                    </apex:pageblocksection>
+                    <apex:pageblockbuttons >
+                        <apex:commandbutton value="Advanced Edit" onclick="enableEditView();" rerender="dummyPanel"/>
+                    </apex:pageblockbuttons>
+                </apex:pageblock>
+            </apex:outputPanel>
+            <apex:outputPanel id="editPanel" style="display:none;">
+                <apex:pageblock id="in">
+                    <apex:pageblocksection columns="2" title="Classification">
+                        <apex:inputField value="{!decision.Decision_Type__c}" />
+                        <apex:inputField value="{!decision.Decision_Approach__c}" />
+                        <apex:inputField value="{!decision.Category__c}" />
+                        <apex:inputField value="{!decision.Decision_Making_Style__c}" />
+                        <apex:inputField value="{!decision.Priority__c}" />
+                    </apex:pageblocksection>
+                    <apex:pageblockbuttons >
+                        <apex:commandbutton value="Save" action="{!customSave}" rerender="out" oncomplete="enableDetailView();"/>
+                    </apex:pageblockbuttons>
+                </apex:pageblock>
+            </apex:outputPanel>
+        </apex:form><br/>
+    </div>  
+</apex:page>

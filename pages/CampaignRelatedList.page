@@ -1,0 +1,3 @@
+<apex:page standardController="Campaign" sidebar="false" showHeader="false">
+    <c:CustomRelatedList objType="Campaign" recId="{!Campaign.Id}" recName="{!Campaign.Name}"/>
+</apex:page>

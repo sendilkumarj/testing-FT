@@ -1,0 +1,548 @@
+<apex:page controller="PlanTab" tabStyle="Plan__c">
+  <script>
+		//FT Favicon
+		(function() {
+		    var link = document.createElement('link');
+		    link.type = 'image/x-icon';
+		    link.rel = 'shortcut icon';
+		    link.href = '{!$Resource.Favicon}';
+		    document.getElementsByTagName('head')[0].appendChild(link);
+		     $(document).prop('title', 'Plans');
+		}());
+		
+	</script>
+
+   <apex:includeScript value="{!$Page.CommonScripts}" />
+    <div class = "preloader"></div>
+    <div class = "bg-fade"></div>
+    <script>
+        showLoader();
+    </script>  
+    <c:CommonLibraries userLocaleSidKey="{!userLocaleSidKey}" /> 
+     <script>
+       kendo.culture('{!userLocaleSidKey}'); // set kendo locale for  current user.
+       var dateFormat = '{0:'+kendo.culture().calendar.patterns.d+'}';  // Hold dateformat for kendo grids
+       var dateTimeFormat =  '{0:'+kendo.culture().calendar.patterns.g+'}'; // Hold datetime format for kedo grids
+     </script>
+    <apex:stylesheet value="{!$Page.CommonStyles}" />
+    <apex:stylesheet value="{!$Page.OverrideStyles}" />
+   <apex:stylesheet value="{!$Page.PlanStyles}" />
+  <!-- <apex:stylesheet value="{!$Page.WorkbenchStyles}" /> --> 
+    <!--<apex:stylesheet value="{!$Page.DecisionStyles}" />-->
+    
+     <!--<apex:stylesheet value="{!URLFOR($Resource.JqueryUITabs, '/tabs/plan-jquery-ui.css')}"/>-->
+
+    <style type="text/css">
+                .k-dropdown .k-input{
+                    background: #fff;
+                }
+             .k-header {
+                     margin-top: 10px;
+                   /* border-color:#fff !important; */
+                }
+               #tabs .k-content{
+                font-weight: normal !important;
+                color: #525252 !important;
+                background: #fff !important;
+                background-color: #fff !important;
+             }
+              .k-tabstrip .k-content{
+                /* margin: 0em -.1em -.1em -.1em !important; */
+                padding: 2em 1em !important;
+                /* border-color: #d4d4d4 !important; */
+                border-color: #a6afbe !important;
+                /* min-height: 300px; */
+                min-height: 400px;
+             } 
+            .k-header{
+              /*  background: #fff !important;
+                background-color: #fff !important; 
+                 background: #f3f3f4 !important;
+                background-color: #f3f3f4 !important; 
+                background: #d5d5d5 !important;
+                background-color: #d5d5d5 !important; */
+             }
+             .k-tabstrip .k-tabstrip-items{
+                padding: 0.3em 0 0 0 !important;
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                /* border-color: #263248 !important; */
+                border-color: #DFDFDF !important;
+                margin-left: 3px !important;
+             }
+             .k-tabstrip .k-link {
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                /* border-color: #263248 !important; */
+                border-color: #DFDFDF !important;
+                font-weight: normal !important;
+             }
+            .k-tabstrip .k-state-active{
+                /* background:#3399ff !important;
+                background-color:#3399ff !important; */
+                background:#fff !important;
+                background-color:#fff !important;
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                border-color: #ccc !important;
+             }
+             #tabs .k-state-hover{
+                /* background: #66B3FF !important;
+                background-color: #66B3FF !important; 
+                background: #D8D8D8 !important;
+                background-color: #D8D8D8 !important; */
+                background: #f6f6f6 !important;
+                background-color: #f6f6f6 !important;
+                text-decoration: none !important;
+                /* border-color: #d4d4d4 !important; */
+                border-color: #DFDFDF !important;
+                /* color: #919191 !important; */
+                color: #333 ;
+             }
+             #tabs .k-state-default{
+                /* border-color: #DFDFDF !important; */
+             }
+              #tabs .k-link:link{
+                /* color: #C2C2C2 !important;
+                background-color: #F0F0F0 !important; */
+                color: #333 ;
+                background-color: #f6f6f6 !important;
+                height: 10px ;
+                padding: 1.0em 1.5em 1.3em 1.5em !important;
+              }
+              
+              
+             #tabs .k-link:hover{
+                /* color: #fff !important; */
+                /* color: #515967 !important; */
+                /* color: #263248 !important; */
+                /* color: #919191 !important; */
+                color: #333 ;
+                /* background: #66B3FF !important;
+                background-color: #66B3FF !important; */
+                /* background: #b6bdca !important;
+                background-color: #b6bdca !important; 
+                background: #D8D8D8 !important;
+                background-color: #D8D8D8 !important; */
+                background: #f0f0f0 !important;
+                background-color: #f0f0f0 !important;
+                text-decoration: none !important;
+                /* border-color: #d4d4d4 !important; */
+                border-color: #DFDFDF !important;
+             }
+             #tabs .k-link:active  {
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                border-color: #DFDFDF !important;
+                
+             }
+             #tabs .k-state-active>.k-link{
+                /* color: #fff !important; */
+                /* color: #515967 !important; 
+                color: #8D8D8D !important;*/
+                color: #333 ;
+                background-color: #fff !important;
+             }
+             #tabs .k-state-active .k-link:hover{
+                /* background:#3399ff !important;
+                background-color:#3399ff !important; */
+                background:#fff !important;
+                background-color:#fff !important;
+             }
+             .k-content .k-header, .k-grid-header{
+                background: #eee !important;
+                background-color: #eee !important;
+                border-color:#dadada !important;
+                color: #222 !important;
+             }
+             #tabs .k-content .k-link:link{
+                color: #222 !important; 
+                font-weight: bold !important;
+                background-color: #eee !important;
+                display: block;
+                min-height: 15px ;
+                line-height: 13px ;
+                /* margin: -0.5em -0.6em -0.4em -0.6em !important; */
+                padding: .5em .6em .4em .6em !important;
+                height: auto ;
+             }
+             
+             #tabs .k-content .k-link:hover, .k-grid-header .k-header .k-link:hover{
+                text-decoration: underline !important;
+                background: #999 !important;
+                background-color: #999 !important;
+                color: #222 !important;
+             }
+             
+            #tabs .k-content .k-pager-wrap>.k-link {
+                margin: 0 1px !important;
+                padding: 0 3px !important;
+                height: 22px !important;
+                line-height: 22px !important;
+                border-radius: 13px;
+                cursor: pointer;
+             }
+             /* .k-pager-numbers .k-link:link{
+                margin: 0 1px 0 0 !important;
+                vertical-align: top !important;
+                color: #dfdfdf !important;
+                
+              }
+              .k-pager-numbers .k-link{
+                color:#fff !important;
+              }*/
+              .k-grid-filter {
+                padding: .3em .2em .4em !important;
+              }
+              .ui-tabs-nav .ui-state-default{
+                    margin-right: -1px !important;
+                    
+               }
+                .ui-tabs .ui-tabs-nav li{
+                    top: 2px !important;
+                    border-bottom: 1px solid #ccc !important;
+                  }
+                  .ui-tabs .ui-tabs-nav .ui-state-active li{
+                    margin-right: -1px !important;
+                    border-bottom-color: #fff !important; 
+               }
+               .ui-tabs .ui-tabs-nav li a{
+                    border-width: 1px !important; 
+               }
+               .k-popup.k-list-container, .k-popup{
+                    border-color: rgb(204, 204, 204) !important;
+                  }
+              #planListView .k-dropdown .k-input{
+                    background: #fff;
+                }
+                .k-list-container ul li{
+                	margin-left: 0em;
+                }
+                .k-filter-menu .k-button{
+		             	font-weight:normal !important;
+		             } 	
+        </style>     
+    <head>  
+        <c:WalkMeAndSupportButton />
+        
+        <style>
+         .k-datetimepicker{
+            width: 14em !important;
+          }
+          .k-datetimepicker .k-input{
+            width: 95% !important;
+          }
+          		.k-state-selected, .k-list>.k-state-selected, .k-list>.k-state-focused, .k-panelbar .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover{
+		          	background-color: #999;
+					border-color: #999;
+		          }
+        </style>
+    </head> 
+    
+    <div id="planListView" style="overflow-x: scroll;width:1366px;"></div>
+    <script>
+         var viewModel;
+        $(document).ready(function () {
+             kendoPlan($.parseJSON('{!JSENCODE(planJSON)}'));
+        });
+        
+        
+        // Kendo grid to display all plan records
+        function kendoPlan(gridData){
+            // new way or style [Using transport]
+            var dataSource = new kendo.data.DataSource({
+              batch: true,   
+              autoSync: true,
+              sort: { field: "lastActivityDateSort", dir: "desc" },
+              transport: {
+                  read: function(e) {
+                      dataSource.sync();
+                      e.success(gridData);
+                  },
+                  update: function(e) {  
+                      var stringifiedData = JSON.stringify(e.data.models); 
+                      var updatedData = parsingModifieData(stringifiedData);
+                      e.success();
+                  }
+               },
+              
+               schema: {
+                  parse:function (response) {
+                        $.each(response, function (idx, elem) {
+                            if (typeof elem.planStartDateSort === "string") {
+                                 elem.planStartDateSort= kendo.parseDate(elem.planStartDateSort);
+                            }
+                            if (typeof elem.planEndDateSort === "string") {
+                                 elem.planEndDateSort= kendo.parseDate(elem.planEndDateSort);
+                            }
+                             if (typeof elem.lastActivityDateSort === "string") {
+                                 elem.lastActivityDateSort = kendo.parseDate(elem.lastActivityDateSort);
+                            }
+                        });
+                        return response;
+                  },
+                  model: {
+                      id: "id",
+                      fields: {
+                          id: { type: "string", editable: false },
+                          subject : { type: "string", editable: true, validation: { required: {message: "is required"}} },
+                          description : { type: "string", editable: true },
+                          duedate : { type: "datetime", editable: true },
+                          planStartDate :{type: "date",editable: true},
+                          planEndDate :{type: "date",editable: true},
+                          lastActivityDate:{type: "DateTime",editable: false },
+                          assignTo : { type: "string", editable: false },
+                          assignToId : { type: "string", editable: false },
+                          decisions : { type: "number", editable: false },
+                          activitiesCount : { type: "number", editable: false },
+                          taskCount: { type: "number", editable: false },
+                         
+                          activityColour : { type: "string", editable: false},
+                          title : { type: "string", editable: false},
+                          chatterPosts: { type: "number", editable: false},
+                          chatterPostLikes : {type : "number", editable: false},
+                          isEditable:{type:"Boolean"},
+                          thanksBadges : {type : "number", editable: false},
+                          // start added on 24-04-2014
+                          lastActivityDateSort:{type: "date",editable: false },
+                          planStartDateSort:{type:"date",editable:true},
+                          planEndDateSort :{type: "date",editable: true},
+                          //end  added on 24-04-2014
+                      }
+                  }
+              },
+              pageSize: 10
+          });
+           viewModel = new kendo.observable({  ds:dataSource });
+          var grid = $("#planListView").kendoGrid({
+              
+              dataSource: dataSource,
+              sortable: true,
+              toolbar : ["save","cancel"],
+              editable: true,
+              filterable: true,
+              pageable: true,
+              resizable: true,
+              pageable: {
+                  refresh: true,
+                  pageSizes: [5,10,25,40]
+                  //select : onchange
+              },
+              edit: function (e) {
+                      
+                        if ( ! e.model.isEditable){
+                            this.closeCell(); // prevent editing
+                        }
+                },
+              columns: [
+                 {
+                     field: "subject",
+                     title: "Subject",
+                     editor: editSubject,
+                     width : 150,
+                     template: "<div title=#:title#><a href=#:id# >#=subject#</a></div>",
+                     
+                 },
+                 /*
+                 {
+                     field: "lastActivityDate",
+                     title: "Last Activity Date",
+                     format: dateTimeFormat,
+                     width: 140,
+                 },*/
+                 {
+                     field: "lastActivityDateSort",
+                     title: "Last Activity Date",
+                     format: dateTimeFormat,
+                     width: 140,
+                 },
+                 {
+                     field: "description",
+                     title: "Description",
+                     filterable: true,
+                     editor: editDescription,
+                     //editable: false,
+                     //template: '<div  align="center"><img src=/#:commentsImage# title="#=comments#" /></div>',
+                     template : "<div title=#:title#>#=description#</div> ",
+                     width: 150
+                     
+                 },
+                 /*{
+                     field: "planStartDate",
+                     title: "Plan Start Date",
+                     format:'{0:{!JSENCODE(dateTimeFormat)}}',
+                     editor: dateTimeEditorforStartDate,
+                     template: "<div title=#:title# >#:kendo.toString(( planStartDate == null ? '' :planStartDate),'{0:{!JSENCODE(dateTimeFormat)}}')#</div>",
+                     width: 180,
+                 },*/
+                 {
+                     field: "planStartDateSort",
+                     title: "Plan Start Date",
+                    
+                     format: dateTimeFormat,
+                     width: 170,
+                 },
+                 /*{
+                     field: "planEndDate",
+                     title: "Plan End Date",
+                     format:'{0:{!JSENCODE(dateTimeFormat)}}',
+                     editor: dateTimeEditorforEndDate,
+                     template: "<div title=#:title# >#:kendo.toString(( planEndDate == null ? '' :planEndDate),'{0:{!JSENCODE(dateTimeFormat)}}')#</div>",
+                     width: 180,
+                 },*/
+                 {
+                     field: "planEndDateSort",
+                     title: "Plan End Date",
+                     
+                     format: dateTimeFormat,
+                     width: 170,
+                 },
+                 {
+                     field: "assignTo",
+                     title: "Assigned To",
+                     width: 130,
+                     template: '<div class = "grid-user-img"></div><div class = "grid-user-img"><a href="/#:assignToId#" target="_parent" >#:assignTo#</a></div>'
+                 },
+                 {
+                     field: "decisions",
+                     title: "Decisions",
+                     width: 100,
+                     template: '<div style="word-wrap: break-word;text-align:center" >#:kendo.toString(decisions,"n0")#</div>'
+                 },
+                 {
+                     field: "activitiesCount",
+                     title: "Activities /<br/> Tasks",
+                     width: 140,
+                     template: '<div class = "#:activityColour#"  style="text-align:center">#:kendo.toString(activitiesCount , "n0")#/#:kendo.toString(taskCount, "n0")#</div>'
+                 },
+                 {
+                     field: "chatterPosts",
+                     title: "Chatter Posts",
+                     width: 120,
+                     template: '<div style="word-wrap: break-word;text-align:center" >#:kendo.toString(chatterPosts, "n0")# </div>'
+                 },
+                 {
+                     field: "chatterPostLikes",
+                     title: "Chatter post<br/> likes",
+                     width: 140,
+                     template: '<div  style="text-align:center">#:kendo.toString(chatterPostLikes, "n0")#  </div>'
+                 },
+                 {
+                    field: "thanksBadges",
+                    title: "Thanks /<br/> badges",
+                    headerAttributes: {"class": "table-header-cell",style: "word-wrap:break-word;"},
+                    width: 140,
+                    template: '<div style="text-align:center">#:kendo.toString(thanksBadges, "n0")#</div>'
+                }
+             ]
+            
+          }).data("kendoGrid");
+       }
+       
+       // Subject editior to display editing based on user permission of record
+       function editSubject(container, options){
+           if(options.model.isEditable || options.model.isEditable == 'true'){
+               $('<input type="text" required="required" data-text-field="subject" style="width:130px;" maxlength="80" data-value-field="subject" data-bind="value:' + options.field + '"/>' )
+                .appendTo(container);
+           } else {
+                $('<div style="padding: .3em .3em;"><a href=/'+options.model.id+'>'+options.model.subject+'</a></div>' )
+               .appendTo(container);
+           }
+       }
+       
+       // Description editior to display editing based on user permission of record
+       function editDescription(container, options){
+            if(options.model.isEditable || options.model.isEditable == 'true'){
+               $('<input type="text" data-text-field="description" style="width:130px;" maxlength="255" data-value-field="description" data-bind="value:' + options.field + '"/>' )
+                .appendTo(container);
+           } else {
+               /*$('<div style="padding: .3em .3em;"><output type="text" data-text-field="description" data-value-field="description" data-bind="value:' + options.field + '"/></div>' )
+               .appendTo(container);*/
+               $('<div style="padding: .3em .3em;">'+options.model.description+'</div>' )
+               .appendTo(container);
+           }
+       }
+       
+        // Date editior for Activites
+        function dateTimeEditorforStartDate(container, options) {
+            var dtF = '{!JSENCODE(dateTimeFormat)}';
+            var dtFormat = dtF.replace(' a',' tt');
+            var timeformat = "hh:mm tt";
+            var planStartDateValue = (options.model.planStartDate).toString();
+            if(planStartDateValue.indexOf('AM') == -1 && planStartDateValue.indexOf('PM')== -1){
+                timeformat ="HH:mm";
+            }
+            if(options.model.isEditable || options.model.isEditable == 'true'){ 
+                $('<input data-text-field="' + 'planStartDate' + '" data-value-field="' + 'planStartDate'  + '"  data-bind="value:' +'planStartDateSort' + '" data-format="' + options.format + '" />')
+                 .appendTo(container)
+                .kendoDateTimePicker({});
+            } else {
+               $('<div style="padding: .3em .3em;">'+options.model.planStartDate+'</div>' )
+               .appendTo(container);
+            }
+        }
+        
+        // Date editior for Activites
+        function dateTimeEditorforEndDate(container, options) {
+           
+            var dtF = '{!JSENCODE(dateTimeFormat)}';
+            var dtFormat = dtF.replace(' a',' tt');
+            var timeformat = "hh:mm tt";
+            var planEndDateValue = (options.model.planEndDate).toString();
+            if(planEndDateValue.indexOf('AM') == -1 && planEndDateValue.indexOf('PM')== -1){
+                timeformat ="HH:mm";
+            }
+            
+            if(options.model.isEditable || options.model.isEditable == 'true'){
+                $('<input data-text-field="' + 'planEndDate' + '" data-value-field="' + 'planEndDate'  + '"  data-bind="value:' +'planEndDateSort' + '"  data-format="' + options.format + '"/>')
+                .appendTo(container)
+                .kendoDateTimePicker({});
+            } else {
+                
+               $('<div style="padding: .3em .3em;">'+options.model.planEndDate+'</div>' )
+               .appendTo(container);
+            }
+        }
+        
+        // Updated function to update plan data.
+        function parsingModifieData(modifiedData){
+            PlanTab.updatePlans(modifiedData, function(result, event)
+            {      
+                if (event.status)
+                {  
+                   var newPlan = removeQuotes(result);
+                   var grid = $("#planListView").data("kendoGrid");
+                   grid.dataSource.data(newPlan);
+                    viewModel.ds.data(
+                        viewModel.ds.options.schema.parse(newPlan || []) //just in case thenew data is null
+                    );
+                }
+            }, {escape:true});
+        }
+        
+        // remove quotes from json string 
+        function removeQuotes(mystring) {
+                
+            newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+            });
+            
+            var newJ= $.parseJSON(newString);
+            return newJ;
+        }
+        
+        $(document).ready(function () {
+            hideLoaderAndFade();
+        });
+    </script>
+    
+    <style>
+        .k-edit-cell td{
+            padding: 5 px !important;
+        }
+       .k-filter-menu .k-button{
+         	font-weight:normal;
+         } 	
+    </style>
+    
+</apex:page>

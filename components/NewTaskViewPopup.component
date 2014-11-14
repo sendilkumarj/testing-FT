@@ -1,0 +1,864 @@
+<apex:component controller="NewTaskViewPopupController" allowDML="true" id="taskpopComponent">
+    <apex:attribute name="recId" description="This attribute is used to pass task id." type="String"    assignTo="{!relatedToId}"/>
+  
+    <apex:includeScript value="{!$Page.CommonScripts}" /> 
+    <apex:stylesheet value="{!$Page.CommonStyles}" />
+    <!--------- jQueryUI ----------->        
+      <!-- Styles for overridding tab styles and for styling task popup -->
+    <style> 
+       /*================ overriding the style to avoid scroll bar in task care kendo drop down ====================*/
+       .k-list{
+          overflow: hidden !important;
+       } 
+       .tasktab-editdiv{
+        display : block !important;
+       }
+       /* ====================== overriding ends here ================ */
+         ul.token-input-list li{
+            width : 10em !important;
+         }
+         #demo-input-pre-populated-with-multiuser-task ul.token-input-list{
+            width : 55.3em !important;
+         }
+         #newtabstask-3{
+         
+          max-height: 324px !important;
+         }
+         #newtabstask-1,#newtabstask-2,#newtabstask-3{
+          width:869px;
+        }
+         #taskContent{
+          min-height:34.5em;
+         }
+         .taskAdjust{
+           min-height:18.8em;
+           border-radius:5px;
+           border-right: 1px solid #ECECEC;
+           border-left: 1px solid #ECECEC;
+           border-bottom: 1px solid #ECECEC;
+         }
+         .bottomwidth{
+          width:900px;
+         }
+          #newtabstask{ 
+              background: #fff !important;
+              background-color: #fff !important;
+              border-color:#fff !important;
+              
+           }
+      </style>
+       <script>
+             var componentPrefix = '';
+             if('{!$CurrentPage.Name}' == 'ActivityTab')
+             componentPrefix ='activityPage:taskWorkBenchComponent:workBenchTaskView:';
+             else
+             componentPrefix ='pg:';
+             $('body').css('overflow','hidden')
+     </script>
+      <script>
+        var assignedToUser = $("#assignedToUser").kendoMultiSelect({maxSelectedItems: 10,filter: "contains"}).data("kendoMultiSelect");
+      </script>
+      <!-- Complete task popup code which includes details,feed,work tab with read and edit mode -->
+       
+       <div class = "modal-window-newTaskPopup" >  
+       <apex:form Id="taskForm">
+            <script>
+                // Updating deatils tab on click of save button.
+               function insertTaskDetails(){
+                  var subject = '';
+                  if(document.getElementById(componentPrefix +'NewtaskviewComponent:taskpopComponent:taskForm:subjectForTask') != null){
+                    subject = document.getElementById(componentPrefix +'NewtaskviewComponent:taskpopComponent:taskForm:subjectForTask').value;
+                  }  
+                  if(subject == ''){
+                      alert('Please enter subject');
+                        return false;
+                  }
+                  var assignTo = '';
+                  
+                  assignTo = ''+$('#assignedToUser').val();
+                  if(assignTo == '' || assignTo == undefined || assignTo == null || assignTo == 'null'){
+                      alert('Please select the user');
+                      return false;
+                  }
+                  assignTo = assignTo.toString();
+                  var sendingNotification = document.getElementById('sendingNotification').checked;
+                   insertTaskDetailsWithRecId(sendingNotification,assignTo);
+                  //updateTaskDetailsWithRecId(sendingNotification);
+               }
+            </script>
+            <apex:actionFunction name="insertTaskDetailsWithRecId" action="{!insertNewTask}" oncomplete="newTaskPopupComponentForClose();closeNewTaskPopup();" >
+               <apex:param name="sendingNotification" value="" />
+               <apex:param name="assignTo" value="" assignTo="{!assignedToUsers}"/>
+           </apex:actionFunction>
+                    <!--------- Popup Phase backward Header ----------->
+                <!--  <div class = "modal-activitywarning-head" style="display:flex;">    
+                    <div class = "object-icon floatLeft">
+                       <img class = "left" src = "{!URLFOR($Resource.Images, 'common/icon-tasks-24x24.png')}" />
+                   </div>
+                   <div class = "headers floatLeft">
+                       <span class = "page-subhead ">Task</span>
+                       <h2><apex:outputText value="{!newSelectedTask.Subject}" /></h2>
+                   </div>  
+                   <div class = "floatRight" >                    
+                    <a class = "modal-close" href = "javascript: void(0);" onclick = "newTaskPopupComponentForClose();closeNewTaskPopup();"></a> 
+                    </div>  
+                </div> -->
+                    <!--------- End Phase backward Header ----------->   
+                    <!--------- Popup Phase backward Content ----------->
+                <div class = "modal-activitywarning-content" id="taskContent">
+                    <div id="newtabstask"  >
+                      <ul  id = "tskplanTab">
+                          <li id="detailsTab"><a href="#">Details</a></li>
+                          <li id="feedTab"><a href="#">Feed</a></li>
+                          <!--<li><a href="#tabs-gen">Attachments</a></li>-->
+                          <li><a href="#">Work <span class="people-tab"></span></a></li>
+                      </ul>
+                    <div id="tasktabs-ite">  
+                          <div class = "tasktabs-block border-taskview">
+                              <div class = "tasktabs-block-head">
+                                <div class="tasktab-editdiv">
+                                   <apex:outputPanel id="editTaskFields" >
+                                       <table cellspacing = "6" cellpadding = "0" class = "modal-tbl" >
+                                           <tr>
+                                               <td class = "cell-left modal-label">
+                                                   <span class = "top-pad">Subject</span>
+                                               </td>
+                                               <td class = "cell-right " colspan = "3" >
+                                               <div class="required-input" > 
+                                                   <apex:inputField styleClass="task-modal-text"  style="width: 51.3em;margin-left: 3px;" id="subjectForTask" value="{!newSelectedTask.Subject}" />
+                                               </div>
+                                               </td>
+                                           </tr>
+                                           <tr>
+                                               <td class = "cell-left modal-label">
+                                                   Assigned To
+                                               </td>
+                                               <td class = "cell-right" colspan = "3">
+                                                    <div class="required-input" > 
+                                                       <select id="assignedToUser" multiple="multiple" style="margin-left: 3px;">
+                                                            <option value="{!$user.Id}" selected="selected" ><apex:outputText value="{!$User.FirstName} {!$User.LastName}" /></option>
+                                                            <apex:repeat value="{!userList}" var="user">
+                                                                <option value="{!user.Id}"><apex:outputText value="{!user.Name}" /></option>
+                                                            </apex:repeat>
+                                                       </select> 
+                                                       </div>
+                                               </td>
+                                               
+                                           </tr>
+                                           <tr>
+                                                <td class = "cell-right" colspan = "3">
+                                                        <div class="toClear" style="margin-left: 10.9em;"> Max. limit is 10 </div>
+                                               </td>
+                                           </tr>
+                                           <tr>
+                                               <td class = "cell-left modal-label">
+                                                   Status
+                                               </td>
+                                               <td class = "cell-right">
+                                                   <apex:inputField id="status" style="width: 11.7em;height: 2.3em;" value="{!newSelectedTask.status}" />
+                                               </td>
+                                               <td class = "">
+                                                   
+                                               </td>
+                                               <td class = "cell-right">
+                                                   <div class="floatRight"><apex:inputField id="priority" style="width: 11.7em;height: 2.3em;margin-left: 1.2em;" value="{!newSelectedTask.Priority}" styleClass="prioritystyle"/></div>
+                                                   <div style="color: #4A4A56;font-weight: bold;font-size: 11px;padding-left: 10px; padding-top:10px;" class="floatRight">Priority</div>
+                                               </td>
+                                           </tr>
+                                           <tr>
+                                               <td class = "cell-left modal-label">
+                                                   Related To
+                                               </td>
+                                               <td class = "cell-right" id="relatedTo">
+                                                   <apex:inputField value="{!newSelectedTask.whatId}" style="width: 11.7em;height: 2.3em;" />
+                                               </td>
+                                               <td class = "">
+                                                   
+                                               </td>
+                                               <td class = "cell-right">
+                                                   <div class="floatRight"><apex:inputField id="dueDate" value="{!newSelectedTask.ActivityDate}" style="margin-left: 1.3em;width: 5.2em !important;"/></div>
+                                                   <div style="color: #4A4A56;font-weight: bold;font-size: 11px; padding-top:10px;" class="floatRight">Due Date</div>
+                                               </td>
+                                           </tr>
+                                           <tr> 
+                                               <td class = "cell-left modal-label">
+                                                   Comments
+                                               </td>
+                                               <td class = "cell-right" colspan = "3">
+                                                   <apex:inputField id="comments" style="width:56.3em;max-width:56.3em;max-height:60px" value="{!newSelectedTask.Description}" />
+                                               </td>
+                                           </tr>
+                                           <tr>
+                                               <td class = "cell-left  modal-label">
+                                                   Send Notification Mail
+                                               </td>
+                                               <td class = "cell-right" >
+                                                   <input id="sendingNotification" type = "checkbox" style="margin-left: -1px;"/>
+                                               </td>
+                                               <td class = "cell-left modal-label">
+                                                   <!--<div class="floatRight" style="margin-right: -2.6em;">Name</div>-->
+                                               </td>
+                                               <td class = "cell-right floatRight" id="lookUp">
+                                                   <!--<apex:inputField value="{!newSelectedTask.whoId}" style="width: 11.7em;height: 2em;margin-right: 6.5em;"/>-->
+                                               </td>
+                                           </tr>
+                                           <tr>
+                                                <td class = "cell-left modal-label">
+                                                    Reminder
+                                                </td>
+                                                <td class = "cell-right">
+                                                    <apex:inputField value="{!newSelectedTask.IsReminderSet}" id="setReminder" onclick="disabledate(this);" style="margin-left: -1px;"/><apex:inputField value="{!newSelectedTask.ReminderDateTime}" id="setReminderDate"/>
+                                                </td>
+                                           </tr>
+                                       </table>
+                                      </apex:outputPanel>
+                                  </div>
+                              </div> 
+                          </div>  
+                       </div>  
+                       <div  id="tabs-cha">
+                          <div class = "chatter-block">
+                              <div class = "tasktabs-block-head">
+                                  <div class = "chatter-tableft">
+                                      <!--<apex:iframe rendered="{!taskChatterId != null}" src="/apex/chatterFeed?id={!taskChatterId}" width="800" scrolling="true" height="350"/>-->
+                                      <!--<chatter:feedWithFollowers rendered="{!taskRecId != null}" id="chatter" entityId="{!taskRecId}"/>-->    
+                                  </div>
+                              </div> 
+                          </div>
+                       </div>  
+                       <!--<div  id="tabs-gen">
+                          <div class = "tasktabs-block border-taskview" style="padding:808px 353px;">
+                              <div class = "tasktabs-block-head">
+                                  Attachment
+                              </div> 
+                          </div>  
+                       </div>-->  
+                       <div id="tasktabs-col" >
+                          <div class = "tasktabs-block border-taskview">
+                              <div class = "tasktabs-block-head">
+                                  <apex:outputPanel Id="workTab" >
+                                    <apex:outputPanel id="workEditPanel">
+                                         <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl" style="border-right: 1px solid #ECECEC;border-left: 1px solid #ECECEC;border-top: 1px solid #ECECEC;">
+                                              <tr>
+                                                  <td class = "cell-left gen-block-cell" style="padding-top: 0.1em;"> 
+                                                      Complexity
+                                                  </td>
+                                                  <td class = "gen-block-cell"> 
+                                                      <apex:inputField value="{!newSelectedTask.Complexity__c}" style="width: 11.5em;height: 2.3em;margin-left: 2px;"/> 
+                                                  </td>
+                                                  <td class = "cell-left gen-block-cell" style="padding-top: 0.1em;"> 
+                                                     Skill Level
+                                                  </td>
+                                                  <td class = "gen-block-cell"> 
+                                                      <apex:inputField value="{!newSelectedTask.Skill_Level__c}" style="width: 11.5em;height: 2.3em;margin-left: 2px;"/> 
+                                                 </td> 
+                                             </tr>
+                                              <tr>
+                                                <td class = "cell-left gen-block-cell" style="padding-top: 1.2em;"> 
+                                                      Estimated Hours
+                                                  </td>
+                                                  <td class = "gen-block-cell"> 
+                                                      <apex:inputField value="{!newSelectedTask.Estimated_Hours__c}" onkeypress="return isNumberKeyforpop(event)"  id="hrstxt" style="width: 11.0em;height: 1.2em;"/>
+                                                  </td>
+                                                  <td class = "cell-left gen-block-cell" style="padding-top: 1.2em;"> 
+                                                      Actual Hours
+                                                  </td>
+                                                 <td class = "gen-block-cell"> 
+                                                      <apex:inputField value="{!newSelectedTask.Actual_Hours__c}" onkeypress="return isNumberKeyforpop(event)" style="width: 11.0em;height: 1.2em;"/> 
+                                                  </td>
+                                              </tr>
+                                         </table>`
+                                          <div class="taskAdjust"></div>
+                                          <script>
+                                              function isNumberKeyforpop(event){
+                                              //  alert('hh');
+                                                   var event = event || window.event //For IE
+                                                   var key = event.target;
+                                                  
+                                                      if( key.value.length  == 16 )
+                                                      {
+                                                        //alert('Maximum number of digits is 16');
+                                                        return false;
+                                                      }
+                                                   //  var charCode = (event.which) ? event.which : event.keyCode
+                                                    var key = window.event ? event.keyCode : event.which;
+                                                     if (event.keyCode == 8 || event.keyCode == 46 || event.keyCode == 37 || event.keyCode == 39) {
+                                                          return true;
+                                                      }
+                                                      else if ( key < 48 || key > 57 ) {
+                                                          return false;
+                                                      }
+                                                      else return true;
+                                                      
+                                                      
+                                                     /*
+                                                      if (charCode < 48 || charCode > 57   )
+                                                          return false;
+                                              
+                                                      return true;*/
+                                                  }
+                                          </script>
+                                      </apex:outputPanel>
+                                  </apex:outputPanel>
+                              </div> 
+                          </div>  
+                      </div>     
+                  </div>
+                </div>    
+                    <!--------- End Phase backward Content ----------->  
+               </apex:form>
+                   <!--------- Popup Phase backward Footer ----------->  
+                <div class = "modal-activitywarning-btm bottomwidth"> 
+                    <div id = "activitywarning-footer">   
+                        <button class="k-button"  type = "button" onclick="insertTaskDetails();" class="k-button">Save &#38; Close</button>
+                        <button class="k-button"  type = "button" onclick="closeNewTaskPopup()" class="k-button">Cancel </button>
+                    </div>  
+                </div>      
+                    <!--------- End Phase backward Footer ----------->
+            </div>
+         <!--  End Complete task popup code which includes details,feed,work tab with read and edit mode -->
+      <script>
+          
+         $(document).ready(function () {
+          
+          $( "#newtabstask" ).kendoTabStrip();
+          $('#newtabstask').css('display','block'); 
+          var tabToActivate = $("#detailsTab");   
+          $("#newtabstask").kendoTabStrip().data("kendoTabStrip").activateTab(tabToActivate);
+          $('#newtabstask').css('display','block'); 
+          var tabStrip = $("#newtabstask").kendoTabStrip().data("kendoTabStrip");
+          tabStrip.disable($("#newtabstask").data("kendoTabStrip").items()[1]);  // enable tab 1    
+         });
+      </script>
+    
+      <!-- Script show hide read/edit mode, script validation and calling action function for controller data -->
+      <script>
+      
+            if(document.getElementById(componentPrefix +'NewtaskviewComponent:taskpopComponent:taskForm:subjectForTask') != null){    
+               // document.getElementById(componentPrefix +'NewtaskviewComponent:taskpopComponent:taskForm:subjectForTask').focus();
+            }  
+            $(".token-input-dropdown").css("z-index","999999999999999999999");
+            // Mehod to call onload functionality
+            $(document).ready(function () {
+             
+                
+              
+                
+                 // ---------------- implemented to have kendo popup ---------
+                
+        
+            var decisionWindows = $(".modal-window-newTaskPopup")
+                
+
+                    var onClose = function() {
+                        $('.modal-window-newTaskPopup').data("kendoWindow").destroy(); 
+                        newTaskPopupComponentForClose();  
+                    }
+
+                    //alert(1);    alert(!decisionWindows.data("kendoWindow"));
+                    if (!decisionWindows.data("kendoWindow")) {
+                        decisionWindows.kendoWindow({
+                              
+                             title: kendo.template($("<div>Task</div>").html()),
+                            actions: [ 
+                                "Close"  
+                            ],
+                            open: function(e){ $('.k-window-title').prepend('<div class="\TriSysPopupWindowIcon\"></div>');
+                                         document.getElementById(componentPrefix +'NewtaskviewComponent:taskpopComponent:taskForm:subjectForTask').focus();
+                                         
+                                    },
+                            close: onClose   
+                            
+                        });
+                    }
+                    else
+                    decisionWindows.data("kendoWindow").open();
+                    decisionWindows.data("kendoWindow").center();
+            });
+            function closeNewTaskPopup(){  
+              $('.modal-window-newTaskPopup').data("kendoWindow").destroy(); 
+              newTaskPopupComponentForClose();
+            } 
+            function closeFromKendoClose(){
+              newTaskPopupComponentForClose();
+              closeNewTaskPopup()
+            }
+           // Script method not to allow user to type char's.
+           function onKeyDownHeaderFunction(event) {
+              var key = event.keyCode || event.charCode;
+              if(/^[0-9]*$/.test(    ( event.srcElement || event.target).value    ) == false)
+              {   
+                  var input = ( event.srcElement || event.target);
+                  input.value = ''; 
+              }   
+           };
+         
+             
+    </script>
+    
+     <style>
+    
+         .TriSysPopupWindowIcon
+            {
+               background: url("{!URLFOR($Resource.Images, 'common/taskCardIcon-16x16.png')}");
+                background-size: 16px;
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                line-height: 16px;
+                vertical-align: middle;
+                margin-bottom: 1px;
+                margin-right: 5px;
+            }  
+            .k-window-title{
+                margin-left: 0em;   
+            }
+        .taskBtns {
+              background-color: #DDDDDD;
+              height: 2em;
+            padding: 1em;
+            padding-left: 24em;
+             margin-top: 2em;
+              border-bottom-left-radius: 5px;
+              border-bottom-right-radius: 5px;
+          }
+           .taskBtnsChatter {
+              background-color: #DDDDDD;
+              height: 2em;
+            padding: 1em;
+             padding-left: 24em;
+              border-bottom-left-radius: 5px;
+              border-bottom-right-radius: 5px;
+          }
+          .taskBtnsWork {
+              background-color: #DDDDDD;
+              height: 2em;
+            padding: 1em;
+              padding-left: 24em;
+               margin-top: 0em;
+              border-bottom-left-radius: 5px;
+              border-bottom-right-radius: 5px;
+          }
+           .cell-left {
+            min-width : 3em !important;
+            vertical-align: middle !important;
+          }
+          
+          .wrapperTask{
+              z-index: 19999;
+              position: fixed;
+              /* left: 50%; padding : 2em;*/
+              background-color : white;
+              border-radius : 5px;
+              width : 75em;
+              min-height: 45em;
+          }
+          .tasktab-editdiv {
+            border: 0.1em solid #ECECEC;
+            max-height: 45em;
+            border-radius: 5px;
+        }
+        .tasktabs-block {
+              height : 27em;
+          }
+           
+           #tskplanTab  .ui-state-active a  
+           {
+              border-color: #FFFFFF !important;
+              background: #FFFFFF !important;
+           }
+           
+            #tskplanTab     .ui-state-hover a 
+           {
+              border-color: #dddddd !important;
+              background: #dddddd!important;
+           } 
+          .border-taskview{
+              border-top-color : #DDDDDD ;
+          }
+          .page-head {
+              cursor : move;
+          }  
+          .chatterexpando .feedpage {
+            padding-left: 2em !important;
+            width: 70em !important;
+        }
+          .chatter-tableft
+          {
+           height: 36em;
+            display: table-cell;
+            width: 70em;
+          }
+          .chatter-tableft iframe{
+            width: 65em !important;
+          }
+          .chatter-block {
+              height: 27.1em;
+          }
+           #tabstask .ui-tabs .ui-widget-content {
+              border: 1px solid #d4d4d4 !important;
+          }
+          #tabstask .ui-tabs .ui-widget-content{
+              border-top: 1px solid #d4d4d4 !important;
+          }
+          .tasktabs-block-head {
+              text-align: left;
+          }
+          
+          .tasktabs-block{
+              border-top-style : hidden;
+              
+          }
+
+          .tabs-gen-block{
+              margin-bottom : 20px;
+          }
+          .border-btm-taskview{
+              border-bottom-color : #DDDDDD;
+          }
+          .gen-block-tbl{
+              border-color: #d4d4d4;
+              border-top-left-radius: 5px;
+              border-top-right-radius: 5px;
+              padding-top: 0.8em;
+          }
+          .modal-tbl{
+            min-height: 28em;
+          }
+          .gen-block-tbl input{
+            width: 5.4em;
+            height: 0.3em;
+            margin-top: 1em;
+          }
+          .required-input .k-input{
+            //display:none !important;
+            border: 0;
+          }
+          .k-multiselect .k-reset{
+                float:left;
+          }
+          .modal-activitywarning-content{
+            min-height: 38em;
+            overflow: hidden;
+          }
+          #lookUp .lookupInput input{
+            width: 9.9em;
+          }
+          #relatedTo select{
+           height:2.4em;
+            width: 11.7em;
+          }
+          #lookUp  select{
+            height:2.3em;
+          }
+         .object-icon{
+            width: 20px;
+            height: 20px;
+            margin: 0.6em;
+          }
+          .headers{
+            margin-top: 9px;
+          }
+          .datePicker{
+            z-index: 110001 !important;
+            position: fixed !important;
+          }
+          .floatRight{
+            float:right;
+          }
+          .k-tabstrip .k-content{
+                padding: 2em 1em !important;
+                border-color: #ccc !important;
+                
+            }
+       .k-state-disabled:hover {
+                background-color: white !important;
+                }
+     </style>
+     
+     <!--  styles used to revert back kendo UI table styles for tabs -->
+    <style type="text/css">
+#decisionDate .k-header,#executionDate .k-header,#evaluationDate .k-header
+    {
+    margin-top: 3px;
+}
+
+.k-dropdown .k-input {
+    background: #fff;
+}
+
+.k-header {
+    border-color: #fff;
+}
+
+#tabstask .k-content {
+    font-weight: normal !important;
+    color: #525252 !important;
+}
+
+.k-tabstrip .k-content {
+    padding: 2em 1em !important;
+    /*border-color: #a6afbe !important;*/
+   // min-height: 260px;
+}
+
+.k-header { 
+    background: #fff ;
+    background-color: #fff ;
+}
+
+.k-tabstrip-items .k-item {
+    margin-left: -1px;
+    margin-right: -2px;
+   /* border-width: 1px 1px; */
+}
+
+.k-tabstrip .k-tabstrip-items {
+    border-color: #DFDFDF !important;
+}
+
+.k-tabstrip .k-state-active {
+    background: #fff !important;
+    background-color: #fff !important;
+    /*border-color: #ccc !important;*/
+}
+
+#tabstask .k-state-hover {
+    background-color: #f6f6f6 !important;
+    text-decoration: none !important;
+    border-color: #DFDFDF !important;
+    color: #333;
+}
+
+#tabstask .k-tabstrip-items .k-link:link {
+    background-color: #f6f6f6 !important;
+    height: 10px;
+    padding: 1.0em 1.5em 1.3em 1.5em !important;
+}
+
+#tabstask .k-link:hover {
+    color: #333;
+    background-color: #f0f0f0 !important;
+    text-decoration: none !important;
+    border-color: #DFDFDF !important;
+    text-decoration: none !important;
+}
+
+#tabstask .k-link:active {
+    border-color: #DFDFDF !important;
+}
+
+#tabstask .k-state-active>.k-link {
+    color: #333;
+    background-color: #fff !important;
+}
+
+#tabstask .k-state-active .k-link:hover {
+    background: #fff !important;
+    background-color: #fff !important;
+}
+
+.k-pager-wrap .k-dropdown {
+    width: 4.4em !important;
+}
+
+.k-content .k-header,.k-grid-header {
+   /* background: #eee ;
+    background-color: #eee ; */
+    color: #222 !important;
+}
+
+#tabstask .k-content .k-link:hover,.k-grid-header .k-header .k-link:hover {
+    text-decoration: underline !important;
+    background: #999 !important;
+    background-color: #999 !important;
+    color: #222 !important;
+}
+
+.k-grid-filter {
+    padding: .3em .2em .4em !important;
+}
+
+.k-list-container li {
+    margin-left: 0px !important;
+}
+
+#gridTaskEvent .ui-widget {
+    color: #222 !important;
+}
+
+#topicMultiSelectTd .k-floatwrap {
+    background: #fff;
+}
+
+#topicMultiSelectTd .k-header {
+    margin-top: -5px;
+}
+
+#timingAndHistoryDiv .k-widget .k-state-focused {
+    box-shadow: none;
+}
+
+.greyColor {
+    color: grey;
+}
+
+.blackColor {
+    color: black;
+}
+
+.k-popup .k-list-container,.k-popup {
+    border-color: rgb(204, 204, 204) !important;
+}
+
+.k-dropdown-wrap .k-state-hover:hover {
+    background-color: #a99f9a !important;
+    border-color: #a99f9a !important;
+}
+
+#tabstask .ui-tabs-nav {
+    padding: 0px 0px 1px 0px !important;
+}
+
+.expandCollapseDetails {
+    background:
+        url("{!URLFOR($Resource.Images, 'common/image-expandCollapse-black-sprite-8x16.png')}")
+        0 -8px no-repeat;
+    height: 8px;
+    width: 8px;
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+.complexity-label-div {
+    float: left;
+    margin-left: 47px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.skill-level-div {
+    float: left;
+    margin-right: 23px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.estimated-hours {
+    float: left;
+    margin-left: 18px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.actual-hours {
+    float: left;
+    margin-right: 18px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.newtaskpopup-Name {
+    float: left;
+    margin-left: 72px;
+    margin-top: 13px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.tasktabs-block {
+    height: 27em !important;
+}
+
+.section-head-matrix {
+    color: #2e2e2e;
+    background-color: #b8b8b8;
+    margin-bottom: 33px;
+    width: 100%;
+    height: 1px;
+    overflow: hidden;
+}
+
+.section-matrix {
+    /*margin-left: 5px;*/
+    
+}
+
+.icon-grid {
+    font-size: 1.4em;
+    margin: 3px 0px;
+}
+
+.k-state-selected,.k-state-selected:link,.k-list>.k-state-selected,.k-list>.k-state-focused,.k-list>.k-state-highlight,.k-panel>.k-state-selected,.k-button:active,.k-ghost-splitbar-vertical,.k-ghost-splitbar-horizontal
+    {
+    background-color: #999 !important;
+    border-color: #999 !important;
+}
+
+.k-filter-menu .k-button {
+    font-weight: normal !important;
+}
+
+.requestfullscreen,.requestfullscreen:hover {
+    /*top: -55px;
+                    right: -2px;
+                    float: right;
+                    position: absolute;*/
+    text-decoration: none;
+    float: right;
+    margin: 10px 5px 5px 5px;
+}
+
+.exitfullscreen,.exitfullscreen:hover {
+    /*display: inline;
+                     float: right; 
+                    right: 5px;
+                    top: 6px;
+                    position: absolute;*/
+    text-decoration: none;
+    float: right;
+    margin: 10px 5px 5px 5px;
+}
+
+.requestfullscreen span,.exitfullscreen span {
+    background: #ccc;
+    padding: 5px;
+    margin: 5px 0px 5px 5px;
+}
+
+#fullscreen {
+    position: relative;
+    background-color: white;
+}
+
+.decisionTopBorder {
+    border-top-color: #333333;
+}
+
+#newtabstask .k-tabstrip-items .k-link:link {
+    color: #333;
+    background-color: #f6f6f6 !important;
+    height: 10px;
+    padding: 1.0em 1.5em 1.3em 1.5em !important;
+    text-decoration: none;
+}
+#newtabstask .k-state-active .k-link:link {
+    background: none repeat scroll 0% 0% #FFF !important;
+}
+
+.modal-window-newTaskPopup .required-input .k-header{
+            margin-top: 0px;
+           border-color: #ccc !important;
+  }
+</style>
+ 
+</apex:component>

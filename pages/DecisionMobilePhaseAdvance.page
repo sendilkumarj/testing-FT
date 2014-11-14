@@ -1,0 +1,228 @@
+<apex:page standardController="Decision__c" extensions="DecisionPhaseChange" showHeader="false" sidebar="false">
+    <script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+    <script>
+    	function returnBack(status){
+    		if(status != 'Close'){
+	    		Sfdc.canvas.publisher.publish({ name: "publisher.close",
+	                                            payload:{ refresh:"true" }});
+            }
+    	}
+    </script>
+     <div id="fullsite" style="font-family: Arial,Helvetica,sans-serif;">
+             <!--   Available for salesforce1 application only-->
+			Available for Fingertip Mobile use only (Salesforce1)
+     </div>
+     <div id="sf1">
+     <script>
+        if( (typeof sforce != 'undefined') && (sforce != null) ) {
+          document.getElementById('fullsite').style.display = 'none';
+       }
+       else {
+          document.getElementById('sf1').style.display = 'none';
+       }
+    </script>
+     <style>
+      
+
+        @media only screen and (max-width: 800px) {
+            textarea{
+                width: 100%;
+            }
+        }
+    </style>
+     <apex:outputPanel id="decisionStatementArea" rendered="{!NOT(userAccess  ) }"  >
+        You do not have sufficent permissions
+      </apex:outputPanel>
+    <apex:form id="decisionform"  rendered="{!userAccess  }" >
+        <apex:actionFunction name="advance"   reRender="decisionform" action="{!approvedReject}"/>    
+        <apex:actionFunction name="DecisionPhaseMoveBack"   reRender="decisionform" action="{!DecisionPhaseMoveBack}"/> 
+        <apex:actionFunction name="backToDecision"   reRender="decisionform" action="{!backToDecision}"/> 
+        <apex:actionFunction name="approveorRejectVeto"   reRender="decisionform" action="{!approveorRejectVeto}"/>
+         <apex:actionFunction name="DecisionPhaseAdvance"    action="{!DecisionPhaseAdvance}" oncomplete="returnBack();" />
+        
+                      <div style="width:100%;margin-top:1%">  
+                         <span style="float:left;margin-left:10%">
+                         Phase
+                         <apex:selectList multiselect="false" id="phases" size="1" value="{!decision.Phase__c}">
+                           <!-- <apex:selectOption rendered="{!   (decision.phase__c == 'Draft' )}"       itemvalue="Draft"  itemlabel="Draft"></apex:selectOption>  -->
+                            <apex:selectOption rendered="{!   ( decisionCurentPhase  != 'Share' ) }"       itemvalue="Share"    itemlabel="Share"></apex:selectOption>
+                            <apex:selectOption rendered="{!   ( decisionCurentPhase  == 'Share') }"     itemvalue="Propose"  itemlabel="Propose"></apex:selectOption>
+                            <apex:selectOption rendered="{!   ( decisionCurentPhase  == 'Propose') }"     itemvalue="Decide"  itemlabel="Decide"></apex:selectOption>
+                            <apex:selectOption rendered="{!   ( decisionCurentPhase  == 'Close' ) || ( decisionCurentPhase == 'Decide' && decision.status__c == 'Approved' ) }"    itemvalue="Execute"  itemlabel="Execute"></apex:selectOption>
+                            <apex:selectOption rendered="{!   ( decisionCurentPhase  == 'Execute' )  }"   itemvalue="Evaluate"  itemlabel="Evaluate"></apex:selectOption>
+                            <apex:selectOption rendered="{!   ( decisionCurentPhase  != 'Close' )  }"    itemvalue="Close"  itemlabel="Close"></apex:selectOption> 
+                            <apex:actionSupport event="onchange" reRender="decisionform" action="{!DecisionPhaseAdvance}" oncomplete="returnBack('{!decision.Phase__c}');"/>           
+                         </apex:selectList>
+                         </span>
+
+                         <span style="float:right;" id="confirmButton">
+                             <apex:panelGroup rendered="{! NOT(renderPanel || renderStanceApprovalPanel || renderDecisionApprovalPanel || renderCloseArea ) }" id="submitButton">
+                                <script>
+                                Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel",
+                                onData:function(e) {
+                                    Sfdc.canvas.publisher.publish({name:"publisher.setValidForSubmit", payload:"true"});
+                                }});
+                                Sfdc.canvas.publisher.subscribe({ name: "publisher.post",
+                                    onData: function(e) {
+                                        DecisionPhaseAdvance();
+                                    }}); 
+                                    </script>
+                              </apex:panelGroup>
+                              <apex:panelGroup rendered="{!  ( renderPanel || renderStanceApprovalPanel || renderDecisionApprovalPanel || renderCloseArea ) }" id="disAblesubmitButton" >
+                                <script> 
+                                
+                                        
+                                </script>
+                              </apex:panelGroup>
+                         </span>
+                          <span style="float:right;margin-right:1.5em;margin-top:0.5em" id="confirmMove">
+                            <b>Move decision from {!decisionCurentPhase } to  {!decision.phase__c} </b>
+                          </span> 
+                                               
+                     </div>
+
+        <apex:outputPanel >
+        <br/><br/>
+        <script>
+           var advanceDecision = {!advanceDecision };  
+           var updateSuccess   = {!updateSuccess };
+           var vetoRejection   = {!vetoRejection };
+           
+           if( vetoRejection    ) 
+           {
+            var confirmation = confirm(' When a Veto Reject a decision all other approvals are overridden. \n Are you sure you want to reject? ')
+            if( confirmation  )
+            approveorRejectVeto();
+          
+           }
+           if(advanceDecision ){
+            var confirmation = confirm('Click Yes, to '+ '{!approvalAction}'+' and advance the decision.\nClick Cancel, to provide your Stance without advancing the decision.')
+             if(confirmation )
+             advance();
+             //else
+             // DecisionPhaseMoveBack();
+           }
+           if( updateSuccess ){
+            // document.getElementById('confirmMove').style.display = 'none';
+            // document.getElementById('confirmUpdate').style.display = 'block';
+           }
+           
+        </script>
+        </apex:outputPanel>
+         <apex:outputPanel id="decisionStatementArea" rendered="{!renderPanel }"  >
+              <apex:pageBlock title="Enter Decision"  id="decisionStatementBlock">
+                  <apex:pageBlockSection columns="1"  id="decisionStatementSection">
+                      <apex:pageBlockSectionItem >
+                         <apex:outputPanel >
+                              Title<br/>
+                              <apex:inputTextarea disabled="true" value="{!Decision.Title__c}"/>
+                          </apex:outputPanel>                                                
+                      </apex:pageBlockSectionItem>
+                      <apex:pageBlockSectionItem >                         
+                         <apex:outputPanel >
+                              Description<br/>
+                              <apex:inputTextarea disabled="true" value="{!Decision.Problem_Idea_Advice__c}"/>
+                          </apex:outputPanel>                                                 
+                      </apex:pageBlockSectionItem>
+                      <apex:pageBlockSectionItem id="decisionStatementItem">
+                          <apex:outputPanel >
+                              Decision<br/>
+                              <apex:inputTextarea id="decisionContent" value="{!Decision.Decision_Taken__c}"/>
+                          </apex:outputPanel>                          
+                      </apex:pageBlockSectionItem>
+                  </apex:pageBlockSection>
+                  <apex:pageBlockButtons location="bottom">
+                                        <apex:commandButton action="{!DecisionPhaseAdvance}" onclick=" return  validate()  " value="Save"/>
+                  </apex:pageBlockButtons>
+
+              </apex:pageBlock>
+         </apex:outputPanel> 
+         
+				<!--         Move decision from Propose to Decide-->
+
+          <apex:outputPanel id="approvalArea" rendered="{! renderStanceApprovalPanel || renderDecisionApprovalPanel}"  >
+              <apex:pageBlock title="{!  if( renderStanceApprovalPanel,'Stance Approval','Decision Approval' )}" >
+                  <apex:pageBlockSection columns="1" >
+                     <apex:pageBlockSectionItem >
+                           Description
+                           <apex:inputTextarea disabled="true" value="{!Decision.Problem_Idea_Advice__c}"/>
+                      </apex:pageBlockSectionItem>
+                      <apex:pageBlockSectionItem >
+                           Decision<br/>
+                          <apex:inputTextarea disabled="true" value="{!Decision.Decision_Taken__c}"/>
+                      </apex:pageBlockSectionItem>
+                      <apex:pageBlockSectionItem >
+                          Comment<br/> 
+                          <apex:inputTextarea value="{!decisionComment}"/>
+                      </apex:pageBlockSectionItem>
+                  </apex:pageBlockSection>
+                               <apex:pageBlockButtons location="bottom"  rendered="{!renderStanceApprovalPanel}">
+                              <apex:commandButton action="{!approvedReject}" reRender="decisionform"  value="Support">
+                                <apex:param assignTo="{!approvalAction}"   value="Approve"/> 
+                              </apex:commandButton>
+                              <apex:commandButton action="{!approvedReject}" reRender="decisionform" value="Oppose">
+                                <apex:param assignTo="{!approvalAction}" value="Reject"/> 
+                              </apex:commandButton>
+                              </apex:pageBlockButtons> 
+                         
+                              <apex:pageBlockButtons location="bottom" rendered="{!renderDecisionApprovalPanel}"> 
+                              <apex:commandButton action="{!approvedReject}" reRender="decisionform"  value="Approve">
+                                <apex:param assignTo="{!approvalAction}"   value="Approve"/> 
+                              </apex:commandButton>
+                              <apex:commandButton action="{!approvedReject}" reRender="decisionform" value="Reject">
+                                <apex:param assignTo="{!approvalAction}" value="Reject"/> 
+                              </apex:commandButton>
+                              </apex:pageBlockButtons> 
+                         
+              </apex:pageBlock>
+         </apex:outputPanel> 
+         
+				<!--      End of Move decision from Propose to Decide   -->
+          
+          <apex:outputPanel id="closeArea" rendered="{! renderCloseArea}"  >
+              <apex:pageBlock title="Reason for closing" >
+                  <apex:pageBlockSection columns="1">
+                      <apex:pageBlockSectionItem >
+                       Reason<br/>
+                      <apex:selectList multiselect="false" id="phases" size="1" value="{!decision.Reason_for_Close__c}">
+                        <apex:selectOption itemvalue="Withdrawn"  itemlabel="Withdrawn"></apex:selectOption>
+                        <apex:selectOption itemvalue="Cancelled"  itemlabel="Cancelled"></apex:selectOption>
+                        <apex:selectOption itemvalue="Executed"  itemlabel="Executed"></apex:selectOption>
+                        <apex:selectOption itemvalue="Duplicate"  itemlabel="Duplicate"></apex:selectOption>
+                        <apex:selectOption itemvalue="Rejected"  itemlabel="Rejected"></apex:selectOption>
+                      </apex:selectList> 
+                      </apex:pageBlockSectionItem>
+                       <apex:pageBlockSectionItem >
+                          Comment<br/>
+                          <apex:inputTextarea value="{!decision.Comments__c}"/>
+                        </apex:pageBlockSectionItem>
+                     </apex:pageBlockSection>
+                             <apex:pageBlockButtons location="bottom"> 
+                                <apex:commandButton action="{!decisionPhaseClose}" reRender="decisionform" value="Save">
+                                </apex:commandButton>
+                             </apex:pageBlockButtons>              
+                 </apex:pageBlock>
+         </apex:outputPanel>                 
+         <script>
+         var decisionStatement = '{!Decision.Decision_Taken__c}';
+         function showHide(){
+           if(decisionStatement == ''){
+            document.getElementById('{!$Component.decisionform.decisionStatementArea}').style.display = 'block';
+            return false;
+           }
+           return true;
+         }
+         function validate()
+         {   
+            var decision = document.getElementById('{!$Component.decisionform.decisionStatementBlock.decisionStatementSection.decisionStatementItem.decisionContent}').value;
+            if( decision == undefined || decision.length == 0 )
+            { alert("Please Enter Decision Field");return false;}
+            return true;
+         }
+        </script>
+         
+    </apex:form>
+    </div>
+    
+    
+</apex:page>

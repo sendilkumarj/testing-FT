@@ -1,0 +1,792 @@
+<apex:page showHeader="true" sidebar="true" controller="NetworkView">
+    <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/> 
+   
+  
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs10, '/tabs/jquery-1.9.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetroNewLibrary, '/kendoMetroNewLibrary/kendo.all.min.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/>
+    <apex:includescript value="{!URLFOR($Resource.d3)}"/>  
+  
+    <apex:stylesheet value="{!$Page.PlanStyles}" />
+    <apex:stylesheet value="{!$Page.WorkbenchStyles}" />
+    
+
+    <apex:stylesheet value="{!$Page.OverrideStyles}" />          
+    <apex:stylesheet value="{!$Page.CommonStyles}" /> 
+    <apex:stylesheet value="{!$Page.HomeStyles}" />
+    
+     <apex:stylesheet value="{!$Page.cardStyles}" />
+  
+  <link rel="stylesheet" type="text/css" href="/css/result-light.css"/>
+  
+      <style type='text/css'>
+         #popupDecisionCard{
+              display:none;
+              position:absolute;
+         }
+         #popupPlanCard{
+              display:none;
+              position:absolute;
+         }
+      </style>
+      <style>
+        .k-loading{
+         display:none;
+        }
+        
+        .k-multiselect, #roleSelection .k-widget {
+            width: 205px !important;
+            }
+        </style>
+        <style>
+                .workbench-filter{
+                     margin:13px 18px;
+                }
+                #networkcontainer{
+                    margin:13px 18px;
+                    background-color: #F2F2F2; 
+                    position:relative;
+                }
+                .k-autocomplete {
+                    width: 462px !important;
+                }
+                 
+                #decisionName {
+                    width: 450px !important;
+                    
+                }
+                
+                .qcd-input{
+                    width: 200px;
+                }
+                //css to set width for role filter
+                .demo-section1 {
+                    width: 106px;
+                    min-height:25px;
+                }
+                //css to set width for phase filter
+                .demo-section2 {
+                    width: 84px;
+                    min-height:25px;
+                }
+                .demo-section select {
+                    width: 350px;
+                }
+                .demo-section label {
+                    display: inline-block;
+                    margin: 15px 0 5px 0;
+                }
+                .k-multiselect-wrap .k-input{
+                    background-color: transparent;
+                    height: 0.31em;
+                    line-height: 1.31em;
+                    padding: .18em 0;
+                    text-indent: .33em;
+                    border: 0;
+                    margin: 1px 0 0;
+                    float: left;
+                }
+                .timeFrame-text{
+                    margin-left:35px;
+                    margin-bottom:5px;
+                }
+                ul.token-input-list{
+                    margin-top:2px;
+                    width: 200px !important;
+                }
+                .k-button{
+                    -webkit-border-radius: 4px;
+                    border-radius: 4px;
+                    border-color: #c5c5c5;
+                }
+                .k-picker-wrap .k-input{
+                    box-shadow: inset 0 0 1px 1px #ddd;
+                    -webkit-box-shadow: inset 0 0 1px 1px #ddd;
+                }
+                .date-to{
+                    margin-top: 10px;
+                }
+                 .ui-tabs .ui-tabs-nav li{
+                    top : 0px !important;
+                }
+            </style> 
+  </head>
+  
+
+  <script type='text/javascript'>//<![CDATA[ 
+  // get the url for plan task decision and user icons for nodes
+  var decisionIconUrl  = '{!URLFOR($Resource.Images, '/network/icon_decision_32x32.png')}';
+  var planIconUrl      = '{!URLFOR($Resource.Images, '/network/icon_plan_32x32.png')}';
+  var taskIconUrl      = '{!URLFOR($Resource.Images, '/network/icon_task_32x32.p')}';
+  var userIconUrl      = '{!URLFOR($Resource.Images, '/network/user-profile-32x32.png')}';
+
+
+
+ // Build network is used to create network from nodes array
+ function buildNetwork(nodes){ 
+   
+   
+   console.log(nodes);
+   
+   //  first remove existing network and close decisiona nd plan cards
+   d3.select("svg").remove();
+   $('#popupDecisionCard').css('display','none');
+   $('#popupPlanCard').css('display','none');
+   // set the repulsion force for the network ie charge
+    var charge =  (nodes.length)*40;
+    //calculate the height of network
+    var height =  ( (screen.height) - 280) + ((nodes.length) > 30 ? ((nodes.length)*1.5):0);
+    
+    var edges = [];
+    //  d3 requires nodes and links separatly as nodes array sent from controller contains the links process nodes array and get links for network
+    nodes.forEach(function(e) { 
+        // Get the source and target nodes
+         var   sourceNode = nodes.indexOf( nodes.filter(function(n) {   return n.id  === e.source; })[0]);
+         var   targetNode = nodes.indexOf( nodes.filter(function(n) {   return n.id  === e.target; })[0]);
+        // Add the edge to the array
+         if( sourceNode != targetNode && sourceNode!= undefined &&  targetNode != undefined && sourceNode!= 'noid' &&  targetNode != 'noid'  )
+        edges.push({source: sourceNode, target: targetNode});
+    });
+    
+ 
+        var lastMouseOn = '';
+        var dom = {};
+         //create svg elemet
+         dom.svg = d3.select('#networkcontainer')
+        .append('svg')
+        .style({'width': '1313px', 'height': height+'px'}) 
+         
+        //create links for network and make its a line and color black
+        dom.links = dom.svg.selectAll('.link')
+        .data(edges)
+        .enter()
+        .append('line')
+        .attr({
+            class : 'link',
+            stroke : 'black'
+        }); 
+         //  for all node elements create g element and append to svg
+         dom.nodes = dom.svg.selectAll('.node')
+        .data(nodes)
+        .enter()
+        .append("g")
+        .attr("class", '.node')
+        .attr("id",function(d){   return  d.id;  }  );
+        
+        // create a force layout and then which will create nodes with positions and then links
+        var force = d3.layout.force()
+        .size([1313, height])
+        .nodes(nodes)  
+        .links(edges)
+        .charge(-1*charge)
+        .linkDistance(130)
+        .on('tick', function (e) {   
+                    // set center node position
+                    dom.nodes[0].x = 650;
+                    dom.nodes[0].y = (height / 2)*3;
+                   // set position for each g elemnt
+                   dom.nodes
+                   .attr('transform', function(d) {  
+                        return "translate(" + d.x + "," + d.y + ")";
+                    }); 
+                 //for each link assign x and y codinates
+                 dom.links
+                .attr({
+                    x1 : function(d) { return d.source.x; },
+                    x2 : function(d) { return d.target.x; },
+                    y1 : function(d) { return d.source.y; },
+                    y2 : function(d) { return d.target.y; }
+                }); 
+                 
+                
+        })
+        .on('end', function () {
+         }).start();
+        
+         // for each g elemnt apend circle
+         dom.svg.selectAll('g')
+                  .append("circle")
+                  .attr("class", "node")
+                  .attr("cx", 0 )
+                  .attr("cy", 0)
+                  .attr("r", 8)
+              //for each g append svg image  set decision and plan icon based on nodetype variable
+              dom.svg.selectAll('g')
+                  .append('svg:image')
+                  .attr('height','30px')
+                  .attr('width','30px')
+                  .attr('x',-15)
+                  .attr('y',-15)                      
+                  .attr("xlink:href", function(d) { 
+                            if(d.nodeType =="Decision"){
+                                    return  decisionIconUrl;
+                            }
+                            else 
+                            if(d.nodeType =="Plan")  {
+                                    return planIconUrl;  
+                            }})
+                  //assign on moseover for each image
+                  .on('mouseover',function(e){ 
+                   // if mouse comes back to the same card then do nothing else change the card details
+                   if( lastMouseOn != e.id ){
+                       // first close the opened card on mouse over of new card
+                       $('#popupDecisionCard').css('display','none');
+                       $('#popupPlanCard').css('display','none');
+                       lastMouseOn = e.id;
+                        // close the cards if expanded
+                        document.getElementById("cardBottomDecision").style.display="none";
+                        document.getElementById("dropBtnDecision").style.backgroundPosition="-64px -8px"; 
+                        
+                        document.getElementById("cardBottomPlan").style.display="none";
+                        document.getElementById("dropBtnPlan").style.backgroundPosition="-64px -8px"; 
+                        
+                        if(document.getElementById("colorDiv")!=null){
+                                        document.getElementById("colorDiv").style.display="none";
+                                        document.getElementById("colorDivCurve").style.display="block";
+                        }
+                       // for decision node set the details
+                       if(e.nodeType == "Decision"){
+                       
+                           $('#namelinkDecision').text(e.nodeName);
+                           $('#namelinkDecision').attr('href','/'+e.id);
+                          
+                           $('#duedate').text(e.deadlineNum ); 
+                           $('#duedate').attr('style', ( e.deadlineState=='Positive'? 'color:#66B02D':'color:#FF3C03'  ) )
+                           
+                           $('#status').text(e.status)
+                           $('#colorDivCurve').attr('style','background-color:'+e.statusColor)
+                          
+                           $('#phase').text(e.phases);
+                           
+                           $('#mystance').text(e.stanceApprovalStatus == null ? '':e.stanceApprovalStatus);
+                           
+                           $('#mystanceColorDiv').attr('style','background-color:#'+e.stanceApprovalStatusColor);
+                           
+                           
+                           $('#a-block').attr('style', (e.Accountable ? 'background-color:'+ e.AccountableRoleColor :'background-color:#d9d9d9'));
+                           $('#r-block').attr('style', (e.Responsible ? 'background-color:'+ e.ResponsibleRoleColor :'background-color:#d9d9d9'));
+                           $('#c-block').attr('style', (e.Consulted ? 'background-color:'+ e.ConsultedRoleColor :'background-color:#d9d9d9'));
+                           $('#i-block').attr('style', (e.Informed ? 'background-color:'+ e.InformedRoleColor :'background-color:#d9d9d9'));
+                           $('#b-block').attr('style', (e.Backup ? 'background-color:'+ e.BackupRoleColor :'background-color:#d9d9d9'));
+                           $('#v-block').attr('style', (e.Veto ? 'background-color:'+ e.VetoRoleColor :'background-color:#d9d9d9'));
+         
+                           $('#requestphoto').attr('src',e.ownerPhoto);
+                           $('#requestphoto').attr('title',e.OwnerName);
+                          
+                           $('#decisionby').text( e.OwnerName);
+                           $('#decisionbyDept').text( e.ownerDept == null ?'':e.ownerDept);
+                           
+                           if( e.pendingTaskCount > 0 )
+                           $('#taskcount').text(e.pendingTaskCount +' Task Late');
+                           else
+                           $('#taskcount').css('dispaly','none');
+                           
+                           $('#averagerelevance').attr('src','/'+e.relevenceImage);
+                           $('#rating').text(e.AverageRating);
+                          
+                          
+                           $('#totallikes').text(e.TotalLikes);
+                           $('#totaldislikes').text(e.TotalDislikes); 
+                           
+                           
+                          // $('#moodimage').css('background:','url(/' + e.moodImage +')'+' '+ e.moodImagePosition + ' no-repeat' );
+                           
+                           $("#moodimage").css('background-image', 'url(/'+e.moodImage+') ');
+                           $("#moodimage").css('backgroundPosition',  e.moodImagePosition  );
+
+                           
+                           $('#moodnumber').text(e.moodStatus+'('+e.moodNumber+')');
+                           
+                       }
+                       else
+                       //for plan card set the details
+                       if(e.nodeType == "Plan"){
+                           lastMouseOn = e.id;
+                           $('#namelinkPlan').text(e.nodeName);
+                           $('#namelinkPlan').attr('href','/'+e.id);
+                           
+                           $('#planstart').text(e.startdate ); 
+                           $('#planstart').attr('style', ( e.deadlineState =='Positive'? 'color:#66B02D':'color:#FF3C03'  ) )
+                           
+                            $('#planend').text(e.enddate ); 
+                            $('#planend').attr('style', ( e.deadlineState =='Positive'? 'color:#66B02D':'color:#FF3C03'  ) )
+                           
+                            $('#planlastmodified').text(e.modifieddate ); 
+                       
+                            $('#location').text(e.location == null?'':e.location ); 
+                          
+                            $('#itemcount').text(e.itemCount );
+                           
+                            $('#activities').text(e.activityCount );
+                            
+                            if( e.dueCount > 0)
+                            $('#latetasks').text( '('+e.dueCount+')' );
+                            else
+                            $('#latetasks').html( '' );  
+                           
+                            $('#description').text(e.description == null? '' : e.description);  
+                           
+                            $('#accountablephoto').attr('src',e.accountableImage ); 
+                            $('#accountablephoto').attr('title',e.accountableName ); 
+                            
+                            $('#accountablename').text(e.accountableName ); 
+                            $('#accountableDept').text(e.accountableDept == null ? '' :e.accountableDept ); 
+                        
+                       }
+                   }
+                   
+                   if(e.nodeType == "Decision")
+                   $('#popupDecisionCard').css({"display":"block","position":"absolute","top":(e.y+2),"left":(e.x+2)});
+                   if(e.nodeType == "Plan")
+                   $('#popupPlanCard').css({"display":"block","position":"absolute","top":(e.y+2),"left":(e.x+2)});
+                    
+                    
+                  
+                  })
+                  //set decision title or plan name  to each node
+                   dom.svg.selectAll('g')
+                  .append("text")
+                  .attr("x",  0)
+                  .attr("y", 17)
+                  .attr("dy", ".35em")
+                  .attr("style", "text-anchor: middle; dominant-baseline: hanging;")
+                 .text(function(d) {  return  ( d.nodeName); return  ( d.nodeName.substr(0,20)+ ( d.nodeName.length>19?'...':'') ); }) 
+        
+     
+                 
+                   d3.select('svg').on('click',function(){ 
+                        
+                         $('#popupDecisionCard').css('display','none');
+                         $('#popupPlanCard').css('display','none');
+                   
+                   })
+        
+        
+        
+        
+        
+        
+        
+}
+
+   
+ 
+
+
+
+
+
+//]]>  
+
+</script>
+<script>
+        // function to expand or collapse cards
+        function showBottonDecision(item){
+                       
+              if(document.getElementById("cardBottom"+item).style.display=="none"){
+                                    document.getElementById("cardBottom"+item).style.display="block";
+                                    document.getElementById("dropBtn"+item).style.backgroundPosition="-64px 0px";
+                                    
+                                    if( ( item=='Decision') && document.getElementById("colorDivCurve")!=null){
+                                        document.getElementById("colorDiv").style.display="block";
+                                        document.getElementById("colorDivCurve").style.display="none";
+                                    }
+                                    
+                            }else{
+                                document.getElementById("cardBottom"+item).style.display="none";
+                                document.getElementById("dropBtn"+item).style.backgroundPosition="-64px -8px"; 
+                                if( ( item=='Decision') && document.getElementById("colorDiv")!=null){
+                                        document.getElementById("colorDiv").style.display="none";
+                                        document.getElementById("colorDivCurve").style.display="block";
+                                    }
+                            }
+                           
+    
+                        } 
+</script>
+
+            <body>           <!-- -  network role phase and name filter -->  
+                             <div class = "workbench-filter">
+                                <p class = "filter-help" id = "filterHelp">Select the criteria and a decision to see the related items of the decision </p>
+                                <div >  
+                                     
+                                    <div class = "filter-option ft-left">
+                                        <div class = "filter-text">Role</div>
+                                        <div class="demo-section demo-section1">
+                                            <select id="role" multiple="multiple" data-placeholder="Select roles..." >
+                                                <option value="Responsible"  >Responsible</option>
+                                                <option value="Consulted"  >Consulted</option>
+                                                 <option value="Accountable" selected="selected">Accountable</option>
+                                                <option value="Informed"  >Informed</option>
+                                            </select>
+                                        </div>
+                                    </div>   
+                                    <div class = "filter-option ft-left">
+                                        <div class = "filter-text">Phase</div>
+                                        <div class="demo-section demo-section2">
+                                            <select id="Phase" multiple="multiple" data-placeholder="Select Phases..." >
+                                                <option value="Draft" selected="selected">Draft</option>
+                                                <option value="Execute" selected="selected">Execute</option>
+                                                <option value="Share" selected="selected">Share</option>
+                                                <option value="Propose" selected="selected">Propose</option>
+                                                <option value="Decide" selected="selected">Decide</option>
+                                                <option value="Evaluate" selected="selected">Evaluate</option>
+                                            </select>
+                                         </div>
+                                    </div>
+                                    
+                                    <div class = "filter-option ft-left">
+                                        <div class = "filter-text">Decision Name</div>
+                                        <input id = "decisionName" type="text"/>
+                                    </div> 
+                                    
+                                    <div class="filter-option filter-btn ft-left">            
+                                        <button class="topMarginforButton" onclick="clearFilter()" style="width:75px;height:25px;" type="button">Clear</button>
+                                    </div>  
+                                    <!-- - 
+                                    <div class = "filter-option ft-left"> 
+                                        <div class = "filter-text">Status</div>
+                                        <input type="text" id="Status"/>
+                                    </div>    
+                                    <div class = "filter-option ft-left">
+                                        <div class = "filter-text">Show Ralations of selected decisions</div>
+                                        <input type="text" id="showrel"/>
+                                    </div>
+                                    <div class = "filter-option filter-btn ft-left">            
+                                        <button type="button" style="width:75px;height:25px;" class="topMarginforButton" onclick="setDefaultData();">Clear</button>
+                                        <button type="button" style="width:75px;height:25px;" class="topMarginforButton" onclick="doSearch();">Search</button>
+                                    </div> 
+                                    ---> 
+                                </div>
+                            </div>
+                <div id="networkcontainer" >
+                    <div id="popupDecisionCard" class="cards">
+                        <div class="viewCardContainer"> 
+                            <div class="viewCardTop"> </div> 
+                            <div class="viewCardIcon">&nbsp;</div>
+                            <div class="viewDropBtn" id="dropBtnDecision" onclick="showBottonDecision('Decision')"></div>
+                            <div class="viewCardText fontWeightBold"><a href="" id="namelinkDecision"></a></div>
+                            <div class="vewDateBtns viewTopborder">
+                                <div class="dueDateDiv">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Due Date</div> 
+                                    <div class="fontCardContentText fontWeightBold secondLineTextPadding" id="duedate" style=""></div> 
+                                </div>
+                                <div class="viewStatusDiv"> 
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Status</div> 
+                                    <div class="fontCardContentText  secondLineTextPadding fontWeightBold" id="status"></div>
+                                </div>
+                                <div class="statusColorDiv statusColorDivCurve" id="colorDivCurve" style=""></div>
+                                <div class="statusColorDiv" id="colorDiv" style="display:none;"></div> 
+                            </div>
+                            <div class="viewCardBottom viewTopborder" id="cardBottomDecision" style="display:none"> 
+                                <div>
+                                    <div class="phaseDiv ">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Phase</div> 
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" id="phase"></div> 
+                                    </div>
+                                    <div class="mystanceDiv">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding commonCardPadding">My Stance</div>
+                                        <div class="fontCardContentText commonCardPadding secondLineTextPadding fontWeightBold" id="mystance"></div>
+                                    </div>
+                                    <div class="mystanceColorDiv"  id="mystanceColorDiv" style=""></div> 
+                                </div>
+                                <div class="cardMyRole cardCellTopLine toClear bottomMargin">
+                                    <div class="cardTitleText fontWeightBold myRoleTitle commonCardPadding">My Role</div>
+                                    <div class="rolesIconGroup actionsDirect commonCardPadding">
+                                        <div class="raci-block floatLeft" id="a-block" style="background-color:#d9d9d9">A</div>
+                                        <div class="raci-block floatLeft" id="r-block" style="background-color:#d9d9d9">R</div>
+                                        <div class="raci-block floatLeft" id="c-block" style="background-color:#d9d9d9">C</div>
+                                        <div class="raci-block floatLeft" id="i-block" style="background-color:#d9d9d9">I</div>
+                                        <div class="floatLeft splitLine">&nbsp;</div>
+                                        <div class="raci-block floatLeft" id="b-block" style="background-color:#d9d9d9">B</div>
+                                        <div class="raci-block floatLeft" id="v-block" style="background-color:#d9d9d9">V</div>
+                                    </div>
+                                </div>
+                                <div class="decisionByDiv cardCellTopLine commonCardPadding">
+                                    <div class="cardTitleText fontWeightBold ">Decision By</div>
+                                    <div class="toClear">
+                                        <div class="decisionCardProfilePic viewCardTopBottomMargin toClear floatLeft"><img src="" style="width:36px;height:36px;" title="" id="requestphoto"></img></div>
+                                        <div class="floatLeft viewCardProfileNameWidth">
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" id="decisionby"></div>
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" id="decisionbyDept"></div>
+                                        </div>
+                                    </div>
+                                    <div class="toClear"></div>
+                                </div>
+                                <div class="qualityDiv cardCellTopLine toClear commonCardPadding">
+                                    <div class="cardTitleText fontWeightBold ">Tasks</div> 
+                                    <div class="fontCardContentText viewCardTopBottomMargin fontWeightBold" >
+                                        <div style="color:red;font-weight:bold;font-size:10px;" id="taskcount"></div>
+                                    </div> 
+                                </div>
+                                <div class="averageDiv cardCellTopLine commonCardPadding bottomMargin">
+                                    <div class="cardTitleText fontWeightBold">Average Relevance</div>
+                                    <div class="floatLeft viewCardTopBottomMargin " id="yourAveStars"><div class="viewAvgstar"><img src="" id="averagerelevance"></img></div></div>
+                                    <div class="floatLeft viewCardTopBottomMargin viewAveRat"><span style="font-family: Arial,Helvetica,sans-serif;color:#cf3f67" id="rating"></span> </div>
+                                </div>
+                                <div class="viewSocialGroupDiv   toClear floatLeft cardCellTopLine">   
+                                    <div class="floatLeft socialDiv ">
+                                        <div class="floatLeft topMargin"> 
+                                            <div class="viewSocialLike floatLeft " id="likeSpan"><div></div></div>
+                                            <div class="fontCardContentText  floatLeft likeDislikeCounts" id="totallikes">0</div>
+                                            <div class="viewSocialDislike floatLeft" id="disLikeSpan"><div></div></div>
+                                            <div class="fontCardContentText  floatLeft likeDislikeCounts" id="totaldislikes">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="viewSocialMoodDiv floatLeft">
+                                        <div  id="moodimage" class="viewSmiely floatLeft" style="">&nbsp;</div>
+                                        <div  id="moodnumber" class="fontCardContentText  viewSmielyRating fontWeightBold floatLeft"></div> 
+                                    </div>
+                                </div>
+                                <div class="toClear"> </div>
+                            </div>
+                            <div class="toClear"> </div>
+                        </div>                                                          
+                    </div>
+                    <div id="popupPlanCard" class="cards">
+                        <div class="viewCardContainer">
+                            <div class="planCardTop"></div>
+                            <div class="planCardIcon">&nbsp;</div>
+                            <div class="viewDropBtn" id="dropBtnPlan" onclick="showBottonDecision('Plan')"></div>
+                            <div class="viewCardText fontWeightBold"><a href="" id="namelinkPlan"></a></div>
+                            <div class="vewDateBtns viewTopborder">
+                                <div class="dueDateDiv">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Start Date</div>
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold"  id="planstart" style=""></div>
+                                </div>
+                                <div class="viewStatusDiv">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">End Date</div>
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" id="planend" style=""></div>
+                                </div>
+                            </div>
+                            <div class="viewCardBottom viewTopborder" id="cardBottomPlan" style="display:none">
+                                <div class="decisionByDiv">
+                                    <div class="phaseDiv" style="border:none">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Modified Date</div>
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" id="planlastmodified"></div>
+                                    </div>
+                                    <div class="mystanceDiv planLocationDiv">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Location</div>
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" id="location"></div>
+                                    </div>
+                                </div>
+                                <div class="cardCellTopLine toClear">
+                                    <div class="phaseDiv">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Items</div>
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" id="itemcount">0</div>
+                                    </div>
+                                    <div class="mystanceDiv">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Activities</div>
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" ><span id="activities">0/0</span><span style="color:red" id="latetasks" ></span></div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="decisionByDiv cardCellTopLine toClear">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Description</div>
+                                    <div class="planDescriptionStatement fontWeightBold">
+                                        <div id="description"></div>
+                                    </div>
+                                    <div class="toClear"></div>
+                                </div>
+                                <div class="decisionByDiv cardCellTopLine commonCardPadding">
+                                    <div class="cardTitleText fontWeightBold">Accountable</div>
+                                    <div class="toClear">
+                                        <div class="decisionCardProfilePic viewCardTopBottomMargin toClear floatLeft"><img src="" style="width:36px;height:36px;" id="accountablephoto" title=""></img></div>
+                                        <div class="floatLeft viewCardProfileNameWidth">
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" id="accountablename"></div>
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" id="accountableDept"></div>
+                                        </div>
+                                    </div>
+                                    <div class="toClear"></div>
+                                </div>
+                                <div class="toClear"></div>
+                            </div>
+                            <div class="toClear"></div>
+                        </div>
+                    </div>      
+                </div>  
+             </body>
+               <script>
+                    $(document).ready(function() {
+                    var dataRole = [
+                    {text: "Accountable", value:"Accountable"},
+                    {text: "Responsible", value:"Responsible"},
+                    {text: "Consulted", value:"Consulted"},
+                    {text: "Informed", value:"Informed"}                  
+                    ];
+            
+                    $("#role").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataRole,
+                         maxSelectedItems:1
+                    });
+                    $("#role_taglist").css('height','16px'); 
+                    
+                    var dataPhase = [
+                    {text: "Draft", value:"Draft"},
+                    {text: "Share", value:"Share"},
+                    {text: "Propose", value:"Propose"},
+                    {text: "Decide", value:"Decide"},
+                    {text: "Execute", value:"Execute"},
+                    {text: "Evaluate", value:"Evaluate"},
+                    {text: "Close", value:"Close"}
+
+
+                    ];
+            
+                    $("#Phase").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataPhase,
+                        maxSelectedItems:1
+                    });
+                    $("#Phase_taglist").css('height','16px');   
+                   /*
+                    var dataStatus = [
+                    {text: "Undecided", value:"Undecided"},
+                    {text: "Approved", value:"Approved"},
+                    {text: "Rejected", value:"Rejected"},
+                    {text: "Executed", value:"Executed"}, 
+                    {text: "Evaluated", value:"Evaluated"},                    
+                    {text: "Closed", value:"Closed"}                    
+                                   
+                    ];
+            
+                    $("#Status").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataStatus,
+                        maxSelectedItems:1
+                    });
+                    
+                    var dataShowRel = [
+                    {text: "Decision", value:"Decision"},
+                    {text: "Plan", value:"Plan"},
+                    {text: "User", value:"User"},
+                    {text: "Task", value:"Task"}                  
+                    ];
+            
+                    $("#showrel").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataShowRel,
+                        maxSelectedItems:1
+                    });
+                    */
+                    
+                    
+                    });
+                 </script>
+                 <script>
+                           var autoCompleteRun = false;
+                           $(document).ready(function() {
+                                var dataSource = new kendo.data.DataSource({
+                                  schema: {
+                                    data:[],
+                                    model: {
+                                      fields: {
+                                        decisionId: {
+                                            type: "string"
+                                        },
+                                        recordName: {
+                                            type: "string"
+                                        },
+                                      }
+                                    }
+                                  }
+                                });
+                                $("#decisionName").kendoAutoComplete({
+                                    dataTextField: "recordName",
+                                    filter: "contains",
+                                    dataSource :dataSource,
+                                    minLength: 1,
+                                    select: onSelect
+                                });
+                            });
+                            
+                            
+                           // on name field keyup if length is zero then clear network
+                            $("#decisionName").keyup(function(){
+                            
+                                    if( $("#decisionName").val().length == 0 ) {
+                                               d3.select("svg").remove();
+                                               $('#popupDecisionCard').css('display','none');
+                                               $('#popupPlanCard').css('display','none');
+                                    }
+                            });
+                            
+                           // on name field keypress  if length is zero then search from database
+                            $("#decisionName").keypress(function(){
+                                      if( ! autoCompleteRun ){  
+                                                                      
+                                          
+                                          $("#decisionName").data("kendoAutoComplete").close();
+                                           var role =    $("#role").data("kendoMultiSelect").value().toString();
+                                           var phase =   $("#Phase").data("kendoMultiSelect").value().toString();
+                                           
+                                           if( $("#decisionName").val().length > 1 ){
+                                                   autoCompleteRun = true;
+                                                   NetworkView.runSearch( $("#decisionName").val(),role,phase,function(result,event){
+                                                       var dataSource = new kendo.data.DataSource({
+                                                          data: removeQuotes(result)
+                                                        }); 
+                                                        console.log(removeQuotes(result));
+                                                        $("#decisionName").data("kendoAutoComplete").setDataSource(dataSource);;
+                                                        $("#decisionName").data("kendoAutoComplete").search($("#decisionName").val() );
+                                                        autoCompleteRun = false;
+                                                  },{ escape: false  }) 
+                                             }
+                                       }
+                            
+                            })
+                            //if any of the autocomplete suggestion is selected create new network using buildnetwork
+                            function onSelect(e) {
+                                    var dataItem = this.dataItem(e.item.index());
+                                    NetworkView.buildNetwork(dataItem.decisionId,'Decision',function(result,event){
+                                     console.log(result);
+                                     buildNetwork(removeQuotes(result));
+                                    
+                                    },{ escape: false })
+                            } 
+                             // remove quate from json string 
+                            function removeQuotes(mystring) {
+                                    
+                                newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                                    return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                                });
+                                
+                                //var newJ= $.parseJSON(newString);
+                                var  newJ = eval ("(" + newString+ ")");
+                                return newJ;
+                            }
+                            //clear fileter resstes the filters
+                            function clearFilter(){
+                                d3.select("svg").remove();
+                                $('#popupDecisionCard').css('display','none');
+                                $('#popupPlanCard').css('display','none');
+                                var roleselect = $("#role").data("kendoMultiSelect");
+                                var phaseselect = $("#Phase").data("kendoMultiSelect");
+                                
+                                // set the value of the multiselect.
+                                roleselect.value(["Accountable"]);
+                                phaseselect.value(["Draft"]);
+                                
+                                $('#decisionName').val('');
+                            }
+                            $(document).ready(function(){
+                            $('.demo-section').each(function(index,p){   
+                               $(p).find( 'input' ).css('display','none') ; 
+                               $(p).find('div').css('min-height','25px') ;
+                               $(p).find( 'input' ).next().css('display','none') ;
+                            })
+                            });
+                        </script> 
+                 
+ </apex:page>

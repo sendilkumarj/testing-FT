@@ -1,0 +1,74 @@
+<apex:page >
+<html>
+<head>
+    <title>Fingertip</title>  
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />  
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/jquery.min.js')}"/>   
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/kendo.mobile.min.js')}"/>   
+  
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.mobile.common.min.css')}"/>   
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.mobile.all.min.css')}"/>   
+     
+   
+    
+    <apex:stylesheet value="{!$Page.MobileStyles}"/>        
+     
+</head>
+    <body>
+    
+      <div data-role="view" data-init="mobileListViewEndlessScrolling" data-title="Scroll down to load">
+    <header data-role="header">
+        <div data-role="navbar">
+            <span data-role="view-title"></span>
+            <a data-align="right" data-role="button" class="nav-button" href="#/">Index</a>
+        </div>
+    </header>
+
+    <ul id="endless-scrolling"></ul>
+</div>
+
+<script type="text/x-kendo-tmpl" id="endless-scrolling-template">
+    <div class="product">
+        
+        <h3>#: name # - #: modified #</h3>
+        
+    </div>
+</script>
+
+<script>
+    function mobileListViewEndlessScrolling() {
+        var dataSource = new kendo.data.DataSource({
+            type: "odata",
+            transport: {
+                 read: function(options) {
+      console.log(options.data.since_id); // undefined in the first request
+      var max = i + 5;
+      var data = [];
+      for (; i < max; i ++) {
+        data.unshift({ name: "record" + i, modified: +new Date() });
+      }
+      options.success(data);
+        }
+            },
+            schema: {
+                total: function () { return 77; }
+            },
+            sort: {
+                field: "Name",
+                dir: "desc"
+            },
+            serverPaging: true,
+            serverSorting: true,
+            pageSize: 50
+        });
+
+        $("#endless-scrolling").kendoMobileListView({
+            dataSource: dataSource,
+            template: $("#endless-scrolling-template").text(),
+            endlessScroll: true
+        });
+    }
+</script>
+    </body>
+</html>
+</apex:page>

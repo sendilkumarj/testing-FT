@@ -1,0 +1,245 @@
+<apex:page showHeader="false" sidebar="false" controller="d3Filter">
+  <apex:stylesheet value="{!$Page.WorkbenchStyles}" /> 
+    <apex:stylesheet value="{!$Page.CommonStyles}" />
+    <apex:stylesheet value="{!$Page.OverrideStyles}" />
+
+    <style>
+    .k-loading{
+     display:none;
+    }
+    
+    .k-multiselect, #roleSelection .k-widget {
+        width: 205px !important;
+        }
+    </style>
+       <style>
+                
+                .qcd-input{
+                    width: 200px;
+                }
+                .demo-section {
+                    width: 181px;
+                    min-height:25px;
+                }
+                .demo-section select {
+                    width: 350px;
+                }
+                .demo-section label {
+                    display: inline-block;
+                    margin: 15px 0 5px 0;
+                }
+                .k-multiselect-wrap .k-input{
+                    background-color: transparent;
+                    height: 0.31em;
+                    line-height: 1.31em;
+                    padding: .18em 0;
+                    text-indent: .33em;
+                    border: 0;
+                    margin: 1px 0 0;
+                    float: left;
+                }
+                .timeFrame-text{
+                    margin-left:35px;
+                    margin-bottom:5px;
+                }
+                ul.token-input-list{
+                    margin-top:2px;
+                    width: 200px !important;
+                }
+                .k-button{
+                    -webkit-border-radius: 4px;
+                    border-radius: 4px;
+                    border-color: #c5c5c5;
+                }
+                .k-picker-wrap .k-input{
+                    box-shadow: inset 0 0 1px 1px #ddd;
+                    -webkit-box-shadow: inset 0 0 1px 1px #ddd;
+                }
+                .date-to{
+                    margin-top: 10px;
+                }
+                 .ui-tabs .ui-tabs-nav li{
+                    top : 0px !important;
+                }
+            </style> 
+    
+      <!-- Kendo Library -->
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/> 
+    
+    
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs10, '/tabs/jquery-1.9.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetroNewLibrary, '/kendoMetroNewLibrary/kendo.all.min.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/>
+    <apex:includescript value="{!URLFOR($Resource.d3)}"/> 
+ 
+    
+   
+                 <div class = "workbench-filter">
+                    <p class = "filter-help" id = "filterHelp">Select the criteria to see the decisions a person is working on</p>
+                    <div >  
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Decision Name</div>
+                            <input id = "decisionName" type="text"   style="width: 50px"/>
+                        </div> 
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Role</div>
+                            <input type="text" id="role"/>
+                        </div>   
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Phase</div>
+                            <input type="text" id="Phase"/>
+                        </div> 
+                        <!-- - 
+                        <div class = "filter-option ft-left"> 
+                            <div class = "filter-text">Status</div>
+                            <input type="text" id="Status"/>
+                        </div>    
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Show Ralations of selected decisions</div>
+                            <input type="text" id="showrel"/>
+                        </div>
+                        <div class = "filter-option filter-btn ft-left">            
+                            <button type="button" style="width:75px;height:25px;" class="topMarginforButton" onclick="setDefaultData();">Clear</button>
+                            <button type="button" style="width:75px;height:25px;" class="topMarginforButton" onclick="doSearch();">Search</button>
+                        </div>
+                        
+                        --->
+                        <script>
+                          
+			               $(document).ready(function() {
+			                    var dataSource = new kendo.data.DataSource({
+								  schema: {
+								    data:[],
+								    model: {
+								      fields: {
+								        decisionId: {
+								            type: "string"
+								        },
+								        recordName: {
+								            type: "string"
+								        },
+								      }
+								    }
+								  }
+								});
+			                    $("#decisionName").kendoAutoComplete({
+			                        dataTextField: "recordName",
+			                        filter: "contains",
+			                        dataSource :dataSource,
+			                        minLength: 1
+			                       // select: onSelect
+			                    });
+			                });
+			                
+			                $("#decisionName").keypress(function(){
+			                          $("#decisionName").data("kendoAutoComplete").close();
+				                     
+				                       d3Filter.runSearch( $("#decisionName").val(),function(result,event){
+					                  	   var dataSource = new kendo.data.DataSource({
+											  data: removeQuotes(result)
+											}); 
+					                    
+					                  	    $("#decisionName").data("kendoAutoComplete").setDataSource(dataSource);;
+					                  	    $("#decisionName").data("kendoAutoComplete").search($("#decisionName").val() );
+				                      })
+			                
+			                })
+			                function onSelect(e) {
+		                        //alert((e.item.index()));
+		                            var dataItem = this.dataItem(e.item.index());
+		                            kendoConsole.log("event :: select (" + dataItem + ")" );
+		                    } 
+			                 // remove quate from json string 
+					        function removeQuotes(mystring) {
+					                
+					            newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+					                return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+					            });
+					            
+					            //var newJ= $.parseJSON(newString);
+					            var  newJ = eval ("(" + newString+ ")");
+					            return newJ;
+					        }
+			            </script>
+                    </div>
+                </div>
+                
+                <div id="network-container">
+                  {!searchDecision}
+                </div>
+                <script>
+                    $(document).ready(function() {
+                    var dataRole = [
+                    {text: "Accountable", value:"Accountable"},
+                    {text: "Responsible", value:"Responsible"},
+                    {text: "Consulted", value:"Consulted"},
+                    {text: "Informed", value:"Informed"}                  
+                    ];
+            
+                    $("#role").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataRole,
+                         maxSelectedItems:1
+                    });
+                    
+                    var dataPhase = [
+                    {text: "Draft", value:"Draft"},
+                    {text: "Share", value:"Share"},
+                    {text: "Propose", value:"Propose"},
+                    {text: "Decide", value:"Decide"},
+                    {text: "Execute", value:"Execute"},
+                    {text: "Evaluate", value:"Evaluate"},
+                    {text: "Close", value:"Close"}
+
+
+                    ];
+            
+                    $("#Phase").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataPhase,
+                        maxSelectedItems:1
+                    });
+                    
+                   /*
+                    var dataStatus = [
+                    {text: "Undecided", value:"Undecided"},
+                    {text: "Approved", value:"Approved"},
+                    {text: "Rejected", value:"Rejected"},
+                    {text: "Executed", value:"Executed"}, 
+                    {text: "Evaluated", value:"Evaluated"},                    
+                    {text: "Closed", value:"Closed"}                    
+                                   
+                    ];
+            
+                    $("#Status").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataStatus,
+                        maxSelectedItems:1
+                    });
+                    
+                    var dataShowRel = [
+                    {text: "Decision", value:"Decision"},
+                    {text: "Plan", value:"Plan"},
+                    {text: "User", value:"User"},
+                    {text: "Task", value:"Task"}                  
+                    ];
+            
+                    $("#showrel").kendoMultiSelect({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: dataShowRel,
+                        maxSelectedItems:1
+                    });
+                    */
+                    
+                    
+                    });
+                 </script>
+           
+</apex:page>

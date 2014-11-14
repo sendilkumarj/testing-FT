@@ -1,0 +1,3 @@
+<apex:page contentType="text/javascript"  >
+  <apex:enhancedList type="Activity" height="600"  />
+</apex:page>

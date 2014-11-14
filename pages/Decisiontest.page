@@ -1,0 +1,14 @@
+<apex:page id="pg"  standardController="Decision__c" docType="html-5.0" extensions="DecisionView" title="Finger Tip" tabStyle="Decision__c">
+  <script>
+         console.log('1');
+         function test1(){
+         
+          DecisionView.Test(function(result,event){alert(2)})}
+     
+  </script>
+  <a href="" onclick="test1()">Click</a>
+ <chatter:feedWithFollowers entityId="{!$CurrentPage.parameters.Id}" id="chatter"/> 
+ <script>  
+  console.log('3');
+  </script>
+</apex:page>

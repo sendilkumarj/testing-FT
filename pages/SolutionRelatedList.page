@@ -1,0 +1,3 @@
+<apex:page standardController="Solution" sidebar="false" showHeader="false">
+    <c:CustomRelatedList objType="Solution" recId="{!Solution.Id}" recName="{!Solution.SolutionName}"/>
+</apex:page>

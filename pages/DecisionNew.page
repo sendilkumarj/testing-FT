@@ -1,0 +1,325 @@
+<apex:page id="newDecision" standardController="Decision__c" extensions="DecisionNew">
+<html>
+    <head>
+        <meta http-equiv="Content-Script-Type" content="text/javascript" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        
+        <!-- Javascript file -->
+        <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/> 
+        <apex:includeScript value="{!$Page.DecisionNewScript}" />
+        <apex:includeScript value="{!$Page.CommonScripts}" />
+
+        <!-- Kendo Library -->
+        <!--<apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/>         
+  
+        
+        <apex:includeScript value="{!URLFOR($Resource.KendoMetroNewLibrary, '/kendoMetroNewLibrary/kendo.all.min.js')}"/> 
+        <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/>  -->
+        
+        <!--------- FT Stylesheets ----------->
+        <apex:stylesheet value="{!$Page.CommonStyles}" />
+        <apex:stylesheet value="{!$Page.DecisionStyles}" />
+        <apex:stylesheet value="{!$Page.OverrideStyles}" />
+        <c:WalkMeAndSupportButton />
+        <script type="text/javascript">
+            $(document).ready(function(){
+                // Loads kendo editor from textarea HTML element with default set of tools
+                //$("#kendoEditorProblemStatement").kendoEditor({
+                     //contentType: "text",
+                // });
+                //$("#kendoEditorProblemStatement").closest(".k-editor").width("655"); 
+                //$("#kendoEditorDecision").kendoEditor();
+                //$("#kendoEditorDecision").closest(".k-editor").width("658"); 
+                changeFooterText();
+            });
+        </script>
+    </head>
+  
+    <body>
+        
+        <apex:form id="newDecisionForm">
+        
+        <!------------ Content -------------->
+        <div class = "wrapper">
+                <!------------ Page Header -------------->
+            <div class = "page-head">
+                <div class = "object-icon ft-left">
+                    <img src = "{!URLFOR($Resource.Images, 'common/icon_decision_32.png')}" />
+                </div>
+                <div class = "headers ft-left">
+                    <span class = "page-subhead ft-left">Decision</span><br />
+                    <h2>New Decision</h2>
+                </div>
+            </div>
+                <!------------ End Page Header -------------->
+                <!------------ Page Block -------------->
+            <div class = "sf-page-block border-blue">
+                <!------------ Page Block Head -------------->
+                <div class = "page-block-head">
+                   <div class = "ft-left"><h3>Decision Edit</h3></div>
+                   <button type="Button"  class="save-decision" onclick = "saveDecisionData()"> Save </button>
+                   <button type="Button"  onclick = "cancel()"> Cancel </button>
+                </div>
+                <!------------ Page Block Body -------------->
+                <div class = "page-block-body">
+                    <!------------ General Section -------------->
+                    <div class = "section-head section-head-blue">
+                        <h3>General</h3>
+                    </div>
+                    <table cellspacing = "2" cellpadding = "0" class = "tbl-gen-block">
+                        <tr>
+                            <td class = "cell-left width-decide">
+                                Title&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The title of the decision can either be written as a question, or as a subject line.You could write Shall I go to Sweden, or alternatively, Going to Sweden."  />
+                            </td>
+                            <td colspan = "3" class = "cell-right required-input"> 
+                                <apex:inputField id="decisionTitle" styleClass="input-width" value="{!decision.Title__c}" required="true" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left" style="white-space:pre;">
+                                 Description <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Provide background for the Description. You can describe what needs to be taken into consideration when taking the decision. You can also state available alternatives to choose from." /> 
+                            </td>
+                            <td colspan = "3" class = "cell-right required-input"> 
+                                <!-- <textarea id="kendoEditorProblemStatement" rows="10" cols="30" class = "kendo-rtf"> </textarea>-->
+                                <apex:inputField value="{!decision.Problem_Idea_Advice__c}" id="kendoEditorProblemStatement" styleClass="input-width-textarea"/> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Decision&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Here, state the actual decision that is taken and possibly the reasons why. For example, Going to Sweden at this time gives little business value,so we will not attend the seminar this year." />
+                            </td>
+                            <td colspan = "3" class = "cell-right"> 
+                                <!-- <textarea id="kendoEditorDecision" rows="10" cols="30" class = "kendo-rtf"> </textarea> -->
+                                <apex:inputField value="{!decision.Decision_Taken__c}" id="kendoEditorDecision" styleClass="input-width-textarea"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Identifier&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="If the Title is marked as private, it will not show in the Chatter or any other place in Fingertip, except to those that are specifically allowed to access the decision." />    
+                            </td>
+                            <td class = "cell-right" width="455px"> 
+                                <apex:inputField id="decisionIdentifier" styleClass="input-id" value="{!decision.Identifier__c}" /> 
+                            </td>
+                            <td class = "cell-left">
+                                Private&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="If the Title is marked as private, it will not show in the Chatter or any other place in Fingertip, except to those that are specifically allowed to access the decision." />    
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!decision.Private__c}" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Decision Type&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Select the type of Decision" />
+                            </td>
+                            <td colspan = "3" class = "cell-right"> 
+                                <apex:inputField value="{!decision.Decision_Type__c}" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Category&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Select the Category of the Decision" />
+                            </td>
+                            <td colspan = "3" class = "cell-right"> 
+                                <apex:inputField value="{!decision.Category__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Priority&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The priority of the decision prioritizes the decision on the Home page and other listings" />    
+                            </td>
+                            <td colspan = "3" class = "cell-right required-input"> 
+                                <apex:inputField id="decisionPriority" value="{!decision.Priority__c}" required="true" />  
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Decision Approach&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Select the approach for making the decision" /> 
+                            </td>
+                            <td colspan = "3" class = "cell-right"> 
+                                <apex:inputField value="{!decision.Decision_Approach__c}" />  
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Decision Making Style&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}"  title="Select the decision Making Style applied" />    
+                            </td>
+                            <td colspan = "3" class = "cell-right"> 
+                                <apex:inputField value="{!decision.Decision_Making_Style__c}" /> 
+                            </td>
+                        </tr>
+                    </table>
+                    <!------------ End General Section -------------->
+                    
+                    <!------------ Financials Section -------------->
+                    <div class = "section-head section-head-blue">
+                        <h3>Financials - Estimated</h3>
+                    </div>
+                    <table cellspacing = "0" cellpadding = "0" class = "page-block-tbl">
+                        <tr>
+                            <td class = "cell-left width-decide">
+                                Investment&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The size of the investment. Use this field if the final deliverable of the decision can be entered into the balance sheet of the organisation." />
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField onkeypress="return isNumberKey(event)" value="{!decision.Estimated_Investment__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Direct Cost&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="A price that can be completely attributed to the production of specific goods or services. Direct costs refer to materials, labor and expenses related to the implementation of the decision." />    
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField onkeypress="return isNumberKey(event)" value="{!decision.Estimated_Direct_Cost__c}" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Revenue&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Revenue / Turnover created by implementing this Decision." />    
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField onkeypress="return isNumberKey(event)" value="{!decision.Estimated_Revenue__c}" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                NPV&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Net Present Value - The difference between the present value of cash inflows and the present value of cash outflows. NPV is used in capital budgeting to analyze the profitability of an investment or project." />    
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField onkeypress="return isNumberKey(event)" value="{!decision.Estimated_Net_Present_Value__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                People Involved&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The total amount of people involved in the implementation of the decision. All people that participate as part-time resources count towards this number." />    
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField onkeypress="return isNumberKey(event)" value="{!decision.Estimated_People_Involved__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                FTE&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The definition of FTE (full time equivalent) is the number of working hours that represents one full-time employee during a fixed time period. In Fingertip, the time period is defined by the Valid From and Valid To dates. As an example, you have three employees and they work 50 hours, 40 hours, and 10 hours per week – totaling 100 hours. Assuming a full-time employee works 40 hours per week, your full time equivalent calculation is 100 hours divided by 40 hours, or 2.5 FTE." />    
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField onkeypress="return isNumberKey(event)" value="{!decision.Estimated_Full_time_Equivalent_FTE__c}" /> 
+                            </td>
+                        </tr>                        
+                    </table> 
+                    <!------------ End Financials Section -------------->
+                    <!-- Begin Customer Specific Field Sets  -->
+                       <div class = "section-head section-head-blue"> 
+                            <h3 class = "ft-left">Custom</h3>
+                       </div>    
+                       <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                            <apex:repeat value="{!$ObjectType.Decision__c.FieldSets.Customer_Specific}" var="fieldSetVariable">
+                                <tr>
+                                    <td class = "cell-left"> <apex:outputText value="{!fieldSetVariable.Label}" /> </td>
+                                    <td class = "cell-right"> <apex:inputField value="{!decision[fieldSetVariable]}" /> </td>
+                                </tr>
+                            </apex:repeat>
+                        </table>  
+                     <!-- End Customer Specific Field Sets  -->
+                     
+                                   
+                    <!------------ Timing Section -------------->
+                    <div class = "section-head section-head-blue">
+                        <h3>Timing</h3>
+                    </div>
+                    <table cellspacing = "0" cellpadding = "0" class = "page-block-tbl">
+                       <!-- <tr>
+                            <td class = "cell-left width-decide">
+                                Valid From&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Date when the Decision is to be valid from" />     
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!decision.Valid_From__c}" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Valid Until&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Date until when the Decision is to be valid" />     
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!decision.Valid_Until__c}" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left">
+                                Point of no return&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The point beyond which one must not continue on his or her current course of action " />     
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!decision.Point_of_No_Return__c}" /> 
+                            </td>
+                        </tr> -->
+                        <tr>
+                            <td class = "cell-left width-decide">
+                                Due Date&nbsp;
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Due Date by when the Decision needs to be made" />
+                            </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!decision.Due_Date__c}" /> 
+                            </td>
+                        </tr>
+                    </table>  
+                    <!------------ End Timing Section -------------->   
+                </div>
+                    <!------------ End Page Block Body -------------->
+                    <!------------ Page Block Bottom -------------->                
+                <div class = "page-block-bottom">
+                   <button type="Button" class="save-decision" id = "saveDecision" onclick = "saveDecisionData()" > Save </button>
+                   <button type="Button"  onclick = "cancel()"> Cancel </button>
+                </div>
+                <!------------ End Page Block Bottom -------------->    
+            </div> 
+            <!------------ End Page Block -------------->           
+        </div> 
+        <!------------ Content --------------> 
+        <!-- Action function for save and cancel button -->    
+        <apex:actionFunction name="saveDecisionRecord" action="{!saveDecision}" reRender="newDecisionForm">
+                <!--<apex:param id="ProblemStatementValue" name="ProblemStatementValue" value="" />
+                <apex:param id="DecisionValue" name="DecisionValue" value="" />-->
+        </apex:actionFunction>
+        <apex:actionFunction name="cancel" action="{!customCancel}" immediate="true"/>
+    </apex:form> 
+    <script>
+        function stripHTML(removedStr) {
+            return removedStr.replace(/<\S[^><]*>/g,"");
+        }
+        
+        
+        function isNumberKey(evt){
+            if( event.target.value.length  == 16 )
+            {
+             alert('Maximum number of digits is 16');
+              return false;
+            }
+             var charCode = (evt.which) ? evt.which : event.keyCode
+            if ((charCode < 48 || charCode > 57 ) && charCode != 32 && charCode != 44 && charCode != 46 && charCode != 8 )
+                return false;
+    
+            return true;
+        }
+    </script> 
+           
+    </body>
+</html>
+</apex:page>

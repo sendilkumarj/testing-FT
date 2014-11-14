@@ -1,0 +1,701 @@
+<apex:page standardController="Plan__c" extensions="PlanPDFGenerate" renderAs="pdf" action="{!defaultMethods}">
+    <head>
+    
+        <style type="text/css" media="print">
+        	@page {
+                  size:A4 landscape;
+            }
+        </style>
+        <style>
+            body{
+                font-family:Arial,Helvetica,sans-serif !important;
+                font-size: 12px !important;
+            }
+            .ft-left{
+                float: left;
+            }
+            .ft-right{
+                float: right;
+            }            
+            .pdf-wrapper{
+                margin-top: 10px 0 0 0;
+            }
+            table td{
+                vertical-align: top;
+            }
+            .tabs-block{
+                 margin-bottom: 15px;
+                 padding: 10px;
+                 background-color: #F8F8F8;
+                 border-bottom: 1px solid #EAEAEA;
+                 border-left: 1px solid #EAEAEA;     
+                 border-right: 1px solid #EAEAEA;
+                 border-top-width: 3px;
+                 border-top-style: solid;
+                 border-radius: 4px;
+                 height: auto;
+                 overflow: hidden;       
+             }
+             .tabs-block-head{
+                 margin-bottom: 10px;
+                 height: auto;
+                 overflow: hidden;
+             }
+             .border-pink{
+                 border-top-color: #993399;
+             }
+             .tabs-block-left{
+                 height: auto;
+                 overflow: hidden;                 
+             }
+             .tabs-block-left h3{
+                 font-size: 15px;
+             }
+             
+             .tabs-gen-block{
+                 padding: 10px 0 0 0;
+                 border-top-width: 2px;
+                 border-top-style: solid; 
+                 height: auto;
+                 overflow: hidden;
+             }
+             .tabs-gen-block h3{
+                 font-size: 13px;
+                 color: #222;
+             }
+             .gen-block-tbl{
+                 width: 100%;
+                 margin-top: 10px;
+             }
+             .gen-block-cell{
+                 padding-top: 5px;
+                 padding-bottom: 5px;
+                 border-bottom: 1px solid #ddd;
+             }
+             .cell-left{
+                 padding-right: 15px;
+                 width: 23%;
+                 text-align: right;
+                 vertical-align: top;
+                 color: #4A4A56;
+                 font-weight: bold;
+                 font-size: 11px;
+             }
+             .cell-right{
+                 width: 27%
+             }
+             .item-view{
+                 padding-top: 10px;
+             }
+             .pdf-thead{
+                 padding: 7px 0 7px 5px;
+                 border-top: 1px solid #ccc;
+                 border-bottom: 1px solid #ccc;
+                 border-left: 1px solid #ccc;
+                 background: #eee;
+                 font-weight: bold;
+                 text-align: left;
+                 vertical-align: middle;
+             }
+             .pdf-thead-right{
+                 padding: 7px 7px 7px 0px;
+                 border-top: 1px solid #ccc;
+                 border-bottom: 1px solid #ccc;
+                 border-left: 1px solid #ccc;
+                 background: #eee;
+                 font-weight: bold;
+                 text-align: right;
+                 vertical-align: middle;
+             } 
+             .thead-right{
+                 border-right: 1px solid #ccc;
+             } 
+             .duration{
+                 border-bottom: none !important;
+                 text-align: center;
+             }
+             .duration-sum{
+                 text-align: right;
+                 padding: 10px 10px 0 0;
+                 font-weight: bold;
+             }
+             .sum-wrap{
+                 margin-top: 10px;
+                 padding: 5px;
+                 border: 1px solid #ccc;
+             }
+             .pdf-tcell{
+                 padding: 5px 0 5px 5px;
+                 border-bottom: 1px solid #ccc;
+                 background: #fff;
+                 text-align: left;
+             }
+             .pdf-tcell-right{
+                 padding: 5px 5px 5px 0px;
+                 border-bottom: 1px solid #ccc;
+                 background: #fff;
+                 text-align: right;
+             } 
+             .tcell-left{
+                 border-left: 1px solid #ccc;
+             } 
+             .tcell-right{
+                 border-right: 1px solid #ccc;
+             }  
+             .width1{
+                 width: 80px;
+             }  
+             .width2{
+                 width: 45px;
+             } 
+             .width3{
+                 width: 60px;
+             }
+             .width4{
+                 width: 130px;
+             }
+             .width5{
+                 width: 300px;
+             } 
+             .user-min{
+                 min-width: 100px;
+             }
+             .center{
+                 text-align: center !important;
+             }
+             .color-red{
+                color:#FF0000;
+             }
+             .color-green{
+                color:#FFFF00;
+             }
+             @page {
+                @bottom-right {
+                    content : element(footer);
+                }
+             }
+             .footer {
+                margin: 0 9px; 
+                padding: 10px 0 0 0; 
+                position : running(footer) ;
+                font-weight: bold;
+                color: #999;
+                border-top: 1px dotted #999; 
+             }
+             .main-update{
+             margin: 0;
+             padding: 0;
+             }
+             .sub-comment{
+                 margin: 0;
+                 padding: 0 0 0 25px;
+             }
+             .sub-comment li{
+                 margin:0;
+                 padding-bottom: 5px;
+                 color: #666;             
+             }
+             .chatter-head{
+                 margin: 0;
+                 padding: 5px 10px 10px 10px;
+                 background: #eee;
+                 border-top: 1px solid #ccc;
+                 font-weight: bold;             
+             }
+             .date-time{
+                 font-weight: normal;
+                 color: #999;
+                 float: right;
+                 font-size: 11px;
+             }
+             .chat-body{
+                 padding: 0 10px 5px 10px;
+                 background: #eee;
+                 border-bottom: 1px solid #f4f4f4;
+             }
+             .chat-sub{
+                 padding: 5px 10px;
+                 border-top: 1px solid #ddd;
+                 background: #e6e6e6;
+             }
+             .chatter-subhead{
+                 padding: 0 0 5px 15px;
+                 font-weight: bold;
+             }
+             .view4Sum{
+             	 word-wrap:break-word;
+                 font-weight: bold;
+             }
+         </style>   
+    </head>
+    <body>
+        <div class="footer" >
+            Plan PDF requested by <apex:outputText value=" {!$User.FirstName}" /> <apex:outputText value=" {!$User.LastName}" /> at <apex:outputText value=" {!currentDateTime}" />
+        </div>
+        <!--------- Content -----------> 
+       <div class = "pdf-wrapper">
+           <!--------- Begin General Area -----------> 
+           <div class = "tabs-block border-pink">
+                <div class = "tabs-block-left">
+                   <h3 class = "ft-left">Plan: <apex:outputField value=" {!plan.Name}" /></h3>
+                </div>
+                <!-- Begin Plan General Section -->
+                <div class = "tabs-gen-block border-pink">                                        
+                   <h3>General</h3>
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr> 
+                           <td class = "cell-left gen-block-cell">Description</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!plan.Description__c}" /></td>
+                       </tr>
+                   </table> 
+                 </div>
+                 <!-- End Plan General Section -->
+                 <!-- Begin Plan Other Information Section -->
+                 <div class = "tabs-gen-block border-pink">
+                   <h3>Other Information</h3>
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr> 
+                           <td class = "cell-left gen-block-cell">All Day Event</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!plan.All_Day_Event__c}" /></td>
+                           
+                       </tr>
+                        <tr>
+                           <td class = "cell-left gen-block-cell">Start</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!plan.Start_Time__c}" /></td>
+                       </tr>
+                       <tr>
+                           <td class = "cell-left gen-block-cell">End</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!plan.End_Time__c}"/></td>
+                       </tr>
+                       <tr>
+                           <td class = "cell-left gen-block-cell">Location</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!plan.Location__c}" /></td>
+                       </tr>
+                       <tr>
+                           <td class = "cell-left gen-block-cell">Show Time As</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!plan.Show_Time_As__c}"/></td>
+                       </tr>
+                   </table> 
+               </div>
+               <!-- End Plan Other Information Section -->
+           </div>    
+           <!--------- End General Area -----------> 
+           
+           <!-- Plan Items Tab Data -->
+           <apex:outputPanel rendered="{!allPlanJsonWrapperList.size != 0}">    
+               <div class = "tabs-block border-pink">    
+                   <apex:outputPanel rendered="{!allPlanJsonWrapperList.size != 0}">
+                       <div class = "tabs-block-left">
+                           <h3 class = "ft-left">Items - View1</h3>
+                           <!--<img class = "ft-right" src = "{!URLFOR($Resource.Images, 'plan/image-itemView1-183x24.png')}" />-->
+                       </div>
+                       
+                       <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                           <tr>
+                               <td class = "pdf-thead" rowspan = "2">Name/Title</td>
+                               <td class = "pdf-thead width3" rowspan = "2">Item Type</td>
+                               <td class = "pdf-thead width3 duration" colspan = "3">Duration</td>
+                               <td class = "pdf-thead" rowspan = "2">Accountable/<br/>Owner</td>
+                               <td class = "pdf-thead thead-right" rowspan = "2">Description</td>
+                           </tr>                   
+                           <tr class = "pdf-thead">
+                               <td class = "pdf-thead width2">Days</td>
+                               <td class = "pdf-thead width2">Hours</td>
+                               <td class = "pdf-thead width3">Minutes</td>
+                           </tr>
+                           <apex:repeat value="{!allPlanJsonWrapperList}" var="item"> 
+                               <tr>
+                                   <td class = "pdf-tcell tcell-left"><apex:outputField value="{!item.rel.Child_Record_Name__c}" /></td>
+                                   <td class = "pdf-tcell"><apex:outputField value="{!item.rel.Child_Object_Name__c}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputField value="{!item.rel.Days__c}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputField value="{!item.rel.Hours__c}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputField value="{!item.rel.Minutes__c}" /></td>
+                                   <td class = "pdf-tcell"><apex:outputField value="{!item.rel.Owner.Name}" /></td>
+                                   <td class = "pdf-tcell tcell-right"><apex:outputField value="{!item.rel.Description__c}" /></td>
+                               </tr>
+                           </apex:repeat> 
+                               <tr>
+                                   <td class = "duration-sum" colspan = "2">
+                                       Duration Sum:
+                                   </td>
+                                   <td colspan = "3">
+                                       <div class = "sum-wrap ft-left">
+                                           <b>{!HTMLENCODE(totalHoursMints)}</b>
+                                       </div>    
+                                   </td>
+                               </tr>
+                       </table>
+                   </apex:outputPanel>
+                   
+                   <apex:outputPanel rendered="{!allPlanJsonWrapperList.size != 0}">
+                       <div class = "tabs-block-left item-view">
+                           <h3 class = "ft-left">Items - View2</h3>
+                           <!--<img class = "ft-right" src = "{!URLFOR($Resource.Images, 'plan/image-itemView2-183x24.png')}" />-->
+                       </div>
+                       <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                           <tr>
+                               <td class = "pdf-thead">Name/Title</td>
+                               <td class = "pdf-thead width3">Item Type</td>
+                               <td class = "pdf-thead width3">Approve</td>
+                               <td class = "pdf-thead width2">No<br/>Stance</td>
+                               <td class = "pdf-thead width3">Disapprove</td>
+                               <td class = "pdf-thead width2">Veto</td>
+                               <td class = "pdf-thead width1">Status</td>
+                               <td class = "pdf-thead width1">Predicted<br/>Result</td>
+                               <td class = "pdf-thead thead-right width3">Phase</td>
+                           </tr>
+                           <apex:repeat value="{!allPlanJsonWrapperList}" var="item"> 
+                               <tr> 
+                                   <td class = "pdf-tcell tcell-left"><apex:outputText value="{!item.rel.Child_Record_Name__c}" /></td>
+                                   <td class = "pdf-tcell"><apex:outputText value="{!item.rel.Child_Object_Name__c}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.approve}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.nostance}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.disapprove}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.veto}" /></td>
+                                   <td class = "pdf-tcell"><apex:outputText value="{!item.status}" /></td>
+                                   <td class = "pdf-tcell center">
+                                   		<apex:outputPanel rendered="{!IF(contains(item.predictionResult, 'Images/common/icon-approved-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-approved-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   		<apex:outputPanel rendered="{!IF(contains(item.predictionResult, 'Images/common/icon-rejected-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-rejected-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   </td>
+                                   <td class = "pdf-tcell tcell-right"><apex:outputText value="{!item.phase}" /></td>
+                               </tr>
+                           </apex:repeat>
+                       </table>
+                   </apex:outputPanel>
+                       
+                   <apex:outputPanel rendered="{!allPlanJsonWrapperList.size != 0}">
+                       <div class = "tabs-block-left item-view">
+                           <h3 class = "ft-left">Items - View3</h3>
+                           <!--<img class = "ft-right" src = "{!URLFOR($Resource.Images, 'plan/image-itemView3-183x24.png')}" />-->
+                       </div>
+                       <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                           <tr>
+                               <td class = "pdf-thead" rowspan = "2">Name/Title</td>
+                               <td class = "pdf-thead width3" rowspan = "2">Item Type</td>
+                               <td class = "pdf-thead center" colspan = "3">Stance</td>
+                               <td class = "pdf-thead width2" rowspan = "2">Veto</td>
+                               <!--<td class = "pdf-thead width2" rowspan = "2">Issue</td>-->
+                               <td class = "pdf-thead width2" rowspan = "2">Mood</td>
+                               <td class = "pdf-thead width3" rowspan = "2">Status</td>
+                               <td class = "pdf-thead thead-right width3" rowspan = "2">Phase</td>
+                           </tr>
+                           <tr>
+                               <td class = "pdf-thead width2 center">
+                                   <img src = "{!URLFOR($Resource.Images, "common/icon-approved-16x16.png")}" />
+                               </td>
+                               <td class = "pdf-thead width2 center">
+                                   <img src = "{!URLFOR($Resource.Images, "common/icon-pending-16x16.png")}" />
+                               </td>
+                               <td class = "pdf-thead width3 center">
+                                   <img src = "{!URLFOR($Resource.Images, "common/icon-rejected-16x16.png")}" />
+                               </td>
+                           </tr>
+                           <apex:repeat value="{!allPlanJsonWrapperList}" var="item"> 
+                               <tr> 
+                                   <td class = "pdf-tcell tcell-left"><apex:outputText value="{!item.rel.Child_Record_Name__c}" /></td>
+                                   <td class = "pdf-tcell"><apex:outputText value="{!item.rel.Child_Object_Name__c}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.approve}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.nostance}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.disapprove}" /></td>
+                                   <td class = "pdf-tcell center"><apex:outputText value="{!item.veto}" /></td>
+                                   <!--<td class = "pdf-tcell center">
+                                   		<apex:outputPanel rendered="{!IF(contains(item.IssueImg, 'Images/common/icon-redFlag-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-redFlag-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   	</td>-->
+                                   <td class = "pdf-tcell center">
+                                   		<apex:outputPanel rendered="{!IF(contains(item.MoodImg, 'Images/common/icon-moodAngry-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-moodAngry-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   		<apex:outputPanel rendered="{!IF(contains(item.MoodImg, 'Images/common/icon-moodSad-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-moodSad-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   		<apex:outputPanel rendered="{!IF(contains(item.MoodImg, 'Images/common/icon-moodNeutral-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-moodNeutral-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   		<apex:outputPanel rendered="{!IF(contains(item.MoodImg, 'Images/common/icon-moodNoInput-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-moodNoInput-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   		<apex:outputPanel rendered="{!IF(contains(item.MoodImg, 'Images/common/icon-moodSmile-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-moodSmile-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   		<apex:outputPanel rendered="{!IF(contains(item.MoodImg, 'Images/common/icon-moodHappy-16x16.png'),true,false)}"	>
+                                   			<img src="{!URLFOR($Resource.Images, 'common/icon-moodHappy-16x16.png')}" />
+                                   		</apex:outputPanel>
+                                   	</td>
+                                   <td class = "pdf-tcell"><apex:outputText value="{!item.status}" /></td>
+                                   <td class = "pdf-tcell tcell-right"><apex:outputText value="{!item.phase}" /></td>
+                               </tr>
+                           </apex:repeat>
+                       </table>
+                   </apex:outputPanel>
+                       
+                   <apex:outputPanel rendered="{!allPlanJsonWrapperList.size != 0}">
+                       <div class = "tabs-block-left item-view">
+                           <h3 class = "ft-left">Items - View4</h3>
+                           <!--<img class = "ft-right" src = "{!URLFOR($Resource.Images, 'plan/image-itemView4-183x24.png')}" />-->
+                       </div>
+                       <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                           <tr>
+                               <td class = "pdf-thead">Name/Title</td>
+                               <td class = "pdf-thead width3">Item Type</td>
+                               <td class = "pdf-thead-right width1" >Investment</td>
+                               <td class = "pdf-thead-right width2" style="width:20px">Direct<br/>Cost</td>
+                               <td class = "pdf-thead-right width2" style="width:20px">Revenue</td>
+                               <td class = "pdf-thead-right width1" style="width:20px">Net Present<br/>Value</td>
+                               <td class = "pdf-thead-right width3" style="width:20px">People<br/>Involved</td>
+                               <td class = "pdf-thead-right thead-right width1">Full-time<br/>Equivalent(FTE)</td>
+                           </tr>
+                           <!-- These variables are used for financial fields summation. Also initialising the variables to 0 -->
+                           <apex:variable var="investment" value="{!0}" /> 
+                           <apex:variable var="directcost" value="{!0}" /> 
+                           <apex:variable var="revenue" value="{!0}" /> 
+                           <apex:variable var="npv" value="{!0}" /> 
+                           <apex:variable var="peopleinvolved" value="{!0}" /> 
+                           <apex:variable var="fte" value="{!0}" /> 
+                           <!-- Sum of all the financial fields and diaplaying item view 4 table-->
+                           <apex:repeat value="{!allPlanJsonWrapperList}" var="item"> 
+                               <!-- Sum calculation on financial fields -->
+                               <apex:variable var="investment" value="{!IF(ISNUMBER(item.Investment),investment + Value(item.Investment), investment + 0)}"/>
+                               <apex:variable var="directcost" value="{!IF(ISNUMBER(item.DirectCost),directcost + Value(item.DirectCost), directcost + 0)}"/>
+                               <apex:variable var="revenue" value="{!IF(ISNUMBER(item.Revenue),revenue + Value(item.Revenue), revenue + 0) }"/>
+                               <apex:variable var="npv" value="{!IF(ISNUMBER(item.NetPresentValue),npv + Value(item.NetPresentValue), npv + 0)}"/>
+                               <apex:variable var="peopleinvolved" value="{!IF(ISNUMBER(item.PeopleInvolved),peopleinvolved + Value(item.PeopleInvolved), peopleinvolved + 0)}"/>
+                               <apex:variable var="fte" value="{!IF(ISNUMBER(item.FTE),fte + Value(item.FTE), fte + 0)}"/> 
+                               <tr> 
+                                   <td class = "pdf-tcell tcell-left"><apex:outputText value="{!item.rel.Child_Record_Name__c}" /></td>
+                                   <td class = "pdf-tcell"><apex:outputText value="{!item.rel.Child_Object_Name__c}" /></td>
+                                   <td class = "pdf-tcell-right"><apex:outputText value="{!item.Investment}" /></td>
+                                   <td class = "pdf-tcell-right"><apex:outputText value="{!item.DirectCost}" /></td>
+                                   <td class = "pdf-tcell-right"><apex:outputText value="{!item.Revenue}" /></td>
+                                   <td class = "pdf-tcell-right"><apex:outputText value="{!item.NetPresentValue}" /></td>
+                                   <td class = "pdf-tcell-right"><apex:outputText value="{!item.PeopleInvolved}" /></td>
+                                   <td class = "pdf-tcell-right tcell-right"><apex:outputText value="{!item.FTE}" /></td>
+                               </tr>
+                           </apex:repeat>
+                           <!-- Display the sum values  -->
+                           <tr> 
+                                <td class = "pdf-tcell tcell-left"> </td>
+                                <td class = "pdf-tcell view4Sum"> Sum: </td>
+                                <td class = "pdf-tcell-right view4Sum"> <apex:outputText value="{!investment}" />  </td>
+                                <td class = "pdf-tcell-right view4Sum"> <apex:outputText value="{!directcost}" />  </td>
+                                <td class = "pdf-tcell-right view4Sum"> <apex:outputText value="{!revenue}" />  </td>
+                                <td class = "pdf-tcell-right view4Sum"> <apex:outputText value="{!npv}" />  </td>
+                                <td class = "pdf-tcell-right view4Sum"> <apex:outputText value="{!peopleinvolved}" />  </td>
+                                <td class = "pdf-tcell-right tcell-right view4Sum"> <apex:outputText value="{!fte}" />  </td>
+                           </tr> 
+                       </table>
+                   </apex:outputPanel>
+               </div>
+               
+               
+            </apex:outputPanel>   
+           
+           <!-- Begin Plan People Tab Data -->
+           <apex:outputPanel rendered="{!peopleList.size != 0}">
+                <div class = "tabs-block border-pink">
+                   <div class = "tabs-block-left">                                        
+                       <h3>People</h3>
+                   </div>    
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr>
+                           <td class = "pdf-thead width5">Name</td>
+                           <td class = "pdf-thead width1">Role</td>
+                           <!-- The below lines are commented because the Participation Acceptance and Plan Approval columns are removed -->
+                           <!--  <td class = "pdf-thead width1">Participation<br/>Acceptance</td> -->  
+                           <!--  <td class = "pdf-thead width3">Plan<br/>Approval</td>  --->
+                           <td class = "pdf-thead thead-right">Description</td>
+                       </tr>
+                       <apex:repeat value="{!socialInputWrapperList}" var="people"> 
+                       <tr>
+                           <td class = "pdf-tcell tcell-left"><apex:outputText value="{!people.usrGrpName}" /></td>
+                           <td class = "pdf-tcell"><apex:outputField value="{!people.socInput.Role__c}" /></td>
+                           <!-- The below lines are commented because the Participation Acceptance and Plan Approval columns are removed -->
+                           <!--   <td class = "pdf-tcell center"><apex:image value="{!URLFOR($Resource.Images , 'common/icon-approved-16x16.png')}" /></td>  -->
+                           <!--   <td class = "pdf-tcell center"><apex:outputText value="" /></td> -->
+                           <td class = "pdf-tcell tcell-right"><apex:outputField value="{!people.socInput.Description__c}" /></td>
+                       </tr>
+                       </apex:repeat> 
+                   </table>
+               </div>
+           </apex:outputPanel>
+           <!-- End Plan People Tab Data -->  
+           
+           <!-- Plan Activities Tab Data -->
+           <apex:outputPanel rendered="{!OR(taskList.size != 0 , eventList.size != 0)}">
+                <div class = "tabs-block border-pink"> 
+                   <div class = "tabs-block-left">                                       
+                       <h3>Activities</h3>
+                   </div>
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr>
+                           <td class = "pdf-thead">Subject</td>
+                           <td class = "pdf-thead width3">Type</td>
+                           <td class = "pdf-thead width1">Due Date</td>
+                           <td class = "pdf-thead width1">Status</td>
+                           <td class = "pdf-thead width3">Priority</td>
+                           <td class = "pdf-thead thead-right">Assigned To</td>
+                       </tr>
+                       <apex:repeat value="{!taskList}" var="task"> 
+                           <tr>
+                               <td class = "pdf-tcell tcell-left"><apex:outputField value="{!task.Subject}" /></td>
+                               <td class = "pdf-tcell"><apex:outputText value="Task" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!task.ActivityDate}" styleClass="{!If(task.ActivityDate > TODAY(), 'color-red', 'redClass')}" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!task.Status}" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!task.Priority}" /></td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputField value="{!task.Owner.Name}" /></td>
+                           </tr>
+                       </apex:repeat> 
+                      <!--  style="{!IF(task.ActivityDate < TODAY(), "color : red;", "color : black;")}" -->
+                       <apex:repeat value="{!eventList}" var="event"> 
+                           <tr>
+                               <td class = "pdf-tcell tcell-left"><apex:outputField value="{!event.Subject}" /></td>
+                               <td class = "pdf-tcell"><apex:outputText value="Event" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!event.ActivityDate}" /></td>
+                               <td class = "pdf-tcell"></td>
+                               <td class = "pdf-tcell"></td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputField value="{!event.Owner.Name}" /></td>
+                           </tr>
+                       </apex:repeat> 
+                   </table>
+               </div>
+            </apex:outputPanel>
+                
+                <!-- Plan Relations Tab Data -->
+           <apex:outputPanel rendered="{!OR(relationList.size != 0, relationList1.size != 0)}">
+                <div class = "tabs-block border-pink"> 
+                   <div class = "tabs-block-left">                                         
+                       <h3>Relations</h3>
+                   </div>    
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr>
+                           <td class = "pdf-thead">Relation</td>
+                           <td class = "pdf-thead">Object Name</td>
+                           <td class = "pdf-thead width3">Object<br />Type</td>
+                           <td class = "pdf-thead width3">Strength</td>
+                           <td class = "pdf-thead thead-right">Notes</td>
+                       </tr>
+                       <apex:repeat value="{!relationList}" var="rel">
+                           <tr> 
+                               <td class = "pdf-tcell tcell-left"><apex:outputField value="{!rel.Child_Relation__c}"/></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!rel.Parent_Record_Name__c}"/></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!rel.Parent_Object_Name__c}"/></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!rel.Strength__c}"/></td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputField value="{!rel.Notes__c}"/></td>
+                           </tr>
+                       </apex:repeat>
+                       <apex:repeat value="{!relationList1}" var="rel1">
+                           <tr>
+                               <td class = "pdf-tcell tcell-left"><apex:outputField value="{!rel1.Parent_Relation__c}"/></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!rel1.Child_Record_Name__c}"/></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!rel1.Child_Object_Name__c}"/></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!rel1.Strength__c}"/></td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputField value="{!rel1.Notes__c}"/></td>
+                           </tr>
+                      </apex:repeat>
+                   </table>
+               </div>
+            </apex:outputPanel>
+                
+                <!-- Plan Attachment Tab Data -->
+            <apex:outputPanel rendered="{!OR(attachmentList.size != 0,noteList.size != 0)}">
+                <div class = "tabs-block border-pink"> 
+                   <div class = "tabs-block-left">                                         
+                       <h3>Notes and Attachments</h3>
+                   </div>    
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr>
+                           <td class = "pdf-thead width1">Type</td>
+                           <td class = "pdf-thead">Name</td>
+                           <td class = "pdf-thead">Body</td>
+                           <td class = "pdf-thead width4">Last Modified Date</td>
+                           <td class = "pdf-thead thead-right">Created By</td>
+                       </tr>
+                       <apex:repeat value="{!attachmentList}" var="att"> 
+                           <tr>
+                               <td class = "pdf-tcell tcell-left"><apex:outputText value="Attachment" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!att.Name}" /></td>
+                               <td class = "pdf-tcell"></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!att.LastModifiedDate}" /></td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputField value="{!att.Owner.Name}" /></td>
+                           </tr>
+                       </apex:repeat> 
+                       <apex:repeat value="{!noteList}" var="note"> 
+                           <tr> 
+                               <td class = "pdf-tcell tcell-left"><apex:outputText value="Note" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!note.Title}" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!note.Body}" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!note.LastModifiedDate}" /></td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputField value="{!note.Owner.Name}" /></td>
+                           </tr>
+                       </apex:repeat> 
+                   </table>
+               </div>
+            </apex:outputPanel>
+                
+                <!-- Plan History Tab Data -->
+           <!--
+            <apex:outputPanel rendered="{!commonHistoryList.size != 0}">
+                <div class = "tabs-block border-pink"> 
+                   <div class = "tabs-block-left">                                       
+                       <h3>History</h3>
+                   </div>    
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr>
+                           <td class = "pdf-thead width4">Date</td>
+                           <td class = "pdf-thead width1">Related To</td>
+                           <td class = "pdf-thead">User</td>
+                           <td class = "pdf-thead width4">Action</td>
+                           <td class = "pdf-thead thead-right">Comments</td>
+                       </tr>
+                       <apex:repeat value="{!commonHistoryList}" var="history"> 
+                           <tr>
+                               <td class = "pdf-tcell tcell-left"><apex:outputText value="{!history.duedate}" ></apex:outputText></td>
+                               <td class = "pdf-tcell"><apex:outputText value="{!history.relatedTo}" /></td>
+                               <td class = "pdf-tcell"><apex:outputText value="{!history.assignedTo}" /></td>
+                               <td class = "pdf-tcell"><apex:outputText value="{!history.status}" /></td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputText value="{!history.comments}" /></td>
+                           </tr>
+                       </apex:repeat> 
+                   </table>
+               </div>
+            </apex:outputPanel> -->
+            
+          <!--------- Chatter ----------->
+          <apex:outputPanel rendered="{!feedsList.size != 0}"> 
+           <div class = "tabs-block border-pink">
+               <div class = "tabs-block-left">
+                   <h3 class = "ft-left">Chatter</h3>
+               </div>
+               <apex:repeat value="{!feedsList}" var="feed">
+                   <div class = "chatter-head">                   
+                       <apex:outputText value="{!feed.createdBy}" />
+                       <span class = "date-time"><apex:outputText value="{!feed.createdDate }" /></span>                            
+                   </div>
+                   <div class = "chat-body">
+                       <apex:outputText value="{!feed.body}" /><br />
+                       <apex:outputText value="{!feed.Title}" ></apex:outputText>
+                   </div> 
+                   <apex:repeat value="{!feed.feedCommentList}"  var="comment">
+                       <div class = "chat-sub"> 
+                           <div class = "chatter-subhead">                   
+                               {!comment.CreatedBy}
+                               <span class = "date-time"><apex:outputText value="{!feed.createdDate }" /></span>                            
+                           </div>                                                         
+                           <ul class = "sub-comment">
+                               <li>{!comment.body}</li>
+                           </ul>                       
+                       </div> 
+                   </apex:repeat>                 
+               </apex:repeat>     
+           </div> 
+          </apex:outputPanel>    
+           <!--------- Chatter ----------->
+           
+       </div>
+    </body>
+</apex:page>

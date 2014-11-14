@@ -1,0 +1,129 @@
+<apex:page sidebar="false" id="workBenchHomePage" tabstyle="workbench__tab" controller="WorkbenchHomePage">
+    <apex:stylesheet value="{!URLFOR($Resource.JqueryUITabs, '/tabs/plan-jquery-ui.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/>   
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jqueryui-1.9.1.js')}"/>
+    
+    <apex:stylesheet value="{!$Page.CommonStyles}" />
+    <apex:stylesheet value="{!$Page.PlanStyles}" />
+    <apex:stylesheet value="{!$Page.OverrideStyles}" />
+    <apex:stylesheet value="{!$Page.WorkbenchStyles}" />     
+    
+    <!-- Kendo Library -->
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/>
+     <!--<apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo-theme.css')}"/>    -->     
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.default.min.css')}"/>
+    
+   <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/kendo.all.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetroNewLibrary, '/kendoMetroNewLibrary/kendo.all.min.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/>
+    <!--<apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/jquery.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/kendo.all.min.js')}"/>-->
+    
+    <apex:includeScript value="{!URLFOR($Resource.TokenInput, '/TokenInput/Tokeninputjavascript1.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.TokenInput, '/TokenInput/TokenInput.css')}"/>
+     
+    <!--------- FT Scripts ----------->
+    <apex:includeScript value="{!$Page.CommonScripts}" />
+    <head>
+        <c:WalkMeAndSupportButton />
+        <!--<script type="text/javascript">(function() {var walkme = document.createElement('script'); walkme.type = 'text/javascript'; walkme.async = true; walkme.src = 'https://d3b3ehuo35wzeh.cloudfront.net/users/3d4e7e29fbce4945a03495f309d755c1/test/walkme_3d4e7e29fbce4945a03495f309d755c1_https.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(walkme, s);})();</script>-->
+    
+    <style>
+        ul.token-input-list{
+            width: 200px !important;
+        }
+        #tabstask .ui-tabs-nav > .ui-state-default a {
+        	border:none !important;
+        }
+        #tabstask .ui-tabs-nav .ui-state-default{
+        	padding-bottom: 1px !important;
+        }
+        #tabstask .ui-tabs-nav > .ui-state-active{
+        	border-bottom: 1px solid #fff !important;
+        }	
+    </style>
+    <script>
+       var topicloaded = false;
+        $(function (){
+            changeFooterText();
+        });
+        
+        // script for google analytics
+     var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-34907619-2']);
+      _gaq.push(['_trackPageview']);
+    
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    </head>
+    <apex:outputPanel id="filterPanelComponent">
+        <c:WorkbenchFilter />
+    </apex:outputPanel>
+    
+    <div id="planWorkbench" style="display:none" >
+	    <table class = "workbench-plan-tbl" cellspacing = "0" cellpadding = "0">
+	        <tr>
+	            <td class = "workbench-plan-tdleft">
+	                <apex:form id="planListForm">
+	                    <c:WorkbenchPlanList />
+	                </apex:form>
+	                <apex:form id="planItemListForm" >
+	                    <c:WorkbenchPlanItemList />  
+	                </apex:form>  
+	             </td>
+	             <td class = "workbench-plan-tdright">
+	                <c:WorkbenchPlanView id="workBenchPlanViewComponent" />
+	            </td>
+	        </tr>
+	    </table>
+    </div>
+    <div id="decisionWorkbench" style="display:none">
+        <c:WorkbenchDecisionView />       
+    </div>
+    <div id="taskWorkbench" style="display:none">
+        <c:WorkbenchTaskView id="taskWorkBenchComponent" />         
+    </div>
+    <div id="topicWorkBench" style="display:none">
+	    <apex:outputPanel id="topicview">
+	    	<apex:outputPanel rendered="{!isTopic}">
+	      		<c:WorkbenchTopicsView showTopic="{!isTopic}"/>
+	   		</apex:outputPanel> 
+	   </apex:outputPanel>
+    </div>
+    <div class = "preloader"></div>     
+    <div class = "bg-fade"></div>
+    <script>
+        var urlParameterVal = getUrlVars()["gotoplan"]; //getUrlVars('gotoplan');
+        //alert(urlParameterVal);
+        if(urlParameterVal == null){
+            
+            changedObject('Decision');
+        }else{
+            changedObject('Plan');  
+        }
+        if (history && history.pushState){
+             history.pushState(null, null, '/apex/WorkbenchHomePage');
+        }
+        function getUrlVars() {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                vars[key] = value;
+            });
+            return vars;
+        }
+        function hideFade(){
+        	$('.preloader').css('display','none');
+        	$('.bg-fade').css('display','none');
+        }
+    </script>
+     <apex:form >
+     	 <apex:actionFunction name="showTopic" rerender="topicview" action="{!displayType}"  oncomplete="topicloaded = true;hideFade();"/>
+     </apex:form>	     
+</apex:page>

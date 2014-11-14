@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>29.0</apiVersion>
+    <description>Javascript for Decision object. This is used in Force.com UI</description>
+    <label>DecisionScriptsManju</label>
+</ApexPage>

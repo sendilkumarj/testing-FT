@@ -1,0 +1,259 @@
+<apex:page contentType="text/css" showHeader="false" cache="false" sidebar="false">
+ 	body {
+          margin:50px;
+        }
+       .strat_container{
+         width:100%;
+         height:100%;
+       }
+       .strat_bottom_container
+       {
+            height:50%;
+            min-width:1100px;
+            margin-top:20px;
+            padding-top:10px;
+       }
+       .strat_top_container{
+          height:50%;
+          width:100%;
+          margin-top:20px;
+          margin-left:30px;
+         
+       }
+       .selected_arranged_topics{
+        width:400px;
+        height:405px;
+        min-height:500px;
+        float:left;
+        margin-right: 30px;
+       }
+       .selected_topics
+       {
+         width:400px;
+         height:405px;
+         min-height:500px;
+         float:left;
+         margin-right: 32px;
+         
+       }
+        .selected_arranged_topics_head{
+        width:400px;
+        float:left;
+        margin-bottom:2px;
+       }
+       .selected_topics_head
+       {
+         width:400px;
+         float:left;
+         margin-bottom: 5px;
+       }
+       .topic_box_border{
+        border:solid 1px black;
+        padding:15px;
+         height:405px;
+         overflow-y:auto;
+         margin-top: 7px;
+       }
+       .delete-link{
+            background:#ffffff url({!URLFOR($Resource.Images,'common/icon-delete-16x16.png')}) no-repeat right top;
+            width:16px;
+            height:16px;  
+            white-space:pre;   
+            text-decoration:none; 
+       }
+       .delete-link-Org{
+            background:#ffffff url({!URLFOR($Resource.Images,'common/icon-delete-16x16.png')}) no-repeat right top;
+            width:16px;
+            height:16px;  
+            white-space:pre;
+            text-decoration:none;    
+       }
+       #kendoTopics{
+        width:830px;
+        margin-top:15px;
+       }
+       .addSaveBtn, .addNewTopicBtn, .saveCloseBtn, .cancelCloseBtn{
+           margin-top:15px;
+       }
+       .addSaveBtn{
+        margin-bottom:30px;
+       }
+       .addRowBtn {
+           margin-top:18px;
+        }
+        
+        .cancelCloseBtn{
+            float:left;
+            margin-left: 20px;
+        }
+        .add-topic-pop{
+            position:absolute;
+            z-index: 10010;
+            top:100px;
+            left:400px;
+            clear:both;
+            width:600px;
+            min-height:300px;
+            background: #fff;
+            border:2px solid #888;
+            display:none;
+            max-height:400px;
+        }
+        .add-topic-popup-middle{
+            width:600px;
+            max-height:300px;
+            background: #fff;
+            overflow-y:auto;
+        }
+        .add-topic-header{
+            background: #CEECF5;
+            width:98%;
+            height:30px;
+            margin:5px;
+            cursor:move;
+            
+        }
+         .add-topic-header span{
+             padding: 5px 0px 0px 8px;
+             font-size: 15px;
+             color: #999;
+             position: absolute;
+         }
+         .inputFields{
+             margin: 25px 0px 0px 25px;
+         }
+         div.k-treeview{
+            border-width: 0;
+            background: 0;
+            overflow: hidden;
+            white-space: normal !important;
+         }
+         .searchLables{
+            font-family: Arial,Helvetica,sans-serif;
+            color: #222;
+            font-size:12px;
+            margin: 10px 10px 10px 0px;
+            
+         }
+         .add-topic-descriptionLabel, .add-topic-formLabels{
+             margin: 10px 0px 5px 0px;
+         }
+         .page-head{
+            margin-top:25px;
+         }
+         .add-topic-formButtons{
+            margin:15px 0px 30px 25px;
+         }
+         .strat_bottom_container{
+         	margin-top:30px;
+         }
+         .done{
+            margin: auto !important;
+         }
+         #topicName{
+            margin-left: 3px;
+            width:265px !important;
+         }
+         .descriptionArea textarea{
+            max-width:500px;
+         }
+         .k-bot a{
+            text-decoration:none !important;
+         }
+         #topicCollector
+         {
+          min-height:405px;
+         }
+         #topicOrganiser
+         {
+          min-height:405px;
+         }
+         .rowColor{
+            color: #2e2e2e;
+         }
+         .rowSubColor {
+            color: #2e2e2e;
+         }
+         .k-grid td:nth-child(2)
+         {
+          vertical-align:top;
+         }
+         .k-state-focused{
+            background-color: #E9E5E3 !important;
+         }
+         .k-state-hover, .k-state-hover:hover {
+            background-color: #E9E5E3 !important;
+         }
+         #addTopic-header{
+            padding: 10px 0 0 10px;
+            font-weight: bold;
+            color: #222;
+         }
+         .topicHeaderText{
+         	font-size: 1.6em;
+			font-weight: normal;
+			color: #333;
+         }
+         .topicSubHeaderText{
+         	font-size: 1em;
+			font-weight: normal;
+			color: #333;
+			margin-left: 0.2em;
+			margin-top: 0.6em;
+			font-weight: bold;
+         }
+         .topicsIcon{
+         	font-size: 1.8em;
+			margin: 0em 0.2em;
+			color: rgb(160, 160, 160)
+         }
+         .greyBand{
+         	min-width: 1100px;
+			height: 30px;
+			background: #F0F0F0;
+			background-color: #F0F0F0;
+         }
+		#decisionSearch .k-textbox input {
+			height: 1.65em;
+			line-height: 1.65em;
+			padding: .177em 0;
+			text-indent: .33em;
+			margin: 0;
+		}
+		#decisionSearch .k-textbox.k-space-right{
+			padding-right: 2.2em;
+			height: 100%;
+			width: 14.5em;
+		}
+		#decisionSearch .k-textbox{
+			background-image: none,linear-gradient(to bottom,rgba(255,255,255,.6) 0,rgba(255,255,255,.0) 100%);
+			background-position: 50% 50%;
+			background-color: #e3e3e3;
+			outline: 0;
+			padding: 2px .3em;
+			line-height: 1.6em;
+			display: inline-block;
+			vertical-align: middle;
+		}
+		.k-state-selected, .k-list>.k-state-selected, .k-list>.k-state-focused, .k-panelbar .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover{
+         	background-color: #999;
+			border-color: #999;
+         }
+         .k-treeview .k-in.k-state-hover, .k-treeview .k-in.k-state-selected, .k-treeview .k-in.k-state-focused{
+         	padding: 5px 4px 0px 3px;
+         	border-color: #d9d9d9;
+         }
+         .k-treeview .k-state-selected, .k-treeview .k-state-hover{
+         	-webkit-border-radius: 0px;
+			border-radius: 0px;
+         }
+         .k-treeview span.k-in{
+         	background: #d9d9d9;
+			min-height: 2.0em;
+			width: 10em;
+         }
+         .k-treeview .k-in{
+         	padding: 5px 4px 0px 3px;
+         }
+         
+</apex:page>

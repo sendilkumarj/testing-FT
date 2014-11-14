@@ -1,0 +1,607 @@
+<apex:page standardController="Decision__c" extensions="DecisionPDFGenerate" renderAs="pdf" title="Fingertip">
+
+<html>
+    <head>
+       
+     <style>
+        body{
+            font-family:Arial,Helvetica,sans-serif !important;
+            font-size: 12px !important;
+        }
+        
+        .pdf-wrapper{
+            margin-top: 10px 0 0 0;
+        }
+        table td{
+            vertical-align: top;
+        }
+        .tabs-block{
+             margin-bottom: 15px;
+             padding: 10px;
+             background-color: #F8F8F8;
+             border-bottom: 1px solid #EAEAEA;
+             border-left: 1px solid #EAEAEA;     
+             border-right: 1px solid #EAEAEA;
+             border-top-width: 3px;
+             border-top-style: solid;
+             border-radius: 4px;
+             height: auto;
+             overflow: hidden;       
+         }
+         .tabs-block-head{
+             margin-bottom: 10px;
+             height: auto;
+             overflow: hidden;
+         }
+         .border-blue{
+             border-top-color: #333333;
+         }
+         .tabs-block-left h3{
+             font-size: 15px;
+         }
+         
+         .tabs-gen-block{
+             padding: 10px 0 0 0;
+             border-top-width: 2px;
+             border-top-style: solid; 
+             height: auto;
+             overflow: hidden;
+         }
+         .tabs-gen-block h3{
+             font-size: 13px;
+             color: #222;
+         }
+         .gen-block-tbl{
+             width: 100%;
+             margin-top: 10px;
+         }
+         .gen-block-cell{
+             padding-top: 5px;
+             padding-bottom: 5px;
+             border-bottom: 1px solid #ddd;
+         }         
+         .cell-left{
+             padding-right: 15px;
+             width: 23%;
+             text-align: right;
+             vertical-align: top;
+             color: #4A4A56;
+             font-weight: bold;
+             font-size: 11px;
+         }
+         .cell-right{
+             width: 27%
+         }
+         .fin-cell{
+             padding-top: 5px;
+             padding-bottom: 5px;
+         }
+         .fin-cell-btm{
+             padding-top: 5px;
+             padding-bottom: 5px;
+             border-bottom: 1px dashed #ddd;
+         }
+         .fin-cell-left{
+             padding-right: 15px;
+             width: 15%;
+             text-align: right;
+             vertical-align: top;
+             color: #4A4A56;
+             font-weight: bold;
+             font-size: 11px;
+         }
+         .fin-cell-right{
+             width: 35%
+         }                  
+         .pdf-thead{
+             padding: 7px 0 7px 5px;
+             border-top: 1px solid #ccc;
+             border-bottom: 1px solid #ccc;
+             border-left: 1px solid #ccc;
+             background: #eee;
+             font-weight: bold;
+             text-align: left;
+             vertical-align: middle;
+         } 
+         .thead-right{
+             border-right: 1px solid #ccc;
+         } 
+         .pdf-tcell{
+             padding: 5px 0 5px 5px;
+             border-bottom: 1px solid #ccc;
+             background: #fff;
+             text-align: left;
+         } 
+         .tcell-left{
+             border-left: 1px solid #ccc;
+         } 
+         .tcell-right{
+             border-right: 1px solid #ccc;
+         }  
+         .width1{
+             width: 80px;
+         }  
+         .width2{
+             width: 45px;
+         } 
+         .width3{
+             width: 60px;
+         }
+         .width4{
+             width: 130px;
+         }         
+         .user-min{
+             min-width: 100px;
+         }
+         .center{
+             text-align: center !important;
+         }
+         @page {
+            @bottom-right {
+                content : element(footer);
+            }
+         }
+         .footer {
+            margin: 0 9px; 
+            padding: 10px 0 0 0; 
+            position : running(footer) ;
+            font-weight: bold;
+            color: #999;
+            border-top: 1px dotted #999; 
+         }
+         .main-update{
+             margin: 0;
+             padding: 0;
+         }
+         .sub-comment{
+             margin: 0;
+             padding: 0 0 0 25px;
+         }
+         .sub-comment li{
+             margin:0;
+             padding-bottom: 5px;
+             color: #666;             
+         }
+         .chatter-head{
+             margin: 0;
+             padding: 5px 10px 10px 10px;
+             background: #eee;
+             border-top: 1px solid #ccc;
+             font-weight: bold;             
+         }
+         .date-time{
+             font-weight: normal;
+             color: #999;
+             float: right;
+             font-size: 11px;
+         }
+         .chat-body{
+             padding: 0 10px 5px 10px;
+             background: #eee;
+             border-bottom: 1px solid #f4f4f4;
+         }
+         .chat-sub{
+             padding: 5px 10px;
+             border-top: 1px solid #ddd;
+             background: #e6e6e6;
+         }
+         .chatter-subhead{
+             padding: 0 0 5px 15px;
+             font-weight: bold;
+         }
+     </style>   
+        
+        
+    </head>
+    <body>
+    
+        <div class="footer" >
+            Decision PDF requested by <apex:outputText value=" {!$User.FirstName}" /> <apex:outputText value=" {!$User.LastName}" /> at <apex:outputText value=" {!currentDateTime}" />
+        </div>
+       <!--------- Content -----------> 
+       <div class = "pdf-wrapper">
+               <!--------- General -----------> 
+           <div class = "tabs-block border-blue">               
+               
+               <div class = "tabs-block-left">
+                   <h3 class = "left">Decision: <apex:outputField value=" {!decision.Title__c}" /></h3>
+               </div>
+               
+                   <!-- Decision General Tab Data -->
+                   
+               <div class = "tabs-gen-block border-blue">                                        
+                   <h3>General</h3>
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr> 
+                           <td class = "cell-left gen-block-cell">Description</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!decision.Problem_Idea_Advice__c}" /> </td>
+                           
+                       </tr>
+                       <tr>
+                           <td class = "cell-left gen-block-cell">Decision</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!decision.Decision_Taken__c}"/></td>
+                           
+                       </tr>
+                       <tr>
+                           <td class = "cell-left gen-block-cell">Private</td>
+                           <td class = "gen-block-cell" colspan = "3"><apex:outputField value="{!decision.Private__c}"/> </td>
+                       </tr>
+                   </table> 
+               </div>
+                   <!----------- End Decision General Tab Data ------------>
+                   <!----------- Classification ------------>
+               <div class = "tabs-gen-block border-blue">                                        
+                   <h3>Classification</h3>
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr>
+                            <td class = "cell-left gen-block-cell">Decision Type</td>
+                            <td class = "cell-right gen-block-cell"><apex:outputField value="{!decision.Decision_Type__c}"/> </td>
+                            
+                            <td class = "cell-left gen-block-cell">Decision Approach</td>
+                            <td class = "cell-right gen-block-cell"><apex:outputField value="{!decision.Decision_Approach__c}"/> </td>
+                            
+                       </tr>
+                       <tr>
+                            <td class = "cell-left gen-block-cell">Category</td>
+                            <td class = "cell-right gen-block-cell"><apex:outputField value="{!decision.Category__c}"/></td>
+                            
+                            <td class = "cell-left gen-block-cell"><apex:outputLabel value="Decision Making Style" /></td>
+                            <td class = "cell-right gen-block-cell"><apex:outputField value="{!decision.Decision_Making_Style__c}"/></td>                            
+                       </tr>
+                       <tr>
+                            <td class = "cell-left gen-block-cell">Priority</td>
+                            <td class = "cell-right gen-block-cell"><apex:outputField value="{!decision.Priority__c}"/></td>             
+                            <td class = "cell-left gen-block-cell"><apex:outputLabel value="Topics" /></td>
+                            <td class = "cell-right gen-block-cell"><apex:outputText value="{!selectedTopics}"/></td>               
+                       </tr>
+                   </table> 
+               </div> 
+                   <!----------- End Classification ------------>
+                   <!----------- Financials ------------>
+               <div class = "tabs-gen-block border-blue"> 
+                  <div class = "tabs-gen-head"> 
+                      <h3 class = "left">Financials</h3>
+                  </div>    
+                  <div id = "financials-view"> 
+                      <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">  
+                       <tr> 
+                            <td><b>Estimated</b></td>
+                            <td> </td> 
+                            <td><b>Actual</b></td> 
+                            <td> </td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell">Investment</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Estimated_Investment__c}"/> </td>
+                            <td class = "fin-cell-left fin-cell">Investment</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Actual_Investment__c}"/> </td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Estimated_Investment_Desc__c}" /></td>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Actual_Investment_Desc__c}" /></td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell">Direct Cost</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Estimated_Direct_Cost__c}"/> </td>
+                            <td class = "fin-cell-left fin-cell">Direct Cost</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Actual_Direct_Cost__c}"/> </td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Estimated_Direct_Cost_Desc__c}" /></td>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Actual_Direct_Cost_Desc__c}" /></td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell">Revenue</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Estimated_Revenue__c}" /> </td>
+                            <td class = "fin-cell-left fin-cell">Revenue</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Actual_Revenue__c}" /></td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Estimated_Revenue_Desc__c}" /></td>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Actual_Revenue_Desc__c}" /></td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell">NPV</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Estimated_Net_Present_Value__c}"/> </td>
+                            <td class = "fin-cell-left fin-cell">NPV</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Actual_Net_Present_Value__c}"/> </td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Estimated_Net_Present_Value_Desc__c}" /></td>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Actual_Net_Present_Value_Desc__c}" /></td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell">People Involved</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Estimated_People_Involved__c}"/> </td>
+                            <td class = "fin-cell-left fin-cell">People Involved</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Actual_People_Involved__c}"/> </td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Estimated_People_Involved_Desc__c}" /></td>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Actual_People_Involved_Desc__c}" /></td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell">FTE</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Estimated_Full_time_Equivalent_FTE__c}"/> </td>
+                            <td class = "fin-cell-left fin-cell">FTE</td>
+                            <td class = "fin-cell-right fin-cell"><apex:outputField value="{!decision.Actual_Full_time_Equivalent_FTE__c}"/> </td>
+                       </tr>
+                       <tr>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Estimated_Full_time_Equivalent_Desc__c}" /></td>
+                            <td class = "fin-cell-left fin-cell-btm"></td>
+                            <td class = "fin-cell-right fin-cell-btm"><apex:outputField value="{!decision.Actual_Full_time_Equivalent_Desc__c}" /></td>
+                       </tr>
+                    </table>
+                  </div>   
+              </div>
+                  <!----------- End Financials ------------>
+                  <!----------- Timing ------------>
+              <div class = "tabs-gen-block border-blue"> 
+                  <div class = "tabs-gen-head"> 
+                      <h3 class = "left">Timing</h3>
+                  </div>
+                  <div>
+                    <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                        <tr>
+                            <td class = "cell-left gen-block-cell">Due Date</td>
+                            <td class = "cell-right gen-block-cell"><apex:outputField value="{!decision.Due_Date__c}" /></td>
+                            <td class = "cell-left gen-block-cell">&nbsp;</td>
+                            <td class = "cell-right gen-block-cell">&nbsp;</td>
+                        </tr>
+                    </table>
+                  </div>   
+              </div>  
+              <!----------- End Timing ------------>                                   
+           </div>    
+           <!--------- End General -----------> 
+           
+                 <!----------- Timing ------------> 
+           <apex:outputPanel rendered="{!timingList.size != 0}">
+             <div class = "tabs-block border-blue">                                        
+               <div class = "tabs-block-left">
+                   <h3 class = "left">Timing</h3>
+               </div>
+                <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                 <tr>
+                     <td class = "pdf-thead width3">Phase</td>
+                     <td class = "pdf-thead width1">Planned Start</td>
+                     <td class = "pdf-thead width1">Planned End</td>
+                     <td class = "pdf-thead width1">Actual <br/>Start Time</td>
+                     <td class = "pdf-thead width1">Actual<br/>End Time</td>
+                     <td class = "pdf-thead width1">Elapsed Time</td>
+                     <td class = "pdf-thead thead-right">Comment</td>
+                 </tr>
+                 <apex:repeat value="{!timingList}" var="time">
+                     <tr> 
+                         <td class = "pdf-tcell tcell-left"><apex:outputField value="{!time.Stage__c}" /></td>
+                         <td class = "pdf-tcell"><apex:outputField value="{!time.Start_Date_Time__c}" /></td>
+                         <td class = "pdf-tcell"><apex:outputField value="{!time.End_Date_Time__c}"/></td>
+                         <td class = "pdf-tcell"><apex:outputField value="{!time.Actual_Start_Date__c}"/></td>
+                         <td class = "pdf-tcell"><apex:outputField value="{!time.Actual_End_Date__c}"/></td>
+                         <td class = "pdf-tcell"><apex:outputField value="{!time.Elapsed_Time__c}"/></td>
+                         <td class = "pdf-tcell tcell-right"><apex:outputField value="{!time.Comments__c}"/></td>
+                     </tr>
+                 </apex:repeat>
+             </table>
+             </div> 
+            </apex:outputPanel>
+                 <!----------- End Timing ------------>             
+               
+               <!--------- People ----------->
+           <apex:outputPanel rendered="{!socialInputWrapperList.size != 0}">
+               <div class = "tabs-block border-blue">
+                   <div class = "tabs-block-left">
+                       <h3 class = "left">People</h3>
+                   </div>
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">
+                       <tr>
+                           <td class = "pdf-thead">Name</td>
+                           <td class = "pdf-thead width1">Role</td>
+                           <td class = "pdf-thead width1">Role<br />Acceptance</td>
+                           <td class = "pdf-thead width3">Stance</td>
+                           <td class = "pdf-thead width1">Backup for<br />Accountable</td>
+                           <td class = "pdf-thead thead-right width2">Veto<br />Rights</td>
+                       </tr>
+                       <apex:repeat value="{!socialInputWrapperList}" var="si">
+                           <tr>
+                               <td class = "pdf-tcell tcell-left"><apex:outputText value="{!si.usrGrpName}" /></td>
+                               <td class = "pdf-tcell"><apex:outputField value="{!si.socInput.Role__c}" /></td>
+                               <td class = "pdf-tcell center"><apex:image value="{!IF(si.socInput.Role_Acceptance_Status__c == 'Approved/Accepted', URLFOR($Resource.Images , 'common/icon-approved-16x16.png'), IF(si.socInput.Role_Acceptance_Status__c == 'Not Accepted',URLFOR($Resource.Images, 'common/icon-rejected-16x16.png'),IF(si.socInput.Role_Acceptance_Status__c == 'Pending Approval',URLFOR($Resource.Images , 'common/icon-pending-16x16.png'),URLFOR($Resource.Images , 'common/icon-null-16x16.png')) ))}" /></td>
+                               <td class = "pdf-tcell center"> <apex:image value="{!IF(si.socInput.Stance_Approval_Status__c == 'Approved', URLFOR($Resource.Images , 'common/icon-approved-16x16.png'), IF(si.socInput.Stance_Approval_Status__c == 'Rejected' ,URLFOR($Resource.Images, 'common/icon-rejected-16x16.png'),IF(si.socInput.Stance_Approval_Status__c == 'Pending Approval',URLFOR($Resource.Images , 'common/icon-pending-16x16.png'),URLFOR($Resource.Images , 'common/icon-null-16x16.png')) ))}" /></td>
+                               <td class = "pdf-tcell center"><apex:image value="{!IF(si.socInput.Backup_for_Accountable__c == true, URLFOR($Resource.Images , 'common/icon-checked-16x16.png'), URLFOR($Resource.Images , 'common/icon-unchecked-16x16.png'))}"/></td>
+                               <td class = "pdf-tcell tcell-right center"><apex:image value="{!IF(si.socInput.Veto_Rights__c == true, URLFOR($Resource.Images , 'common/icon-checked-16x16.png'), URLFOR($Resource.Images , 'common/icon-unchecked-16x16.png'))}"/></td>
+                           </tr>
+                       </apex:repeat>
+                       
+                   </table>
+               </div>  
+          </apex:outputPanel>  
+               <!--------- End People -----------> 
+               <!--------- Tasks ----------->
+           <apex:outputPanel rendered="{!OR(taskEventList.size != 0,taskEventHistoryList.size != 0)}">
+               <div class = "tabs-block border-blue">
+                   <div class = "tabs-block-left">
+                       <h3 class = "left">Activities</h3>
+                   </div>
+                   <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">                   
+                       <tr>
+                           <td class = "pdf-thead">Subject</td>
+                           <td class = "pdf-thead width3">Type</td>
+                           <td class = "pdf-thead width1">Due Date</td>
+                           <td class = "pdf-thead width1">Status</td>
+                           <td class = "pdf-thead width2">Priority</td>
+                           <td class = "pdf-thead thead-right">Created By</td>
+                       </tr>
+                       <apex:repeat value="{!taskEventList}" var="tel">
+                           <tr>
+                              <td class = "pdf-tcell tcell-left"><apex:outputText value="{!tel.subject}" /> </td>
+                              <td class = "pdf-tcell"><apex:outputText value="{!IF(tel.isTask == 'true','Task','Event')}" /></td>
+                              <td class = "pdf-tcell"><apex:outputText value="{!tel.dueDate}" /> </td>
+                              <td class = "pdf-tcell"><apex:outputText value="{!tel.status}" /> </td>
+                              <td class = "pdf-tcell"><apex:outputText value="{!tel.priority}" /> </td>
+                              <td class = "pdf-tcell tcell-right"><apex:outputText value="{!tel.assignedTo}" /> </td>
+                           </tr>
+                       </apex:repeat>
+                       <apex:repeat value="{!taskEventHistoryList}" var="tehl">
+                           <tr>
+                               <td class = "pdf-tcell tcell-left"><apex:outputText value="{!tehl.subject}" /> </td>
+                               <td class = "pdf-tcell"><apex:outputText value="{!IF(tehl.isTask == 'true','Task','Event')}" /></td>
+                               <td class = "pdf-tcell"><apex:outputText value="{!tehl.dueDate}" /> </td>
+                               <td class = "pdf-tcell"><apex:outputText value="{!tehl.status}" /> </td>
+                               <td class = "pdf-tcell"><apex:outputText value="{!tehl.priority}" /> </td>
+                               <td class = "pdf-tcell tcell-right"><apex:outputText value="{!tehl.assignedTo}" /> </td>
+                           </tr>
+                      </apex:repeat>
+                   </table>
+               </div>
+           </apex:outputPanel>          
+               <!--------- End Activities ----------->
+               <!--------- Relations ----------->
+          <apex:outputPanel rendered="{!OR(relationList.size != 0,relationList1.size != 0)}">
+           <div class = "tabs-block border-blue">
+               <div class = "tabs-block-left">
+                   <h3 class = "left">Relations</h3>
+               </div>
+               <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">                   
+                   <tr>
+                       <td class = "pdf-thead width1">Relation</td>
+                       <td class = "pdf-thead">Object Name</td>
+                       <td class = "pdf-thead width1">Object Type</td>
+                       <td class = "pdf-thead width1">Strength</td>
+                       <td class = "pdf-thead thead-right">Notes</td>
+                   </tr>
+                   <apex:repeat value="{!relationList}" var="rel">
+                   <tr>
+                       <td class = "pdf-tcell tcell-left"><apex:outputField value="{!rel.Child_Relation__c}"/></td>
+                       <td class = "pdf-tcell"><apex:outputField value="{!rel.Parent_Record_Name__c}"/></td>
+                       <td class = "pdf-tcell"><apex:outputField value="{!rel.Parent_Object_Name__c}"/></td>
+                       <td class = "pdf-tcell"><apex:outputField value="{!rel.Strength__c}"/></td>
+                       <td class = "pdf-tcell tcell-right"><apex:outputField value="{!rel.Notes__c}"/></td>
+                   </tr>
+                   </apex:repeat>
+                   <apex:repeat value="{!relationList1}" var="rel1">
+                       <tr>
+                           <td class = "pdf-tcell tcell-left"><apex:outputField value="{!rel1.Parent_Relation__c}"/></td>
+                           <td class = "pdf-tcell"><apex:outputField value="{!rel1.Child_Record_Name__c}"/></td>
+                           <td class = "pdf-tcell"><apex:outputField value="{!rel1.Child_Object_Name__c}"/></td>
+                           <td class = "pdf-tcell"><apex:outputField value="{!rel1.Strength__c}"/></td>
+                           <td class = "pdf-tcell tcell-right"><apex:outputField value="{!rel1.Notes__c}"/></td>
+                       </tr>
+                   </apex:repeat>  
+               </table>
+           </div>
+         </apex:outputPanel>
+               <!--------- End Relations ----------->
+            <!--------- Attachments ----------->
+          <apex:outputPanel rendered="{!OR(attachmentList.size != 0,noteList.size != 0)}">  
+           <div class = "tabs-block border-blue">
+               <div class = "tabs-block-left">
+                   <h3 class = "left">Notes and Attachments</h3>
+               </div>
+               <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">                   
+                   <tr>
+                       <td class = "pdf-thead width1">Type</td>
+                       <td class = "pdf-thead">Name</td>
+                       <td class = "pdf-thead">Body</td>
+                       <td class = "pdf-thead width1">Last Modified</td>
+                       <td class = "pdf-thead thead-right">Created By</td>
+                   </tr>
+                   <apex:repeat value="{!attachmentList}" var="att">
+                      <tr>
+                         <td class = "pdf-tcell tcell-left"><apex:outputText value="Attachment" /> </td>
+                         <td class = "pdf-tcell"><apex:outputField value="{!att.Name}" /></td>
+                         <td class = "pdf-tcell"></td>
+                         <td class = "pdf-tcell"><apex:outputField value="{!att.LastModifiedDate}" /> </td>
+                         <td class = "pdf-tcell tcell-right"><apex:outputField value="{!att.owner.Name}" /> </td>
+                      </tr>
+                   </apex:repeat>
+                   <apex:repeat value="{!noteList}" var="note">
+                       <tr>
+                           <td class = "pdf-tcell tcell-left"><apex:outputText value="Note" /> </td>
+                           <td class = "pdf-tcell"><apex:outputField value="{!note.Title}" /></td>
+                           <td class = "pdf-tcell"><apex:outputField value="{!note.Body}" /></td>
+                           <td class = "pdf-tcell"><apex:outputField value="{!note.LastModifiedDate}" /> </td>
+                           <td class = "pdf-tcell tcell-right"><apex:outputField value="{!note.Owner.Name}" /> </td>
+                       </tr>
+                  </apex:repeat>
+               </table>
+           </div> 
+         </apex:outputPanel>    
+           <!---------End Attachments ----------->  
+           
+          
+           
+            <!--------- History ----------->
+         <apex:outputPanel rendered="{!commonHistoryList.size != 0}">
+           <div class = "tabs-block border-blue">
+               <div class = "tabs-block-left">
+                   <h3 class = "left">History</h3>
+               </div>
+               <table cellspacing = "0" cellpadding = "0" class = "gen-block-tbl">                   
+                   <tr>
+                       <td class = "pdf-thead width4">Date</td>
+                       <td class = "pdf-thead width1">Related To</td>
+                       <td class = "pdf-thead">User</td>
+                       <td class = "pdf-thead width4">Action</td>
+                       <td class = "pdf-thead thead-right">Comments</td>
+                   </tr>
+                   <apex:repeat value="{!commonHistoryList}" var="history">
+                       <tr>
+                          <td class = "pdf-tcell tcell-left"><apex:outputText value="{!history.duedate}" ></apex:outputText></td>
+                          <td class = "pdf-tcell"><apex:outputText value="{!history.relatedTo}" /></td>
+                          <td class = "pdf-tcell"><apex:outputText value="{!history.assignedTo}" /> </td>
+                          <td class = "pdf-tcell"><apex:outputText value="{!history.status}" /> </td>
+                          <td class = "pdf-tcell tcell-right"><apex:outputText value="{!history.comments}" /> </td>
+                       </tr>
+                   </apex:repeat>
+                   
+               </table>
+           </div> 
+          </apex:outputPanel>   
+           <!---------End History ----------->   
+          <apex:outputPanel rendered="{!feedsList.size != 0}"> 
+           <div class = "tabs-block border-blue">
+               <div class = "tabs-block-left">
+                   <h3 class = "left">Chatter</h3>
+               </div>
+               <apex:repeat value="{!feedsList}" var="feed">
+                   <div class = "chatter-head">                   
+                       <apex:outputText value="{!feed.createdBy}" />
+                       <span class = "date-time"><apex:outputText value="{!feed.createdDate }" /></span>                            
+                   </div>
+                   <div class = "chat-body">
+                       <apex:outputText value="{!feed.body}" /><br />
+<!--                       <apex:outputText value="{!feed.Title}" ></apex:outputText>-->
+                   </div> 
+                   <apex:repeat value="{!feed.feedCommentList}"  var="comment">
+                       <div class = "chat-sub"> 
+                           <div class = "chatter-subhead">                   
+                               {!comment.createdBy}
+                               <span class = "date-time"><apex:outputText value="{!comment.createdDate}" /></span>                            
+                           </div>                                                         
+                           <ul class = "sub-comment" style="white-space: pre;">
+                               <li>{!comment.body}</li>
+                           </ul>                       
+                       </div> 
+                   </apex:repeat>                 
+               </apex:repeat>     
+           </div> 
+          </apex:outputPanel>    
+           <!--------- Chatter ----------->
+       </div>
+             <!---------- End Content ------------> 
+        
+    </body>   
+</html>
+</apex:page>

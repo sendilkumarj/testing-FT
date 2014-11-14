@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>27.0</apiVersion>
+    <description>This page is used for creating new decision. Also implemented kendo RTF for problem statement and decision.
+Stylesheets used in this page are DecisionStyles, CommonStyles. 
+UI Style is Force.com.</description>
+    <label>DecisionNew</label>
+</ApexPage>

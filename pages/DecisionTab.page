@@ -1,0 +1,2988 @@
+<apex:page controller="DecisionTab" tabstyle="Decision__c" extensions="NetworkView">  
+      <script>
+        //FT Favicon
+        (function() {
+            var link = document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = '{!$Resource.Favicon}';
+            document.getElementsByTagName('head')[0].appendChild(link);
+            $(document).prop('title', 'Decisions'); 
+       }());
+        
+    </script>
+    <script type='text/javascript' src="{!URLFOR($Resource.networkjs,'/js/jquery.history.js')}" > </script>
+    <apex:includeScript value="{!$Page.CommonScripts}" />
+    <div class = "preloader"></div>     
+   <div class = "bg-fade"></div>
+    <script>
+       showLoader();
+    </script>
+    <script type='text/javascript' src="{!$Resource.fullscreen}" > </script>
+    <c:CommonLibraries userLocaleSidKey="{!userLocaleSidKey}" /> 
+    <c:cardsTemplate />   
+    
+     <script>
+       kendo.culture('{!userLocaleSidKey}'); // set kendo locale for  current user.
+       var dateFormat = '{0:'+kendo.culture().calendar.patterns.d+'}';  // Hold dateformat for kendo grids
+       var dateTimeFormat =  '{0:'+kendo.culture().calendar.patterns.g+'}'; // Hold datetime format for kedo grids
+     </script>
+        <!--------- jQueryUI ----------->
+       <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs10, '/tabs/jquery-ui-1.10.3.js')}"/>  
+        <!--<apex:stylesheet value="{!URLFOR($Resource.JqueryUITabs, '/tabs/decision-jquery-ui.css')}"/>-->
+    
+    
+    <apex:stylesheet value="{!$Page.CommonStyles}" />
+   
+    <apex:stylesheet value="{!$Page.WorkbenchStyles}" /> 
+    <apex:stylesheet value="{!$Page.DecisionStyles}" />  
+    <apex:stylesheet value="{!$Page.PlanStyles}" />   
+    <apex:stylesheet value="{!$Page.OverrideStyles}" />   
+    
+    <apex:includeScript value="{!URLFOR($Resource.TokenInput, '/TokenInput/Tokeninputjavascript1.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.TokenInput, '/TokenInput/TokenInput.css')}"/>
+     
+    <!--------- FT Scripts ----------->
+    <head>
+        <c:WalkMeAndSupportButton />
+        <!--<script type="text/javascript">(function() {var walkme = document.createElement('script'); walkme.type = 'text/javascript'; walkme.async = true; walkme.src = 'https://d3b3ehuo35wzeh.cloudfront.net/users/3d4e7e29fbce4945a03495f309d755c1/test/walkme_3d4e7e29fbce4945a03495f309d755c1_https.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(walkme, s);})();</script>-->
+    <style>
+        .ui-tabs .ui-tabs-nav li{border: none !important;}
+        .ui-state-active a:link{border:1px solid #ccc !important; border-bottom:1px solid #f2f2f2 !important;}
+        .ui-tabs-nav > .ui-state-hover a{border-color:#ccc !important;}
+        /* .ui-tabs-nav .ui-state-default{ margin: 0px -1px 0px 0px !important; }*/
+        .ui-tabs-nav > .ui-state-default a{margin: 0px -2px 0px 0px !important; border: 1px solid #d4d4d4;}
+        .ui-state-active a:hover{border-bottom:1px solid #fff !important;}
+       .ui-tabs .ui-tabs-nav li a{padding: .8em 1em .4em 1em;font-weight:normal; }
+      /*  #gridDecisionFinancial .k-button, #gridDecisionSocial .k-button, #gridDecision .k-button{
+            -webkit-border-radius: 0px !important;
+            border-radius: 0px !important;
+        }*/
+        .k-tooltip-validation
+        {
+         margin-left:-10px !important;
+        }
+       .ui-tabs .ui-widget-content{
+            /* background-color: #F2F2F2 !important;*/
+         }
+         .k-pager-wrap .k-dropdown{
+            /* width: 4.4em !important; */
+         }
+         .k-state-hover .k-delete{
+           /* background-position: -32px -16px !important;*/
+         }
+         .k-button:hover .k-delete{
+           /* background-position: -46px -16px !important;*/
+         }
+         .k-state-hover .k-i-calendar{
+            /* background-positon: -32px -176px !important; */
+         }
+         .k-popup.k-list-container, .k-popup{
+                     border-color: rgb(204, 204, 204) !important; 
+                  }
+          #tabs-card .k-dropdown .k-input{
+                background: #fff;
+            }
+            .k-animation-container .k-dropdown .k-input{
+                    background: #fff;
+                 }
+                 a#topicManagmentBtn:hover {
+                    color: black;
+                }
+                #topicsFiltersPanelbar .workbench-filter .k-picker-wrap{
+                    padding: 0 2.7em 0 0;
+                }
+                .k-panelbar .k-state-selected .k-i-arrow-s, .k-panelbar .k-state-selected .k-i-arrow-n{
+                    margin: 5px 10px;
+                    background-position-x: 0px;
+                }
+                #decisionSearch .k-textbox.k-space-right{
+                    padding-right: 2.2em;
+                }
+                .k-state-selected, .k-list>.k-state-selected, .k-list>.k-state-focused, .k-panelbar .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover{
+                    background-color: #999;
+                    border-color: #999;
+                }
+                .requestfullscreen, .requestfullscreen:hover{
+                    /*top: -55px;
+                    right: -2px;
+                    float: right;
+                    position: absolute;*/
+                    text-decoration:none;
+                    float:right;
+                     margin: 10px 5px 5px 5px;
+                }
+                .exitfullscreen, .exitfullscreen:hover{
+                    /*display: inline;
+                     float: right; 
+                    right: 5px;
+                    top: 6px;
+                    position: absolute;*/
+                    text-decoration:none;
+                    float:right;
+                    margin: 10px 5px 5px 5px;
+                }
+                .requestfullscreen span, .exitfullscreen span{
+                    background: #ccc;
+                    padding: 5px;
+                    margin: 5px 0px 5px 5px;
+                }
+                
+                #fullscreen{
+                 position:relative; 
+                }  
+                
+                ul#decisionTab {
+                    border-bottom: 0;
+                }
+                #tabs {
+                  display: block;  
+                }
+    </style>
+    
+     <!--  styles used to revert back kendo UI table styles for tabs -->
+        <style type="text/css">
+                #decisionDate .k-header, #executionDate .k-header, #evaluationDate .k-header{
+                    margin-top: 3px;
+                }
+                .k-dropdown .k-input{
+                    background: #fff;
+                }
+        
+                 .k-header {
+                 /*   margin-top: 10px; */
+                    border-color:#fff ;
+                }
+               #tabs .k-content{
+                font-weight: normal !important;
+                color: #525252 !important;
+                /*  background: #fff !important; 
+                background-color: #fff !important;*/
+             }
+              .k-tabstrip .k-content{
+                /* margin: 0em -.1em -.1em -.1em !important; */
+                padding: 2em 1em !important;
+                /* border-color: #d4d4d4 !important; */
+                border-color: #f2f2f2 !important;
+              /*   min-height: 260px; */
+                margin-left:-2px;
+             } 
+            .k-header{
+                background: #fff ;
+                background-color: #fff ; 
+                /* background: #f3f3f4 !important;
+                background-color: #f3f3f4 !important; 
+                background: #d5d5d5 !important;
+                background-color: #d5d5d5 !important; */
+             }
+             .k-tabstrip-items .k-item{
+                margin-left: -2px;
+               margin-right: -2px; 
+             }
+             .k-tabstrip .k-tabstrip-items{
+                padding: 0.3em 0 0 0 !important;
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                /* border-color: #263248 !important; */
+                border-color: #DFDFDF !important;
+             }
+             .k-tabstrip .k-link {
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                /* border-color: #263248 !important; */
+                border-color: #DFDFDF !important;
+                font-weight: normal !important;
+             }
+            .k-tabstrip .k-state-active{
+                /* background:#3399ff !important;
+                background-color:#3399ff !important; */
+                background:#fff !important;
+                background-color:#fff !important;
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                border-color: #ccc !important;
+                /*border: 1px solid #ccc !important;*/
+             }
+             #tabs .k-state-hover{
+                /* background: #66B3FF !important;
+                background-color: #66B3FF !important; */
+                /* background: #D8D8D8 !important;
+                background-color: #D8D8D8 !important; */
+                background: #f6f6f6 !important;
+                background-color: #f6f6f6 !important;
+                text-decoration: none !important;
+                /* border-color: #d4d4d4 !important; */
+                border-color: #DFDFDF !important;
+                /* color: #919191 !important; */
+                color: #333 ;
+             }
+             #tabs .k-state-default{
+                /* border-color: #DFDFDF !important; */
+             }
+              #tabs .k-tabstrip-items .k-link:link{ 
+                /* color: #C2C2C2 !important; */
+                color: #333 ;
+                background-color: #f6f6f6 !important;
+                height: 10px ;
+                padding: 1.0em 1.5em 1.3em 1.5em !important;
+              }
+             #tabs .k-link:hover{
+                /* color: #fff !important; */
+                /* color: #515967 !important; */
+                /* color: #263248 !important; */
+                /* color: #919191 !important; */
+                color: #333 ;
+                /* background: #66B3FF !important;
+                background-color: #66B3FF !important; */
+                /* background: #b6bdca !important;
+                background-color: #b6bdca !important; */
+                background: #f0f0f0 !important;
+                background-color: #f0f0f0 !important;
+                text-decoration: none !important;
+                /* border-color: #d4d4d4 !important; */
+                border-color: #DFDFDF !important;
+             }
+             #tabs .k-link:active  {
+                /* border-color: #d4d4d4 !important; */
+                /* border-color: #a6afbe !important; */
+                border-color: #DFDFDF !important;
+                
+             }
+             #tabs .k-state-active .k-link:link{
+                 background: #fff ;
+                 background-color: #fff !important;
+              } 
+             #tabs .k-state-active>.k-link{
+                /* color: #fff !important; */
+                /* color: #515967 !important; */
+                /* color: #8D8D8D !important;*/
+                color: #333 ;
+             }
+             #tabs .k-state-active .k-link:hover{
+                /* background:#3399ff !important;
+                background-color:#3399ff !important; */
+                background:#fff !important;
+                background-color:#fff !important;
+             }
+             .k-pager-wrap .k-dropdown {
+                width: 4.4em !important;
+            }
+             .k-content .k-header, .k-grid-header{
+                background: #fff !important;
+                background-color: #fff !important;
+                border-color:#dadada !important;
+                color: #222 !important;
+             }
+             #tabs .k-content .k-link:link{
+               /*  color: #222 !important; 
+                font-weight: bold !important;
+                background-color: #eee !important;
+                display: block;
+                min-height: 15px ;
+                line-height: 13px ;
+                margin: -0.5em -0.6em -0.4em -0.6em !important; 
+                padding: .5em .6em .4em .6em !important;
+                height: auto ;*/
+             }
+             
+             #tabs .k-content .k-link:hover, .k-grid-header .k-header .k-link:hover{
+              /*  text-decoration: underline !important; */
+                background: #ccc !important;
+                background-color: #ccc !important;
+                color: #222 !important;
+             }
+                #tabs .k-content .k-pager-wrap>.k-link {
+                /*margin: 0 1px ;
+                padding: 0 3px !important;
+                height: 22px ;
+                line-height: 22px ;
+                border-radius: 13px;
+                cursor: pointer;*/
+             }
+              .k-pager-numbers .k-link:link{
+                /*margin: 0 1px 0 0 !important;
+                vertical-align: top !important;
+                color: #dfdfdf !important;*/
+                
+              }
+              .k-pager-numbers .k-link{
+                /*color:#fff !important;*/
+              }
+              .k-grid-filter {
+                padding: .3em .2em .4em !important;
+              }
+              .k-list-container li{
+                margin-left:0px !important;
+              }
+              #gridTaskEvent .ui-widget {
+                /*font-family: Arial,Helvetica,sans-serif !important;*/
+                color: #222 !important;
+              }
+              #topicMultiSelectTd .k-floatwrap{
+                background: #fff;
+              }
+              #topicMultiSelectTd .k-header{
+                margin-top: -5px;
+              }
+              
+              .modal-window-activitywarning {
+                /*position : fixed !important;*/
+              }
+              #timingAndHistoryDiv .k-widget .k-state-focused
+                {
+                  box-shadow: none;
+                }
+                   .ui-tabs-nav .ui-state-default{
+                    margin-right: -1px !important;
+                    
+               }
+                .ui-tabs .ui-tabs-nav li{
+                    top: 2px !important;
+                    border-bottom: 1px solid #ccc !important;
+                  }
+                  .ui-tabs .ui-tabs-nav .ui-state-active li{
+                    margin-right: -1px !important;
+                    border-bottom-color: #fff !important; 
+               }
+               .ui-tabs .ui-tabs-nav li a{
+                    border-bottom-width: 1px !important;
+                    border-width: 0px;
+               }
+               
+               .greyColor {
+                    color : grey;
+               }
+               .blackColor {
+                    color : black;
+               }
+               .k-popup .k-list-container, .k-popup{
+                    border-color: rgb(204, 204, 204) !important;
+                  }
+                .k-dropdown-wrap .k-state-hover:hover{
+                  background-color: #a99f9a !important;
+                  border-color: #a99f9a !important;
+                }
+                #tabstask .ui-tabs-nav{
+                  padding: 0px 0px 1px 0px !important;
+                }
+                .expandCollapseDetails{
+                    background: url("{!URLFOR($Resource.Images, 'common/image-expandCollapse-black-sprite-8x16.png')}") 0 -8px no-repeat;
+                    height : 8px;
+                    width : 8px;
+                    margin-top : 3px;
+                    margin-right : 5px;
+                }
+                .complexity-label-div {
+                    float:left;
+                    margin-left: 47px;
+                    margin-top: 3px;
+                    font-weight:bold;
+                    font-size:11px;
+                    color:#4A4A56;
+                }
+                .skill-level-div {
+                    float: left;
+                    margin-right: 23px;
+                    margin-top: 3px;
+                    font-weight: bold;
+                    font-size: 11px;
+                    color: #4A4A56;
+                }
+                .estimated-hours {
+                    float: left;
+                    margin-left: 18px;
+                    margin-top: 3px;
+                    font-weight: bold;
+                    font-size: 11px;
+                    color: #4A4A56;
+                }
+                .actual-hours {
+                    float: left;
+                    margin-right: 18px;
+                    margin-top: 3px;
+                    font-weight: bold;
+                    font-size: 11px;
+                    color: #4A4A56;
+                }
+                .newtaskpopup-Name {
+                    float: left;
+                    margin-left: 72px;
+                    margin-top: 13px;
+                    font-weight: bold;
+                    font-size: 11px;
+                    color: #4A4A56;
+                }
+                .tasktabs-block{
+                    height: 27em !important;
+                }
+                .section-head-matrix{
+                 color: #2e2e2e;
+                 background-color: #b8b8b8;
+                 margin-bottom: 33px;
+                 width: 100%;
+                 height: 1px;
+                 overflow: hidden; 
+                }
+                .section-matrix{
+                   /*margin-left: 5px;*/
+                }
+                .icon-grid
+                {
+                 font-size:1.4em;
+                 margin: 3px 0px;
+                }
+                 .k-state-selected, .k-state-selected:link, .k-list > .k-state-selected, .k-list > .k-state-focused, .k-list > .k-state-highlight, .k-panel > .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal {
+                        background-color: #999 !important;
+                        border-color: #999 !important;
+                }
+                .k-filter-menu .k-button{
+                        font-weight:normal !important;
+                }  
+                .requestfullscreen, .requestfullscreen:hover{
+                    /*top: -55px;
+                    right: -2px;
+                    float: right;
+                    position: absolute;*/
+                    text-decoration:none;
+                    float:right;
+                     margin: 10px 5px 5px 5px;
+                }
+                .exitfullscreen, .exitfullscreen:hover{
+                    /*display: inline;
+                     float: right; 
+                    right: 5px;
+                    top: 6px;
+                    position: absolute;*/
+                    text-decoration:none;
+                    float:right;
+                    margin: 10px 5px 5px 5px;
+                }
+                .requestfullscreen span, .exitfullscreen span{
+                    background: #ccc;
+                    padding: 5px;
+                    margin: 5px 0px 5px 5px;
+                }
+                
+                #fullscreen{
+                 position:relative; 
+                 background-color:white;
+                }  
+                
+                .decisionTopBorder {
+                border-top-color: #333333;
+                }
+        </style>
+  
+        <script>
+            var socialLoad = false;
+            var financialLoad =  false;
+            $(function (){ 
+                changeFooterText(); 
+            });
+            
+            // script for google analytics
+            var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-34907619-2']);
+          _gaq.push(['_trackPageview']);
+        
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
+    </head>
+    <apex:form >
+                <apex:actionFunction name="loadTopicWorkbench" action="{!loadTopicWorkbench}" reRender="WorkbenchTopicsView" oncomplete="hideLoaderAndFade();topicLoaded();"/>
+    </apex:form> 
+    <!---------- Tabs ------------->
+    <div id="tabs" class = "ui-tabs"> 
+        <!---------- Start of Tabs ------------->  
+        <ul class = "ui-tabs" id = "decisionTab">
+             <li id="decisionBoard"><a href="#tabs-phase">Decision Board</a></li>
+            <li id="decisionList"><a href="#tabs-card">Decision List</a></li>
+            <li id="decisionTopics"><a href="#">Decision Topics</a></li>
+            <li id="decisionNetwork"><a href="#">Network</a></li>
+
+        </ul>
+        <!---------- End of Tabs ------------->
+        
+        <!---------- Start of Phase Board ------------->
+        <div id="tabs-phase">
+            
+            <!---------- Start of Filters ------------->
+            
+            <!--<div id="workBenchFilters">-->
+           <div id="decisionSearch">
+                <span class="k-textbox k-space-right">
+                    <input type="text" placeholder="Search..." id="searchDecisionText"/>
+                    <a href="#" class="k-icon k-i-search" onclick="getElementalData();">&nbsp;</a>
+                </span>
+            </div>
+            <apex:outputPanel id="filterPanelComponent">
+                <ul id="filtersPanelbar" >
+                <li id="item" class="">
+               
+                    <span class="">Filters</span>
+                     
+                     <div class = "workbench-filter" >
+                        <div class="floatLeft filtersMargin">
+                            <div>Time Frame</div>
+                            <div id="dateDrop" class="toClear">
+                                <select id="dateType" disabled="disabled">
+                                    <option>Due Date</option>
+                                    <option>Created Date</option>
+                                    <option selected="selected">Last Modified Date</option>
+                                </select>
+                                <select id="timeFrame" onchange="calDates(this.value);" style="margin-left:0.8em;">
+                                    <option value="1 Week">1 Week</option>
+                                  <option value="2 Weeks">2 Weeks</option>
+                                  <option value="3 Weeks">3 Weeks</option>
+                                  <option value="4 Weeks">4 Weeks</option>  
+                                  <option value="1 Month">1 Month</option>  
+                                  <option value="2 Months">2 Months</option>
+                                  <option value="3 Months">3 Months</option>
+                                  <option value="4 Months">4 Months</option>
+                                  <option value="All">All</option>
+                                </select>
+                            </div>
+                            <div class="toClear">
+                            
+                                <div class="floatLeft " style="margin-top:1em;">
+                                <div>From</div>
+                                <input id="fromDate" value=""  disabled="disabled"/></div>
+                                
+                                <div class="floatLeft filtersMargin">
+                                <div>To</div>
+                                <input id="toDate" value=""  disabled="disabled"/></div>
+                            </div>
+                        </div>
+                        <div class="floatLeft filtersMargin" style="width:4px;border-left:1px solid #ccc;min-height:100px;"></div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Name</div>
+                            <select id="userName" data-placeholder="Select attendees..." onChange="hasUser();">
+                                <option value="{!$user.Id}" selected="selected" ><apex:outputText value="{!$User.FirstName} {!$User.LastName}" /></option>
+                                <apex:repeat value="{!userList}" var="user">
+                                    <option value="{!user.Id}"><apex:outputText value="{!user.Name}" /></option>
+                                </apex:repeat> 
+                            </select>
+                            <div style="color: red;display:none;" id="userErrDB"><b>Please select the user.</b></div>
+                        </div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Role</div>
+                            <select id="roleOfUser" onchange="getElementalData();" class="toClear">
+                                <option selected="selected" value="All">All</option>
+                                <option value="Accountable">Accountable</option>
+                                <option value="Responsible">Responsible</option>
+                                <option value="Consulted">Consulted</option>
+                                <option value="Informed">Informed</option>
+                            </select>
+                        </div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Phases</div>
+                            <select id="decisionPhases" onchange="disableSelect('decisionStatus','decisionPhases');" class="toClear">
+                                <option value="All">All</option>
+                                <option value="Draft">Draft</option>
+                                <option value="Share">Share</option>
+                                <option value="Propose">Propose</option>
+                                <option value="Decide">Decide</option>
+                                <option value="Execute">Execute</option>
+                                <option value="Evaluate">Evaluate</option>
+                                <option value="Close">Close</option>
+                            </select></div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Status</div>
+                            <select  id="decisionStatus" onchange="disableSelect('decisionPhases','decisionStatus');" class="toClear">
+                               <option value="All">All</option>
+                               <option value="Undecided">Undecided</option>
+                               <option value="Approved">Approved</option>
+                               <option value="Rejected">Rejected</option>
+                               <option value="Executed">Executed</option>
+                               <option value="Evaluated">Evaluated</option>
+                               <option value="Closed">Closed</option>
+                               <option value="Withdrawn">Withdrawn</option>
+                               <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="floatLeft filtersMargin" style="width:4px;border-left:1px solid #ccc;min-height:100px;"></div>
+                        <div class="floatLeft filtersMargin">
+                        <div>&nbsp;</div>
+                        <div class="toClear"><button class="k-button" onclick="openQCD();">New Decision</button></div>
+                        </div>
+                        <div class="floatLeft filtersMargin">
+                        <div>&nbsp;</div>
+                        <div class="toClear">
+                            <button class="k-button"  onclick="setDefaultData();" >Clear</button></div>
+                        </div>
+                            
+                     </div>
+                    
+                </li>
+             
+                </ul>
+              <script>
+               
+                    if($("#filtersPanelbar").data('kendoPanelBar') == undefined  )
+                    $("#filtersPanelbar").kendoPanelBar();
+                    if($("#dateType").data('kendoDropDownList') == undefined  )
+                    $("#dateType").kendoDropDownList({}); 
+                     if($("#timeFrame").data('kendoDropDownList') == undefined  )
+                    $("#timeFrame").kendoDropDownList({});
+                     if($("#fromDate").data('kendoDatePicker') == undefined  )
+                    $("#fromDate").kendoDatePicker();
+                    if($("#toDate").data('kendoDatePicker') == undefined  )
+                    $("#toDate").kendoDatePicker();
+                    if($("#roleOfUser").data('kendoDropDownList') == undefined  )
+                    $("#roleOfUser").kendoDropDownList({}); 
+                    if($("#decisionPhases").data('kendoDropDownList') == undefined  )
+                    $("#decisionPhases").kendoDropDownList({}); 
+                    if($("#decisionStatus").data('kendoDropDownList') == undefined  )
+                    $("#decisionStatus").kendoDropDownList({ scroll: false}); 
+                    
+                    if($("#userName").data('kendoMultiSelect') == undefined  )
+                    $("#userName").kendoMultiSelect({maxSelectedItems: 1,filter: "contains"});
+                     
+                </script>
+                 </apex:outputPanel>
+                  <!--</div>-->
+                <!--<div class = "workbench-filter">
+                    <p class = "filter-help" id = "filterHelp">Select the criteria to see the decisions a person is working on</p>
+                    <div >  
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Timeframe</div>
+                            <select id="timeFrame" onchange="getElementalData();">
+                              <option value="1 Week">1 Week</option>
+                              <option value="2 Weeks">2 Weeks</option>
+                              <option value="3 Weeks">3 Weeks</option>
+                              <option value="4 Weeks">4 Weeks</option>  
+                              <option value="1 Month">1 Month</option>  
+                              <option value="2 Months">2 Months</option>
+                              <option value="3 Months">3 Months</option>
+                              <option value="4 Months">4 Months</option>
+                              <option value="All">All</option>
+                            </select>
+                        </div>
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Name</div>
+                            <input type="text" class = "qcd-input" id="demo-input-pre-populated-with-tokenlimit" name="acc" required="True" onchange="getElementalData();"/>
+                            <div style="color: red;display:none;" id="userErrDB"><b>Please select the user.</b></div>
+                        </div>   
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Role</div>
+                            <select id="roleOfUser" onchange="getElementalData();">
+                                <option selected="selected" value="All">All</option>
+                                <option value="Accountable">Accountable</option>
+                                <option value="Responsible">Responsible</option>
+                                <option value="Consulted">Consulted</option>
+                                <option value="Informed">Informed</option>
+                            </select>
+                        </div>   
+                        <div class = "filter-option ft-left"> 
+                            <div class = "filter-text">Phases</div>
+                            <select id="decisionPhases" onchange="disableSelect('decisionStatus','decisionPhases');">
+                                    <option value="All">All</option>
+                                    <option value="Draft">Draft</option>
+                                    <option value="Share">Share</option>
+                                    <option value="Propose">Propose</option>
+                                    <option value="Decide">Decide</option>
+                                    <option value="Execute">Execute</option>
+                                    <option value="Evaluate">Evaluate</option>
+                                    <option value="Close">Close</option>
+                            </select>
+                        </div>    
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Status</div>
+                            <select id="decisionStatus" onchange="disableSelect('decisionPhases','decisionStatus');">
+                                    <option value="All">All</option>
+                                    <option value="Undecided">Undecided</option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Executed">Executed</option>
+                                    <option value="Evaluated">Evaluated</option>
+                                    <option value="Closed">Closed</option>
+                                    <option value="Withdrawn">Withdrawn</option>
+                                    <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class = "filter-option filter-btn ft-left">            
+                            <button type="button" style="width:75px;height:25px;" onclick="getElementalData();" >Go</button>
+                            <button type="button" style="width:75px;height:25px;" class="topMarginforButton" onclick="setDefaultData();">Clear</button>
+                        </div>
+                    </div>
+                </div>-->
+                
+                <script>
+                 $(document).ready(function () {
+                    
+                     
+                    
+                });
+                
+                    var userId = 'default';
+                    var chkUserId = 'yes';
+                    $("#demo-input-pre-populated-with-tokenlimit").tokenInput(  $.parseJSON('{!JSENCODE(userDataJSON)}') , {
+                        prePopulate: 
+                           $.parseJSON('{!JSENCODE(defaultUserJson)}') 
+                        ,onAdd: function (item) {
+                           
+                           chkUserId = 'yes';
+                           userId = item.id;
+                           //storeIdAcc(item.id);
+                           $('#userErrDB').css('display','none');
+                        },
+                        onDelete: function (item) {
+                            chkUserId = 'no';
+                            //delIdAcc(item.id);
+                            $('#userErrDB').css('display','Block');
+                        },
+                        tokenLimit: 1,
+                        propertyToSearch: "name",
+                        resultsFormatter: function(item){ 
+                            return "<li>" + "<img src='" + item.url + "' title='" + item.name+ "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" + item.name+ "</div>" 
+                       },
+                    });
+                    
+                    function hasUser(){
+                        if($("#userName").val() != null){
+                            $('#userErrDB').css('display','none');
+                            getElementalData();
+                        } else {
+                            $('#userErrDB').css('display','block');
+                        }
+                    }
+                    
+                    function calDates(val){
+                        var todayDate = new Date();
+                        var todayDateMonth = todayDate.getMonth() + 1;
+                        var todayDateDay = todayDate.getDate();
+                        var todayDateYear = todayDate.getFullYear();
+                        var todayDateDisplayPadded = ("00" + todayDateMonth.toString()).slice(-2)+ "/" + ("00" + todayDateDay.toString()).slice(-2)+ "/" + ("0000" + todayDateYear.toString()).slice(-4);
+                        var date = kendo.parseDate(todayDateDisplayPadded, "MM/dd/yyyy");
+                        $("#toDate").data("kendoDatePicker").value(date);
+                        var d = new Date();
+                        if(val == '1 Week'){
+                            var date1 = calWeeks(7);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '2 Weeks'){
+                            var date1 = calWeeks(14);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '3 Weeks'){
+                            var date1 = calWeeks(21);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '4 Weeks'){
+                            var date1 = calWeeks(28);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '1 Month'){
+                            var date1 = calMonth(1);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '2 Months'){
+                            var date1 = calMonth(2);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '3 Months'){
+                            var date1 = calMonth(3);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '4 Months'){
+                            var date1 = calMonth(4);
+                            $("#fromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == 'All'){
+                            $("#toDate").data("kendoDatePicker").value(null);
+                            $("#fromDate").data("kendoDatePicker").value(null);
+                        }
+                        getElementalData();
+                    }
+                    
+                    function calWeeks(count){
+                        var ToDayDate = new Date();
+                        var weekdate = new Date(ToDayDate.getFullYear(), ToDayDate.getMonth(), ToDayDate.getDate() - count);
+                        var weekMonth = weekdate.getMonth() + 1;
+                        var weekDay = weekdate.getDate();
+                        var weekYear = weekdate.getFullYear();
+                        var weekDisplayPadded = ("00" + weekMonth.toString()).slice(-2)+ "/" + ("00" + weekDay.toString()).slice(-2)+ "/" + ("0000" + weekYear.toString()).slice(-4);
+                        var date1 = kendo.parseDate(weekDisplayPadded, "MM/dd/yyyy");
+                        return date1;
+                    }
+                    
+                    function calMonth(count){
+                        var ToDayDate = new Date();
+                        var weekdate = new Date(ToDayDate.getFullYear(), ToDayDate.getMonth() - count, ToDayDate.getDate());
+                        var weekMonth = weekdate.getMonth() + 1;
+                        var weekDay = weekdate.getDate();
+                        var weekYear = weekdate.getFullYear();
+                        var weekDisplayPadded = ("00" + weekMonth.toString()).slice(-2)+ "/" + ("00" + weekDay.toString()).slice(-2)+ "/" + ("0000" + weekYear.toString()).slice(-4);
+                        var date1 = kendo.parseDate(weekDisplayPadded, "MM/dd/yyyy");
+                        return date1;
+                    }
+                    
+                    function getElementalData(){
+                        if($("#userName").val() != null){
+                            var searchDecisionText = $('#searchDecisionText').val();
+                            var timeFrame = $('#timeFrame').val(); 
+                            var roleOfUser = $('#roleOfUser').val();
+                            var phases = $('#decisionPhases').val();
+                            var status = $('#decisionStatus').val();
+                            userId = $("#userName").val();
+                            showLoader();
+                            getMyDecisions(searchDecisionText,timeFrame,roleOfUser,phases,status,userId);
+                        }else{
+                            //alert('please select user');
+                            $('#userErrDB').css('display','Block');
+                        }
+                    }
+                    
+                    function getDefaultData(){   
+                        var timeFrame = document.getElementById('timeFrame').options[0].value;
+                        var roleOfUser = document.getElementById('roleOfUser').options[0].value;
+                        document.getElementById('timeFrame').value = document.getElementById('timeFrame').options[0].value;
+                        document.getElementById('roleOfUser').value = document.getElementById('roleOfUser').options[0].value;
+                        if(document.getElementById('decisionPhases').disabled == true){
+                            document.getElementById('decisionPhases').disabled = false;
+                        }
+                        if(document.getElementById('decisionStatus').disabled == true){
+                            document.getElementById('decisionStatus').disabled = false;
+                        }
+                        document.getElementById('decisionPhases').value = document.getElementById('decisionPhases').options[0].value;
+                        var status = document.getElementById('decisionStatus').options[0].value;
+                        document.getElementById('decisionStatus').value = document.getElementById('decisionStatus').options[0].value;
+                        var phases = document.getElementById('decisionPhases').options[0].value;
+                        var searchDecisionText = $('#searchDecisionText').val();
+                        getMyDecisions(searchDecisionText,timeFrame,roleOfUser,phases,status,'default');
+                    }
+                    
+                    $('#searchDecisionText').keypress(function(e){ 
+                        if (e.keyCode == '13'){
+                          getElementalData();
+                        }
+                    });
+                    
+                    function setMyData(){
+                        getDefaultData();
+                    }
+                    
+                    function disableSelect(selectA,chckB){
+                        if($('#'+chckB).val() != 'All'){
+                            //$('#'+selectA).attr('disabled','true');
+                            var dropdownlist = $('#'+selectA).data("kendoDropDownList");
+                            dropdownlist.enable(false);
+                        }else{
+                            //document.getElementById(selectA).disabled = false;
+                            var dropdownlist = $('#'+selectA).data("kendoDropDownList");
+                            dropdownlist.enable(true);
+                        }
+                        getElementalData();
+                    }
+                    
+                    function setDefaultData() {
+                        showLoader();
+                        $('#searchDecisionText').val('');
+                        showDefaultData();
+                    }
+                    
+                    function openQCD(){
+                        window.location.href = "/apex/DecisionQuickCreate?fromDecisionTab=true";
+                    }
+                    
+                    setTimeout(function(){
+                      calDates('1 Week');
+                    }, 2000);
+                </script>
+            
+           
+            <apex:form >
+                <apex:actionFunction name="showDefaultData" action="{!dummyMethod}" reRender="filterPanelComponent" oncomplete="setMyData();calDates('1 Week');" />
+            </apex:form>
+           
+             <!---------- End of Filters ------------->
+             <div>
+               <c:WorkbenchDecisionView />
+             </div>
+       </div>
+        <!---------- End of Phase Board ------------->
+        
+        <!---------- Start of Table View ------------->
+        <div id="tabs-card">
+            
+            <div id="Dec-rec">
+                 <div >
+                     <div style="text-align:right;width:1366px;height:28px">
+                     <label><input type="checkbox" id="closedDecisionCheck" class="ui-tabs-anchor" name="Show Closed Decisions" value="Show Closed Decisions" onclick='closedDecisions();'/>Show Closed Decisions</label>
+                        <span style="float: left;padding-bottom: 0px;">
+                            <label>View : 
+                                <select id="tab-Type" onchange="changeTable();">
+                                      <option value="Contribution">Contribution</option>
+                                      <option value="Social">Social</option>
+                                      <option value="Financial">Financial</option>
+                                </select> 
+                            </label> 
+                         </span>
+                     </div>
+                     <div id="gridDecision" style="width:1366px;display:block;clear: both;"></div>
+                     <div id="gridDecisionSocial" style="width:1366px;display:none"></div>
+                     <div id="gridDecisionFinancial"  style="width:1366px;display:none"></div>
+                     <script>
+                         $(document).ready(function () {
+                              if(isLoaded == 'No'){     
+                                hideLoaderAndFade();
+                              }
+                              
+                          });
+                          var isLoaded = 'No';
+                          var isTopic = 'No';
+                          
+                         
+                         // contribution tab
+                         function contributionTab() {
+                                 closedDecisions();
+                                 
+                         } 
+                         // social tab
+                         function socialTab(){
+                              closedDecisions();
+                              //kendoDecisionSocial($.parseJSON('{!JSENCODE(socialTabJsonData)}'));
+                              
+                         }
+                         
+                         // financial tab
+                         function financialTab(){
+                              closedDecisions();
+                              //kendoDecisionFinancial($.parseJSON('{!JSENCODE(financialTabJsonData)}'));
+                         }
+                         
+                     </script>
+                        <script>
+                            var params = {};
+                            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str,key,value) {
+                               params[key] = value;
+                            });
+                            var addCol = params.addCol;
+                            if(window.location.href.indexOf("#") == -1) {
+                                if(addCol == 'true'){
+                                     
+                                    loadTopicWorkbench();
+                                }
+                            }
+                            $(document).ready(function() {
+                                
+                                var tabToActivate = addCol == 'true'?  $("#decisionTopics") : $("#decisionBoard"); 
+                                $("#tabs").kendoTabStrip(
+                                 {
+                                  activate:function( event  ) {    
+                                                    
+                                                    var activeTab = $("#tabs").kendoTabStrip().data("kendoTabStrip").select().attr('id');
+                                                    alert(21)
+                                                    if( activeTab  == 'decisionList' ){    
+                                                        if(isLoaded == 'No'){   
+                                                            showLoader();
+                                                            DecisionTab.DecisionRecord('', function(result, event)
+                                                            {    
+                                                                if (event.status)
+                                                               {   alert(1234)
+                                                                   var newTaskEvent = removeQuotes(result);
+                                                                   kendoDecision(newTaskEvent);
+                                                                   isLoaded = 'Yes';
+                                                                   hideLoaderAndFade();
+                                                                }
+                                                            }, {escape:true});
+                                                        }
+                                                    }
+                                                    if( activeTab  == 'decisionTopics' ){ 
+                                                        if(isTopic == 'No'){      
+                                                            showLoader();
+                                                            loadTopicWorkbench();
+                                                        }
+                                                    }
+                                                    
+                                                }
+                                 
+                                 } 
+                                ).data("kendoTabStrip").activateTab(tabToActivate);
+                            });
+                            
+                     </script>
+                 </div>    
+            </div>  
+                 
+                  <!--2_4_2014 Start Created this script to load Social Tab data -->
+                <script>
+                    // datetime in am or 24 hour format
+                    /*function dateTimeFormat(container, options)(){
+                        if(options.model.lastActivityDate.contains('PM')){
+                            return "datetimepicker"
+                        } else {
+                            
+                        }
+                    }*/
+                
+                    // this function is used to display the Table based on the selection 
+                    var viewModel1 ;
+                    function changeTable(){
+                        var selectTab = document.getElementById("tab-Type");
+                        var selectTabValue = selectTab.options[selectTab.selectedIndex].value;
+                        if(selectTabValue=='Contribution'){
+                            contributionTab();
+                            document.getElementById('gridDecisionSocial').style.display = 'none';
+                            document.getElementById('gridDecisionFinancial').style.display = 'none';
+                            document.getElementById('gridDecision').style.display = 'block';
+                        }
+                        else if(selectTabValue=='Social'){ 
+                            socialTab();
+                            document.getElementById('gridDecision').style.display = 'none';
+                            document.getElementById('gridDecisionFinancial').style.display = 'none';
+                            document.getElementById('gridDecisionSocial').style.display = 'block';
+                        }
+                        else if(selectTabValue=='Financial'){
+                            financialTab();
+                            document.getElementById('gridDecision').style.display = 'none';
+                            document.getElementById('gridDecisionSocial').style.display = 'none';
+                            document.getElementById('gridDecisionFinancial').style.display = 'block';
+                        }
+                    }
+                
+                
+                    function kendoDecisionSocial(gridData) {
+                    /*function(gridData) { 
+                        $.each(gridData,function(idx,elem) {
+                             if(lastActivityDateSort && typeof elem.lastActivityDate =="Date") {
+                                 
+                              }
+                         });
+                         return gridData
+                    }*/
+                    var dataSource = new kendo.data.DataSource({   
+                         autoSync: true, 
+                         batch :true,
+                         sort: { field: "lastActivityDateSort", dir: "desc" },
+                         transport: {
+                             read: function(e) {
+                                 dataSource.sync();
+                                 e.success(gridData);
+                             },
+                             update: function(e) { 
+                                 
+                                 var stringifiedData = JSON.stringify(e.data.models); 
+                                 var divId ='gridDecisionSocial';
+                                 var updatedData = parsingModifieDataforDecision(stringifiedData,divId);
+                                 e.success();
+                             }
+                          },
+                          schema: {
+                                   parse : function(gridData) {  console.log('234');
+                                    $.each(gridData,function(idx,elem) { console.log('2345');
+                                         if(  typeof elem.lastActivityDateSort =="string") {
+                                              elem.lastActivityDateSort =  kendo.parseDate(elem.lastActivityDateSort);
+                                           }
+                                     });
+                                     return gridData
+                                },
+                                model: {
+                                   id: "id", 
+                                   fields: {
+                                       id: { type: "string" },
+                                       name:{type: "string" },
+                                       icon:{type:"string",editable: false},
+                                       title:{type: "string",editable: true,validation: { required: true} },
+                                       lastActivityDate:{type: "date",editable: false },
+                                       lastActivityDateSort:{type: "date",editable: false },
+                                       myRole:{type:"string",editable: false},
+                                       accountable:{type:"string",editable: false},
+                                       myMood:{type:"string",editable: true},
+                                       averageMood:{type:"string",editable: false},
+                                       likes:{type:"number",editable: false},
+                                       unlikes:{type:"number",editable: false},
+                                       relevance:{type:"number",editable: false},
+                                       relevanceClass:{type:"string",editable: false},
+                                       outcome:{type:"string",editable: false},
+                                       effort:{type:"string",editable: false},
+                                       outcomeValue:{type:"number",editable: false},
+                                       effortValue:{type:"number",editable: false},
+                                       averageMoodValue:{type:"number",editable: false},
+                                       relevanceStarPosition: {type:"string",editable: false},
+                                       toolTipEdit: {type:"string",editable: false}
+                                   }
+                               }
+                            },
+                            pageSize: 10
+                        });
+                        viewModel1 = new kendo.observable({  ds:dataSource });
+                        var grid = $("#gridDecisionSocial").kendoGrid({
+                        dataSource:dataSource,
+                        sortable: true,
+                        toolbar:    ["save","cancel"] ,
+                        editable:true,
+                        filterable: true,
+                        scrollable: true,
+                        pageable: true,
+                        resizable: true,
+                        pageable: {
+                            refresh: true,
+                            pageSizes: [5,10,25,40]
+                            //select : onchange
+                        },
+                        columns: [
+                           
+                            {
+                                field: "icon",
+                                title: "Decision Image",
+                                filterable: false,
+                                sortable: false,
+                                width: 110,
+                                template: '<div style="text-align:center"><img height="64px" width="64px" id="dImage"  src="#:icon#" /></div>'
+                            },
+                            {
+                                field: "title", 
+                                title: "Title",
+                                width: 200,
+                                editor: editDecision,
+                                template: '<div title="#:toolTipEdit#"><a href=/#:id# >#:title#</div>'
+                            },
+                            { 
+                                field: "lastActivityDateSort",
+                                title: "Last Activity Date",
+                                width: 140,
+                                format:dateTimeFormat
+                               
+                            },
+                            {
+                                field: "myRole",
+                                title: "My Role",
+                                width: 90,
+                                template: '<div>#:myRole#</div>'
+                            },
+                             {
+                                field: "accountable",
+                                title: "Accountable",
+                                width: 120,
+                                template: '<div style="word-wrap: break-word;">#:accountable#</div>'
+                            },
+                            /*{
+                                field: "myMood",
+                                title: "My Mood",
+                                width: 90,
+                                template: '<div align="center"><div  class="#:myMoodClass#" align="center"></div></div>'
+                                
+                            },*/
+                            {
+                                field: "averageMood",
+                                title: "Average Mood",
+                                width: 130,
+                                template: '<div title="#:averageMoodValue#" align="center"><div class="#:moodClass#"></div></div>'
+                            },
+                           {
+                                field: "likes",
+                                title: "Likes",
+                                width: 70,
+                                template: '<div style="word-wrap: break-word;text-align:center" > #:kendo.toString(likes, "n0") #</div>'
+                            },
+                            {
+                                field: "unlikes",
+                                title: "Unlikes",
+                                width: 80,
+                                template: '<div  style="text-align:center">#:kendo.toString(unlikes, "n0") #</div>'
+                            },
+                            {
+                                field: "relevance",
+                                title: "Average Relevance",
+                                width: 150,
+                                template: '<div title="#:relevance#" style="background:url(\'/#:AllStart#\') #:relevanceStarPosition# ; height:18px"></div>'
+                            },
+                            {
+                                field: "outcome",
+                                title: "Average Outcome",
+                                width: 140,
+                                template: '<div title="#:outcomeValue#" style="text-align:center">#:outcome#</div>'
+                            },
+                            {
+                                field: "effort",
+                                title: "Average Effort",
+                                width: 120,
+                                template: '<div title="#:effortValue#" style="text-align:center">#:effort#</div>'
+                            }
+                            
+                       ],
+                       sortable: true,
+                      
+                    });
+                    
+                 }
+                </script>
+                <!--2_4_2014  end of the social tab    -->
+                <!--4_4_2014 start of financial Tab    -->
+                <script>
+                var viewModel2;
+                function kendoDecisionFinancial(gridData) {
+                    var gridRemoveTab = $("#gridDecisionFinancial").kendoGrid();
+                    if(gridRemoveTab.find("thead").find("#top-Header").length!=0){
+                        
+                        gridRemoveTab.find("thead").find("#top-Header").remove();
+                        b=false;
+                    }
+                    var dataSource = new kendo.data.DataSource({   
+                         autoSync: true, 
+                         batch :true,
+                         sort: { field: "lastActivityDateSort", dir: "desc" },
+                         transport: {
+                             read: function(e) {
+                                 dataSource.sync();
+                                 e.success(gridData);
+                             },
+                             update: function(e) { 
+                                 
+                                 var stringifiedData = JSON.stringify(e.data.models); 
+                                  var divId ='gridDecisionFinancial';
+                                 var updatedData = parsingModifieDataforDecision(stringifiedData,divId);
+                                 e.success();
+                             }
+                          },
+                          /*requestStart: function(e){
+                                //var grid = $("#grid").data("kendoGrid");
+                                if(gridData.editable && !gridData.editable.validatable.validate()){
+                                    e.preventDefault();
+                                }
+                          },*/
+                          schema: {
+                                /*parse : function(gridData) { 
+                                $.each(gridData,function(idx,elem) {
+                                     if(elem.lastActivityDate && typeof elem.lastActivityDate =="string") {
+                                         elem.lastActivityDate =  kendo.parseDate(elem.lastActivityDate,"{!JSENCODE(dateTimeFormat)}");
+                                      }
+                                 });
+                                 return gridData
+                                },*/
+                                model: {
+                                   id: "id",
+                                   fields: {
+                                       id: { type: "string" },
+                                       name:{type: "string" },
+                                       icon:{type:"string",editable: false},
+                                       title:{type: "string",editable: true,validation: { required: true}},
+                                       investmentEstimate:{type:"number",editable:true , 
+                                       /*validation: { 
+                                       min: 0,
+                                       max:9999999999999999,
+                                           custom: function(input) {
+                                                if(input.val()>9999999999999999) {//to be added further
+                                                    input.attr("data-custom-msg", "Max 16 digits.");
+                                                    return false;
+                                                }
+                                                else
+                                                    return true;
+                                            }
+                                            
+                                           }*/
+                                       },
+                                       investmentActual:{type:"number",editable:false },
+                                       investmentPercent:{type:"number",editable:false },
+                                       directCostEstimate:{type:"number",editable: true },
+                                       directCostActual:{type:"number",editable: false},
+                                       directCostPercent:{type:"number",editable: false },
+                                       revenueEstimate:{type:"number",editable: true },
+                                       revenueActual:{type:"number",editable: false},
+                                       revenuePercent:{type:"number",editable: false },
+                                       NPVEstimate:{type:"number",editable: true },
+                                       NPVActual:{type:"number",editable: false},
+                                       NPVPercent:{type:"number",editable: false },
+                                       peopleInvolvedEstimate:{type:"number",editable: true },
+                                       peopleInvolvedinvestmentActual:{type:"number",editable: false},
+                                       peopleInvolvedPercent:{type:"number",editable: false },
+                                       FTEEstimate:{type:"number",editable: true },
+                                       FTEActual:{type:"number",editable: false},
+                                       FTEPercent:{type:"number",editable: false },
+                                       
+                                       investmentPercentColour:{type:"string",editable: false },
+                                       directCostPercentColour:{type:"string",editable: false },
+                                       NPVPercentColour:{type:"string",editable: false },
+                                       peopleInvolvedPercentColour:{type:"string",editable: false },
+                                       FTEPercentColour:{type:"number",editable: false },
+                                       toolTipEdit: {type:"string",editable: false}
+                                   }
+                               }
+                            },
+                            pageSize: 10
+                        });
+                    viewModel2 = new kendo.observable({  ds:dataSource });
+                    var grid = $("#gridDecisionFinancial").kendoGrid({
+                        
+                        dataSource:dataSource,
+                        sortable: true,
+                        toolbar:    ["save","cancel"] ,
+                        editable:true,
+                        filterable: true,
+                        scrollable: true,
+                        pageable: true,
+                        resizable: true,
+                        pageable: {
+                            refresh: true,
+                            pageSizes: [5,10,25,40]
+                            //select : onchange
+                        },
+                        columns: [
+                           
+                            {
+                                field: "icon",
+                                title: "Decision Image",
+                                filterable: false,
+                                sortable: false,
+                                width: 110,
+                                template: '<div style="text-align:center"><img height="64px" width="64px" id="dImage"  src="#:icon#" /></div>'
+                            },
+                            {
+                                field: "title",
+                                title: "Title",
+                                width: 200,
+                                editor: editDecisionActual,
+                                template: '<div title="#:toolTipEdit#"><a href=/#:id# >#:title#</div>'
+                            },
+                            
+                            {
+                                field: "investmentEstimate",
+                                title: "Estimated",
+                                width: 120,
+                                editor:editDecisionEstimate,
+                                template: '<div title="#:toolTipEditEstimate#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(investmentEstimate, "n2")#</div>'                               
+                            },
+                            {
+                                field: "investmentActual",
+                                title: "Actual",
+                                width: 120,
+                                editor:editDecisionActual,
+                                template: '<div title="#:toolTipEditActual#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(investmentActual, "n2")#</div>'
+                            },
+                            {   field: "investmentPercent", 
+                                title: "%",
+                                width: 120,
+                                template: '<div class="#:investmentPercentColour#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(investmentPercent, "p")#</div>' 
+                                
+                            },
+                            {
+                                field: "directCostEstimate",
+                                title: "Estimated",
+                                width: 120,
+                                editor: editDecisionEstimate,
+                                template: '<div title="#:toolTipEditEstimate#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(directCostEstimate, "n2")#</div>'
+                            },
+                            {
+                                field: "directCostActual",
+                                title: "Actual",
+                                width: 120,
+                                editor: editDecisionActual,
+                                template: '<div title="#:toolTipEditActual#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(directCostActual, "n2")#</div>'
+                                
+                            },
+                            {   field: "directCostPercent", 
+                                title: "%",
+                                width: 120,
+                                template: '<div class="#:directCostPercentColour#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(directCostPercent, "n2")#</div>'  
+                            },
+                            {
+                                field: "revenueEstimate",
+                                title: "Estimated",
+                                width: 120,
+                                editor: editDecisionEstimate,
+                                template: '<div title="#:toolTipEditActual#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(revenueEstimate, "n2")#</div>'
+                            },
+                           {
+                                field: "revenueActual",
+                                title: "Actual",
+                                width: 120,
+                                editor: editDecisionActual,
+                                template: '<div title="#:toolTipEditEstimate#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(revenueActual, "n2")#</div>'
+                            },
+                            {   field: "revenuePercent", 
+                                title: "%",
+                                width: 120,
+                                template: '<div class="#:revenuePercentColour#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(revenuePercent, "p")#</div>'  
+                            },
+                            {
+                                field: "NPVEstimate",
+                                title: "Estimated",
+                                width: 120,
+                                editor: editDecisionEstimate,
+                                template: '<div title="#:toolTipEditEstimate#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(NPVEstimate, "n2")#</div>'
+                            },
+                            {
+                                field: "NPVActual",
+                                title: "Actual",
+                                width: 120,
+                                editor: editDecisionActual,
+                                template: '<div title="#:toolTipEditActual#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(NPVActual, "n2")#</div>'
+                            },
+                            {   field: "NPVPercent", 
+                                title: "%",
+                                width: 120,
+                                template: '<div class="#:NPVPercentColour#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(NPVPercent, "p")#</div>'   
+                            },
+                            {
+                                field: "peopleInvolvedEstimate",
+                                title: "Estimated",
+                                width: 120,
+                                editor: editDecisionEstimate,
+                                template: '<div title="#:toolTipEditEstimate#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(peopleInvolvedEstimate, "n")# </div>'
+                            },
+                            {
+                                field: "peopleInvolvedinvestmentActual",
+                                title: "Actual",
+                                width: 120,
+                                editor: editDecisionActual,
+                                template: '<div title="#:toolTipEditActual#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(peopleInvolvedinvestmentActual, "n")#</div>'
+                            },
+                            {   field: "peopleInvolvedPercent", 
+                                title: "%",
+                                width: 120,
+                                template: '<div class="#:peopleInvolvedPercentColour#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(peopleInvolvedPercent, "p")# </div>'  
+                            },
+                            {
+                                field: "FTEEstimate",
+                                title: "Estimated",
+                                width: 120,
+                                editor: editDecisionEstimate,
+                                template: '<div title="#:toolTipEditEstimate#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(FTEEstimate, "n2")# </div>'
+                            },
+                            {
+                                field: "FTEActual",
+                                title: "Actual",
+                                width: 120,
+                                editor: editDecisionActual,
+                                template: '<div title="#:toolTipEditActual#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(FTEActual, "n2")#</div>'
+                            },
+                            {   field: "FTEPercent", 
+                                title: "%",
+                                width: 120,
+                                template: '<div class="#:FTEPercentColour#" style="word-wrap: break-word;text-align:center" >#:kendo.toString(FTEPercent, "p")#</div>' 
+                                
+                            }
+                            
+                       ],
+                       sortable: true,
+                       
+                    });
+                    
+                    if(grid.find("thead").find("#top-Header").length==0){
+                        grid.find("thead").first().prepend('<tr id="top-Header"> <th style="border-bottom:1px solid #DADADA" colspan="2"></th> <th class="k-header" style="text-align:center;border-bottom:1px solid #DADADA" colspan="3">Investment</th> <th class="k-header" style="text-align:center;border-bottom:1px solid #DADADA" colspan="3">Direct Cost</th> <th class="k-header" style="text-align:center;border-bottom:1px solid #DADADA" colspan="3">Revenue</th> <th class="k-header" style="text-align:center;border-bottom:1px solid #DADADA" colspan="3">NPV</th> <th class="k-header" style="text-align:center;border-bottom:1px solid #DADADA" colspan="3">People Involved</th> <th class="k-header" style="text-align:center;border-bottom:1px solid #DADADA" colspan="3">FTE</th> <th></th> </tr> ');
+                    }
+                 }
+            </script>
+            <!--4_4_2014 end of financial Tab  -->
+            
+            
+            <script>
+                 var viewModel;
+                function closedDecisions(){
+                    var selectTab = document.getElementById("tab-Type");
+                    var selectTabValue = selectTab.options[selectTab.selectedIndex].value;
+                    if(selectTabValue =='Contribution'){
+                        closedDecisionsContribution();
+                    }
+                    else if(selectTabValue =='Social'){
+                        closedDecisionsSocial();
+                    }
+                    else if(selectTabValue=='Financial'){
+                        closedDecisionsFinancial();
+                    }
+                }
+                
+                // for Contribution view
+                function closedDecisionsContribution(){
+                 var isChecked = document.getElementById('closedDecisionCheck');
+                 if(isChecked.checked){
+                        DecisionTab.DecisionRecord('Close', function(result, event)
+                        {    
+                            if (event.status)
+                            {  
+                               var decisionData =removeQuotes(result);
+                               var grid = $("#gridDecision").data("kendoGrid");
+                               grid.dataSource.data(decisionData);
+                               viewModel.ds.data(
+                                    viewModel.ds.options.schema.parse(decisionData|| []) //just in case thenew data is null
+                                );
+                            }
+                        }, {escape:true});
+                    }
+                    else{
+                        DecisionTab.DecisionRecord('', function(result, event)
+                        {    
+                            if (event.status)
+                            {  
+                               var decisionData = removeQuotes(result);
+                               var grid = $("#gridDecision").data("kendoGrid");
+                               grid.dataSource.data(decisionData);
+                               viewModel.ds.data(
+                                    viewModel.ds.options.schema.parse(decisionData|| []) //just in case thenew data is null
+                                );
+                             }
+                            
+                        }, {escape:true});
+                    }
+                 }
+                // for social view
+                 function closedDecisionsSocial(){
+                     var isChecked = document.getElementById('closedDecisionCheck');
+                     
+                       if(isChecked.checked){
+                         if(!socialLoad){
+                            showLoader();  
+                            $('.bg-fade').fadeIn('slow');
+                         }
+                         DecisionTab.buildSocialTabData('Close', function(result, event)
+                         {    
+                             if (event.status)
+                             {  
+                                
+                                var decisionData = removeQuotes(result);
+                                if(!socialLoad){
+                                  kendoDecisionSocial( decisionData  );
+                                  hideLoader();  
+                                  $('.bg-fade').fadeOut('slow');
+                                  socialLoad = true;
+                               }
+                               else{
+                                  var grid = $("#gridDecisionSocial").data("kendoGrid");
+                                  grid.dataSource.data(decisionData);
+                                  viewModel1.ds.data(
+                                    viewModel1.ds.options.schema.parse(decisionData|| []) //just in case thenew data is null
+                                  );
+                               }
+                             }
+                         }, {escape:true});
+                     }
+                     else{
+                         if(!socialLoad){
+                                showLoader();  
+                                $('.bg-fade').fadeIn('slow');
+                         }
+                         DecisionTab.buildSocialTabData('', function(result, event)
+                         {    
+                             
+                             if (event.status)
+                             {  
+                                
+                                var decisionData  = removeQuotes(result);
+                                if(!socialLoad){
+                                  kendoDecisionSocial( decisionData  );
+                                  hideLoader();  
+                                  $('.bg-fade').fadeOut('slow');
+                                  socialLoad = true;
+                               }
+                               else{
+                                  var grid = $("#gridDecisionSocial").data("kendoGrid");
+                                  grid.dataSource.data(decisionData);
+                                  viewModel1.ds.data( 
+                                    viewModel1.ds.options.schema.parse(decisionData|| []) //just in case thenew data is null
+                                  );
+                               }
+                             }
+                         }, {escape:true});
+                     }
+                 }
+                    
+                // for financialView
+                function closedDecisionsFinancial(){
+                    var isChecked = document.getElementById('closedDecisionCheck');
+                    if(isChecked.checked){
+                        if(!financialLoad){
+                            showLoader();  
+                            $('.bg-fade').fadeIn('slow');
+                        }
+                        DecisionTab.buildFinancialTabData('Close', function(result, event)
+                        {    
+                            if (event.status)
+                            {  
+                               var newTaskEvent =removeQuotes(result);
+                               if(!financialLoad){
+                                  kendoDecisionFinancial( newTaskEvent  );
+                                  hideLoader();  
+                                  $('.bg-fade').fadeOut('slow');
+                                  financialLoad = true;
+                               }
+                               else{
+                                   var grid = $("#gridDecisionFinancial").data("kendoGrid");
+                                   grid.dataSource.data(newTaskEvent);
+                               }
+                            }
+                        }, {escape:true});
+                    }
+                    else{  
+                        if(!financialLoad){
+                            showLoader(); 
+                            $('.bg-fade').fadeIn('slow');
+                        }
+                        DecisionTab.buildFinancialTabData('', function(result, event)
+                        {     
+                            if (event.status)
+                            {   
+                               var newTaskEvent = removeQuotes(result);
+                               if(!financialLoad){
+                                  kendoDecisionFinancial( newTaskEvent  );
+                                  hideLoader();  
+                                  $('.bg-fade').fadeOut('slow');
+                                  financialLoad = true;
+                               }
+                               else{
+                                   var grid = $("#gridDecisionFinancial").data("kendoGrid");
+                                   grid.dataSource.data(newTaskEvent);
+                               }
+                            }
+                        }, {escape:true});
+                    }
+                }
+                    
+                
+                function editDecision(container, options){
+                    if(options.model.isEditable || options.model.isEditable == 'true'){
+                        $('<input required="required" style="width:120px;" maxlength="130" type="text" data-text-field="title" data-value-field="title" data-bind="value:' + options.field + '"/>' )
+                         .appendTo(container);
+                    } else {
+                        //$('<a href=/'+options.model.id+'><output type="text" data-text-field="title" data-value-field="title" data-bind="value:' + options.field + '"/></a>' ).appendTo(container);
+                        $('<a href=/'+options.model.id+'>'+ options.model.title + '</a>' ).appendTo(container);
+                    }
+                }
+                
+                // to edit the Actual field
+                function editDecisionActual(container, options){
+                     
+                     if(options.model.isEditableActual || options.model.isEditableActual == 'true'){
+                        if(options.field=='peopleInvolvedinvestmentActual' || options.field=='FTEActual' ){
+                        $('<input type="text" min="0" maxlength="10"  data-type="number" data-role="numerictextbox" data-text-field="options.field" data-value-field="options.field"  data-bind="value:' + options.field + '"/>' )
+                         .appendTo(container);
+                        }
+                        else{
+                            $('<input type="text" min="0" maxlength="16"  data-type="number" data-role="numerictextbox" data-text-field="options.field" data-value-field="options.field"  data-bind="value:' + options.field + '"/>' )
+                            .appendTo(container);
+                        
+                        }
+                        
+                    } else {
+                            
+                           // $('<div style="text-align:center"> <output type="text" data-text-field="'+options.field+'" data-bind="value:'+options.field+'" ></div>' ).appendTo(container);
+                            // $('<div style="text-align:center"> <output type="text" data-bind="value:'+ options.field + '" /></div>' ).appendTo(container);
+                             if(options.field=='revenueActual'){
+                                $('<div style="text-align:center">'+ options.model.revenueActual+ '</div>' ).appendTo(container);
+                            }
+                            else if(options.field=='FTEActual'){
+                                $('<div style="text-align:center">'+ options.model.FTEActual+ '</div>' ).appendTo(container);
+                            }
+                            
+                            else if(options.field=='NPVActual'){
+                                $('<div style="text-align:center">'+ options.model.NPVActual+ '</div>' ).appendTo(container);
+                            }
+                            else if(options.field=='directCostActual'){
+                                $('<div style="text-align:center">'+ options.model.directCostActual + '</div>' ).appendTo(container);
+                            }
+                            else if(options.field=='peopleInvolvedinvestmentActual'){
+                                $('<div style="text-align:center">'+ options.model.peopleInvolvedinvestmentActual+ '</div>' ).appendTo(container);
+                            }
+                            
+                            
+                    }
+                }
+                
+                // to edit Estimate field
+                function editDecisionEstimate(container, options){
+                
+                     if(options.model.isEditableEstimate|| options.model.isEditableEstimate == 'true'){
+                        if(options.field=='peopleInvolvedEstimate' || options.field=='FTEEstimate'){
+                            $('<input type="text"  min="0" maxlength="10" data-val-required="Enter value between 1 and 10"  data-type="number" data-role="numerictextbox" data-text-field="options.field" data-value-field="options.field"  data-bind="value:' + options.field + '"/>' )
+                            .appendTo(container);
+                        }
+                        else{
+                            $('<input type="text"  min="0" maxlength="16" data-val-required="Enter value between 1 and 10"  data-type="number" data-role="numerictextbox" data-text-field="options.field" data-value-field="options.field"  data-bind="value:' + options.field + '"/>' )
+                            .appendTo(container);
+                        }
+                        
+                    } 
+                    else {
+                           
+                            //$('<div style="text-align:center"><output type="text" style="text-align:center"  data-bind="value:' + options.field + '"/></div>' ).appendTo(container);
+                            if(options.field=='investmentEstimate'){
+                                $('<div style="text-align:center"> '+options.model.investmentEstimate+'</div>' ).appendTo(container);
+                            }
+                            else if(options.field=='revenueEstimate'){
+                                $('<div style="text-align:center">'+ options.model.revenueEstimate+ '</div>' ).appendTo(container);
+                            }
+                            else if(options.field=='FTEEstimate'){
+                                $('<div style="text-align:center"> '+ options.model.FTEEstimate+ '</div>' ).appendTo(container);
+                            }
+                            
+                            else if(options.field=='NPVEstimate'){
+                                $('<div style="text-align:center"> '+ options.model.NPVEstimate+ '</div>' ).appendTo(container);
+                            }
+                            else if(options.field=='directCostEstimate'){
+                                $('<div style="text-align:center">'+ options.model.directCostEstimate + '</div>' ).appendTo(container);
+                            }
+                            else if(options.field=='peopleInvolvedEstimate'){
+                                $('<div style="text-align:center">'+ options.model.peopleInvolvedEstimate + '</div>' ).appendTo(container);
+                            }
+                    
+                        }
+                }
+                //kendo.culture('{!defaultUserLocale}');
+                function kendoDecision(gridData) {
+                     var dataSource = new kendo.data.DataSource({   
+                        autoSync: true, 
+                        batch :true,
+                        sort: { field: "lastActivityDateSort", dir: "desc" },
+                        transport: {
+                            read: function(e) {
+
+                                dataSource.sync();
+                                e.success(gridData);
+                            },
+                            update: function(e) {   
+                                var stringifiedData = JSON.stringify(e.data.models); 
+                                var divId ='gridDecision';
+                                var updatedData = parsingModifieDataforDecision(stringifiedData,divId);
+                                e.success();
+                            }
+                         },
+                         schema: {
+                         
+                            
+                                parse : function(gridData) { 
+                                $.each(gridData,function(idx,elem) {   
+                                     if(  typeof elem.lastActivityDateSort =="string") {  
+                                         elem.lastActivityDateSort =  kendo.parseDate(elem.lastActivityDateSort);
+                                        
+                                      }
+                                 });
+                                 return gridData
+                                },
+                           
+                               model: {
+                                  id: "id",
+                                  fields: {
+                                      id: { type: "string" },
+                                      name:{type: "string" },
+                                      icon:{type:"string",editable: false},
+                                      title:{type: "string",editable: true,validation: { required: true}},
+                                      lastActivityDate:{type: "datetime",editable: false },
+                                      lastActivityDateSort:{type: "date",editable: false },
+                                      nextDueDate:{type: "DateTime",editable: false },
+                                      dType:{type:"string",editable: false},
+                                      phase:{type: "string",editable: false },
+                                      status:{type:"string",editable: false},
+                                      myRole:{type:"string",editable: false},
+                                      myStance:{type:"string",editable: false},
+                                      accountable:{type:"string",editable: false},
+                                      stance:{type:"string",editable: false},
+                                      activitiesCount:{type:"number",editable: false},
+                                      taskCount:{type:"number",editable: false},
+                                      readsOfDecision:{type:"string",editable: false},
+                                      chatterPosts:{type:"number",editable: false},
+                                      chatterPostLikes:{type:"number",editable: false},
+                                      chatterPostLikesForME:{type:"number",editable: false},
+                                      thanksBadgesForMe:{type:"number",editable: false},
+                                      thanksBadges:{type:"number",editable: false},
+                                      isEditable:{type:"Boolean"},
+                                      stanceColour:{type:"string"},
+                                      activityColour:{type:"string"},
+                                      toolTipEdit: {type:"string",editable: false},
+                                      locale:{type:"string"}
+                                  }
+                              }
+                           },
+                           pageSize: 10
+                       });
+                   viewModel = new kendo.observable({
+                    ds:dataSource });
+                   
+                   var grid = $("#gridDecision").kendoGrid({
+                       
+                       dataSource:dataSource,
+                       resizable: true,
+                       sortable: true,
+                       toolbar:    ["save","cancel"] ,
+                       editable:true,
+                       filterable: true,
+                       scrollable: true,
+                       pageable: true,
+                       pageable: {
+                            refresh: true,
+                            pageSizes: [5,10,25,40]
+                            //select : onchange
+                        },
+                       columns: [
+                          
+                           {
+                               field: "icon",
+                               title: "Decision Image",
+                               filterable: false,
+                               sortable: false,
+                               width: 120,
+                               template: '<div style="text-align:center"><img height="64px" width="64px" id="dImage"  src="#:icon#" /></div>'
+                           },
+                           {
+                               field: "title",
+                               title: "Title",
+                               width: 200,
+                               editor: editDecision,
+                               template: '<div title="#:toolTipEdit#"><a href=/#:id# >#:title#</div>'
+                           },
+                           {
+                               field: "lastActivityDateSort",
+                               title: "Last Activity Date",
+                               format:dateTimeFormat, 
+                               width: 150
+                                
+                            },
+                           
+                           /*
+                           {
+                               field: "nextDueDate",
+                               title: "Next Due Date",
+                               //format:'{0:{!JSENCODE(dateFormat)} HH:mm}',
+                               //editor: dateTimeEditorforActivities,
+                               width: 130,
+                               //template: "<div>#:kendo.toString(( nextDueDate== null ? '' :nextDueDate),'{!JSENCODE(dateFormat)}')#</div>"
+                           },
+                           {
+                               field: "dType",
+                               title: "Type",
+                               width: 80,
+                               template: '<div>#:dType#</div>'
+                           },
+                           {
+                               field: "phase",
+                               title: "Phase",
+                               
+                               width: 80,
+                               template: '<div>#:phase#</div>'
+                           },
+                           {
+                               field: "status",
+                               title: "Status",
+                               //editor: statusDropDownEditor ,
+                               width: 80,
+                               template: '<div>#:status#</div>'
+                           },*/
+                           {
+                               field: "myRole",
+                               title: "My Role",
+                               width: 90,
+                               template: '<div>#:myRole#</div>'
+                           },
+                            {
+                               field: "accountable",
+                               title: "Accountable",
+                               width: 120,
+                               template: '<div style="word-wrap: break-word;">#:accountable#</div>'
+                           },
+                           
+                           {
+                               field: "myStance",
+                               title: "My Stance",
+                               width: 100,
+                               template: '<div style="text-align:center">#:myStance#</div>'
+                               
+                           },
+                           {
+                               field: "stance",
+                               title: "Stances",
+                               width: 90,
+                               template: '<div class = "#:stanceColour#"  style="text-align:center">#:stance#</div>'
+                               
+                           },
+                           {
+                               field: "activitiesCount",
+                               title: "Activities /<br/> Tasks",
+                               width: 100,
+                               template: '<div class = "#:activityColour#"  style="text-align:center">#:kendo.toString(activitiesCount, "n0")#/#:kendo.toString(taskCount , "n0")#</div>'
+                           },
+                           /*{
+                               field: "readsOfDecision",
+                               title: "Reads of Decision",
+                               width: 200,
+                               template: '<div>#:readsOfDecision#</div>'
+                           },*/
+                           {
+                               field: "chatterPosts",
+                               title: "Chatter Posts",
+                               width: 110,
+                               template: '<div style="word-wrap: break-word;text-align:center" >#:kendo.toString(chatterPosts, "n0")#</div>'
+                           },
+                           {
+                               field: "chatterPostLikes",
+                               title: "Chatter post<br/> likes",
+                               width: 110,
+                               template: '<div  style="text-align:center">#:kendo.toString(chatterPostLikes, "n0")#</div>'
+                           },
+                           /*{
+                               field: "chatterPostLikesForME",
+                               title: "Chatter post likes for ME",
+                               width: 180,
+                               template: '<div  style="text-align:center">#:chatterPostLikesForME#</div>'
+                           },
+                           {
+                               field: "thanksBadgesForMe",
+                               title: "Thanks / badges for Me",
+                               width: 200,
+                               template: '<div>#:thanksBadgesForMe#</div>'
+                           },*/
+                           {
+                               field: "thanksBadges",
+                               title: "Thanks /<br/> badges",
+                               width: 90,
+                               template: '<div style="text-align:center">#:kendo.toString(thanksBadges, "n0")#</div>'
+                           }
+                           
+                      ],
+                      sortable: true
+                      
+                   });
+                   
+                }
+                
+            
+            </script>
+            
+            
+            <script>
+                function parsingModifieDataforDecision(t,divId){
+                    var isclosed = document.getElementById('closedDecisionCheck');
+                    if(isclosed.checked){
+                        parseModifiedData(t,divId,'Close');
+                    }
+                    else{
+                        parseModifiedData(t,divId,'');
+                    }
+                }
+            
+                 //Batch update for Decision tab method
+                 function parseModifiedData(modifiedData,divId,isclosedEnabled){
+                     // Calling controller method to update task and event
+                     if(divId == 'gridDecision'){
+                         DecisionTab.updateDecisions(modifiedData,isclosedEnabled, function(result, event)
+                         {    
+                             if (event.status)
+                             {  
+                                var cleanedData = removeQuotes(result);
+                                var grid = $("#"+divId).data("kendoGrid");
+                                grid.dataSource.data(cleanedData);
+                                viewModel.ds.data(
+                                    viewModel.ds.options.schema.parse(cleanedData|| []) //just in case thenew data is null
+                                );
+                                 
+                             }
+                         }, {escape:true});
+                     }
+                     else if(divId == 'gridDecisionSocial'){
+                         DecisionTab.updateDecisionsSocial(modifiedData,isclosedEnabled, function(result, event)
+                         {    
+                             if (event.status)
+                             {  
+                                var cleanedData = removeQuotes(result);
+                                var grid = $("#"+divId).data("kendoGrid");
+                                grid.dataSource.data(cleanedData);
+                                
+                                viewModel1.ds.data(
+                                    viewModel1.ds.options.schema.parse(cleanedData|| []) //just in case thenew data is null
+                                );
+                                
+                             }
+                         }, {escape:true});
+                     }
+                     else if(divId == 'gridDecisionFinancial'){
+                          DecisionTab.updateDecisionsFinancial(modifiedData,isclosedEnabled, function(result, event)
+                         {    
+                             if (event.status)
+                             {  
+                                var cleanedData = removeQuotes(result);
+                                var grid = $("#"+divId).data("kendoGrid");
+                                grid.dataSource.data(cleanedData);
+                                 
+                                viewModel2.ds.data(
+                                    viewModel2.ds.options.schema.parse(cleanedData|| []) //just in case thenew data is null
+                                );
+                             }
+                            
+                         }, {escape:true}); 
+                     }
+                 }  
+                
+                // Date editior for Activity and next due date
+                function dateTimeEditorforActivities(container, options) {
+                    if( options.model.isTask == 'Task' ) {
+                        $('<input data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                                .appendTo(container)
+                                .kendoDatePicker({});
+                    } else {
+                        $('<input id="dateTimePicker" data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                            .appendTo(container)
+                            .kendoDateTimePicker({});
+                    }
+                }
+                
+                // Status Dropdown
+                
+                function statusDropDownEditor(container, options) {
+                   
+                        $('<input   data-text-field="StatusName" data-value-field="StatusName" data-bind="value:' + options.field + '"/>' )
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            height:220,
+                            autoBind: false,
+                            dataSource: statusValue
+                        });
+                    
+                }
+                
+                // remove quotes from json string 
+                function removeQuotes(mystring) {
+                    newString = mystring.replace(/&(lt|gt|quot|amp);/g, function (m, p) { 
+                        //return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                        return (p == "lt") ? "<" :(p == "gt") ? ">" :(p == "amp") ? "&" :"\"";
+                    });
+                    var newJ= $.parseJSON(newString);
+                     return newJ;
+                    
+                }
+            </script>
+            <style>
+                
+                .qcd-input{
+                    width: 200px;
+                }
+                .demo-section {
+                    width: 181px;
+                    min-height:25px;
+                }
+                .demo-section select {
+                    width: 350px;
+                }
+                .demo-section label {
+                    display: inline-block;
+                    margin: 15px 0 5px 0;
+                }
+                .k-multiselect-wrap .k-input{
+                   /* background-color: transparent;
+                    height: 0.31em;
+                    line-height: 1.31em;
+                    padding: .18em 0;
+                    text-indent: .33em;
+                    border: 0;
+                    margin: 1px 0 0;
+                    float: left;*/
+                }
+                .timeFrame-text{
+                    margin-left:35px;
+                    margin-bottom:5px;
+                }
+                ul.token-input-list{
+                    margin-top:2px;
+                    width: 200px !important;
+                }
+                .k-button{
+                  /*  -webkit-border-radius: 4px;
+                    border-radius: 4px;
+                    border-color: #c5c5c5; */
+                }
+                .k-picker-wrap .k-input{
+                   /* box-shadow: inset 0 0 1px 1px #ddd;
+                    -webkit-box-shadow: inset 0 0 1px 1px #ddd; */
+                }
+                .date-to{
+                    margin-top: 10px;
+                }
+                 .ui-tabs .ui-tabs-nav li{
+                    top : 0px !important;
+                }
+                #userName .k-input{
+                    display:none !important;
+                  }
+                  #filtersPanelbar .workbench-filter{
+                    width: 1403px !important;
+                  }
+            </style> 
+              
+        </div>
+        <script type="text/kendo-template" id="message">
+       <div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error" style="margin: 0.5em; display: block; " data-for="field" data-valmsg-for="field" id="field_validationMessage">
+              <span class="k-icon k-warning"> </span>Message<div class="k-callout k-callout-n">
+        </div>
+</script>
+       
+        
+        <!---------- End of Table View ------------->
+        
+       <!---------- Start of Topic Workbench ------------->
+       <div >
+       
+             <div id="decisionSearch">
+                <span class="k-textbox k-space-right">
+                    <input type="text" placeholder="Search..." id="searchTopicText"/>
+                    <a href="#" class="k-icon k-i-search" onclick="getStrategyData();">&nbsp;</a>
+                </span>
+            </div>
+            <apex:outputPanel id="TopicFilters">
+                   
+                <div id="StrategyMapFilters" class="workbench-filter">
+                    <apex:outputPanel rendered="{!chkRecPermissionForSysAdmin}">
+                        <div style="float:right;">
+                            <!--<apex:outputlink value="/apex/TopicAdminTool" style="color:blue;">Topic Management</apex:outputlink>-->
+                            <a href="/apex/TopicAdminTool" id="topicManagmentBtn" style="text-decoration:none;">Manage Topics</a>
+                        </div> 
+                    </apex:outputPanel>
+                    
+                   <ul id="topicsFiltersPanelbar" >
+                        <li id="filterPanel" class="">
+               
+                    <span class="">Filters</span>
+                     
+                     <div class = "workbench-filter" >
+                        <div class="floatLeft filtersMargin">
+                            <div>Time Frame</div>
+                            <div id="dateDrop" class="toClear">
+                                <select id="topicDateType" disabled="disabled">
+                                    <option>Due Date</option>
+                                    <option>Created Date</option>
+                                    <option selected="selected">Last Modified Date</option>
+                                </select>
+                                <select id="topicTimeFrame" onchange="calDatesTopic(this.value);" style="margin-left:0.8em;" disabled="disabled">
+                                    <option value="1 Week">1 Week</option>
+                                    <option value="2 Weeks">2 Weeks</option>
+                                    <option value="3 Weeks">3 Weeks</option>
+                                    <option value="4 Weeks">4 Weeks</option>  
+                                    <option value="1 Month">1 Month</option>  
+                                    <option value="2 Months">2 Months</option>
+                                    <option value="3 Months">3 Months</option>
+                                    <option value="4 Months">4 Months</option>
+                                    <option value="All">All</option>
+                                    <option value="custom" selected="selected">Custom</option>
+                                </select>
+                            </div>
+                            <div class="toClear">
+                                <div class="floatLeft " style="margin-top:1em;">
+                                <div>From</div>
+                                <input id="datepickerFrom" value="" onchange="getStrategyData();"/></div>
+                                
+                                <div class="floatLeft filtersMargin">
+                                <div>To</div>
+                                <input id="datepickerTo" value="" onchange="getStrategyData();"/></div>
+                            </div>
+                        </div>
+                        <div class="floatLeft filtersMargin" style="width:4px;border-left:1px solid #ccc;min-height:100px;"></div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Name</div>
+                            <select id="topicUserName" data-placeholder="Select attendees..." onChange="getStrategyData();">
+                                <option value="{!$user.Id}" selected="selected" ><apex:outputText value="{!$User.FirstName} {!$User.LastName}" /></option>
+                                <apex:repeat value="{!userList}" var="user">
+                                    <option value="{!user.Id}"><apex:outputText value="{!user.Name}" /></option>
+                                </apex:repeat> 
+                            </select>
+                            <div style="color: red;display:none;" id="userErrTopic"><b>Please select the user.</b></div>
+                        </div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Role</div>
+                            <select id="StrategyMaproleOfUser" multiple="multiple" data-placeholder="Select roles..." onchange="getStrategyData();">
+                                <option value="Responsible" selected="selected">Responsible</option>
+                                <option value="Consulted" selected="selected">Consulted</option>
+                                 <option value="Accountable" selected="selected">Accountable</option>
+                                <option value="Informed" selected="selected">Informed</option>
+                            </select>
+                        </div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Phases</div>
+                            <select id="StrategyMapdecisionPhases" multiple="multiple" data-placeholder="Select Phases..." onchange="disableStatus();getStrategyData();">
+                                <option value="Draft" selected="selected">Draft</option>
+                                <option value="Execute" selected="selected">Execute</option>
+                                <option value="Share" selected="selected">Share</option>
+                                <option value="Propose" selected="selected">Propose</option>
+                                <option value="Decide" selected="selected">Decide</option>
+                                <option value="Evaluate" selected="selected">Evaluate</option>
+                            </select></div>
+                        <div class="floatLeft filtersMargin">
+                            <div>Status</div>
+                            <select id="StrategyMapdecisionStatus" multiple="multiple" data-placeholder="Select Status..." onchange="disablePhase();getStrategyData();">
+                                <option value="Undecided" selected="selected">Undecided</option>
+                                <option value="Approved" selected="selected">Approved</option>
+                                <option value="Rejected" selected="selected">Rejected</option>
+                                <option value="Executed" selected="selected">Executed</option>
+                            </select>
+                        </div>
+                        <div class="floatLeft filtersMargin" style="width:4px;border-left:1px solid #ccc;min-height:100px;"></div>
+                        <div class="floatLeft filtersMargin">
+                        <div>&nbsp;</div>
+                        <div class="toClear"><button class="k-button" onclick="openQCD();" id="disabledButton">New Decision</button></div>
+                        </div>
+                        <div class="floatLeft filtersMargin">
+                        <div>&nbsp;</div>
+                        <div class="toClear">
+                            <button class="k-button"  onclick="setDefaultDataForTopic();" >Clear</button></div>
+                        </div>
+                            
+                     </div> 
+                    </li> 
+                </ul> 
+                    
+                </div>
+               
+                 <script>
+                       if($("#topicsFiltersPanelbar").data('kendoPanelBar') == undefined  ) 
+                    $("#topicsFiltersPanelbar").kendoPanelBar({ 
+                    });
+                    if($("#topicDateType").data('kendoDropDownList') == undefined  )
+                    $("#topicDateType").kendoDropDownList({}); 
+                    if($("#topicTimeFrame").data('kendoDropDownList') == undefined  )
+                    $("#topicTimeFrame").kendoDropDownList({}); 
+                    if($("#topicFromDate").data('kendoDatePicker') == undefined  )
+                    $("#topicFromDate").kendoDatePicker();
+                    if($("#topicToDate").data('kendoDatePicker') == undefined  )
+                    $("#topicToDate").kendoDatePicker();
+                    if($("#topicUserName").data('kendoMultiSelect') == undefined  )
+                    $("#topicUserName").kendoMultiSelect({maxSelectedItems: 1,filter: "contains"});
+                    if($("#disabledButton").data('kendoButton') == undefined  )
+                    $("#disabledButton").kendoButton({enable: false});
+                    if($("#topicManagmentBtn").data('kendoButton') == undefined  )
+                    $("#topicManagmentBtn").kendoButton({});
+                  </script>
+                <script>
+                     
+                   
+                  </script>
+                   <script>
+                    var strategyMapId = 'default';
+                    var strategyMapUserId = 'yes';
+                  
+                  
+                    if($("#StrategyMaproleOfUser").data('kendoMultiSelect') == undefined  )
+                    $("#StrategyMaproleOfUser").kendoMultiSelect();
+                    if($("#StrategyMapdecisionPhases").data('kendoMultiSelect') == undefined  )
+                    $("#StrategyMapdecisionPhases").kendoMultiSelect()
+                    if($("#StrategyMapdecisionStatus").data('kendoMultiSelect') == undefined  )
+                    $("#StrategyMapdecisionStatus").kendoMultiSelect()
+                    
+                     StrategyMaproleOfUser =    $("#StrategyMaproleOfUser").data("kendoMultiSelect");
+                     StrategyMapdecisionPhases = $("#StrategyMapdecisionPhases").data("kendoMultiSelect");
+                     StrategyMapdecisionStatus = $("#StrategyMapdecisionStatus").data("kendoMultiSelect");
+                   
+                   
+                    $("#StrategyMaproleOfUser_taglist").css('height','auto');
+                     var actualDate = new Date();
+                     var date =  new Date(actualDate.getFullYear() - 1, actualDate.getMonth(), actualDate.getDate());
+                    var format  = $('<div/>').html('{!HTMLENCODE(dateFormat)}').text();
+                    $("#datepickerFrom").kendoDatePicker({
+                         format: format, 
+                        value: date,
+                    });
+                    $("#datepickerTo").kendoDatePicker({
+                        format: format, 
+                        value: actualDate
+                    });
+                    $("#demo-input-pre-populated-with-tokenlimit-strategymap").tokenInput(  $.parseJSON('{!JSENCODE(userDataJSON)}') , {
+                        prePopulate: 
+                           $.parseJSON('{!JSENCODE(defaultUserJson)}') 
+                        ,onAdd: function (item) {
+                           strategyMapUserId = 'yes';
+                           strategyMapId = item.id;
+                           //storeIdAcc(item.id);
+                        },
+                        onDelete: function (item) {
+                            strategyMapUserId = 'no';
+                            //delIdAcc(item.id);
+                        },
+                        tokenLimit: 1,
+                        propertyToSearch: "name",
+                        resultsFormatter: function(item){ 
+                            return "<li>" + "<img src='" + item.url + "' title='" + item.name+ "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" + item.name+ "</div>" 
+                       },
+                    });
+                    
+                    // Getting tipocs on change of any filter value on topic filter
+                    var datepickerFromTemp;
+                    var datepickerToTemp;
+                    function getStrategyData(){
+                        if($('#topicUserName').val() != null){
+                            $('#userErrTopic').css('display','none');
+                            var datepickerFrom = ''+$("#datepickerFrom").data("kendoDatePicker").value();
+                            var datepickerTo = ''+$("#datepickerTo").data("kendoDatePicker").value();
+                            if($('#datepickerTo').data("kendoDatePicker").value() < $('#datepickerFrom').data("kendoDatePicker").value()){
+                                alert('To Date should be greater than From Date');
+                                if(datepickerToTemp != undefined){  
+                                    $('#datepickerTo').data("kendoDatePicker").value( datepickerToTemp);
+                                } else {
+                                    $('#datepickerTo').data("kendoDatePicker").value( actualDate);
+                                }
+                                if(datepickerFromTemp != undefined){    
+                                    $('#datepickerFrom').data("kendoDatePicker").value( datepickerFromTemp);
+                                } else {
+                                    $('#datepickerFrom').data("kendoDatePicker").value( date);
+                                }
+                                datepickerTo = $('#datepickerTo').attr("aria-label");
+                                datepickerFrom = $('#datepickerFrom').attr("aria-label");
+                                //return false; 
+                            }
+                            
+                            datepickerFromTemp = $('#datepickerFrom').data("kendoDatePicker").value();
+                            datepickerToTemp = $('#datepickerTo').data("kendoDatePicker").value();
+                            
+                            var roleOfUser = '';
+                            if($('#StrategyMaproleOfUser').val() != null){  
+                                roleOfUser = ''+$('#StrategyMaproleOfUser').val();
+                            } else {
+                                alert('Please select a role');
+                                return false;
+                            }
+                            var phases = '';
+                            if($('#StrategyMapdecisionPhases').val() != null){
+                                phases = ''+$('#StrategyMapdecisionPhases').val();
+                            } else {
+                                alert('Please select a phase');
+                               return false;
+                            }
+                            var status = '';
+                            if($('#StrategyMapdecisionStatus').val() != null){
+                                status = ''+$('#StrategyMapdecisionStatus').val();
+                            } else {
+                                alert('Please select a status');
+                                return false;
+                            }
+                            var searchText = '';
+                            if($("#searchTopicText").val() != null){
+                                searchText = $("#searchTopicText").val();
+                            }
+                            showLoader();
+                            
+                            strategyMapId = $('#topicUserName').val();
+                            getstrategyMap(searchText,datepickerFrom,datepickerTo,roleOfUser,phases,status,strategyMapId,'Decision');
+                            $('#filterHelp').css('display','none');
+                            $('#StrategyMapFilters').css('display','block');
+                            return true;
+                        } else {
+                            $('#userErrTopic').css('display','block');
+                        }
+                    }
+                    
+                    $('#searchTopicText').keypress(function(e){ 
+                        if (e.keyCode == '13'){
+                          getStrategyData();
+                        }
+                    });
+                    
+                    function setDefaultDataForTopic(){ 
+                        var ToDayDate = new Date();
+                        $("#datepickerFrom").val(kendo.toString(new Date(ToDayDate.getFullYear() - 1, ToDayDate.getMonth(), ToDayDate.getDate()), kendo.culture().calendar.patterns.d));
+                        $("#datepickerTo").val(kendo.toString(new Date(), kendo.culture().calendar.patterns.d));
+                        var uId = '{!$User.Id}';
+                        $("#topicUserName").data("kendoMultiSelect").value(uId);
+                        $("#searchTopicText").val('');
+                        var data = [ {name: 'Draft', value: 'Draft' },
+                        {name: 'Execute', value: 'Execute' },
+                        {name: 'Share', value: 'Share' },
+                        {name: 'Propose', value: 'Propose' },
+                        {name: 'Decide', value: 'Decide' },
+                        {name: 'Evaluate', value: 'Evaluate' } ];
+                        $("#StrategyMapdecisionPhases").kendoMultiSelect({dataSource: data});
+                        var data1 = [ {name: 'Undecided', value: 'Undecided' },
+                        {name: 'Approved', value: 'Approved' },
+                        {name: 'Rejected', value: 'Rejected' },
+                        {name: 'Executed', value: 'Executed' }];
+                        $("#StrategyMapdecisionStatus").kendoMultiSelect({dataSource: data1});
+                        var StrategyMapdecisionStatus = $("#StrategyMapdecisionStatus").data("kendoMultiSelect");
+                        StrategyMapdecisionStatus.enable(true);
+                        var StrategyMapdecisionPhases = $("#StrategyMapdecisionPhases").data("kendoMultiSelect");
+                        StrategyMapdecisionPhases.enable(true);
+                        var data2 = [ {name: 'Responsible', value: 'Responsible' },
+                        {name: 'Consulted', value: 'Consulted' },
+                        {name: 'Accountable', value: 'Accountable' },
+                        {name: 'Informed', value: 'Informed' }];
+                        $("#StrategyMaproleOfUser").kendoMultiSelect({dataSource: data2});
+                        showLoader();
+                        getStrategyDataClear(false);
+                    }
+                    
+                    function calDatesTopic(val){
+                        var todayDate = new Date();
+                        var todayDateMonth = todayDate.getMonth() + 1;
+                        var todayDateDay = todayDate.getDate();
+                        var todayDateYear = todayDate.getFullYear();
+                        var todayDateDisplayPadded = ("00" + todayDateMonth.toString()).slice(-2)+ "/" + ("00" + todayDateDay.toString()).slice(-2)+ "/" + ("0000" + todayDateYear.toString()).slice(-4);
+                        var date = kendo.parseDate(todayDateDisplayPadded, "MM/dd/yyyy");
+                        $("#topicToDate").data("kendoDatePicker").value(date);
+                        var d = new Date();
+                        if(val == '1 Week'){
+                            var date1 = calWeeks(7);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '2 Weeks'){
+                            var date1 = calWeeks(14);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '3 Weeks'){
+                            var date1 = calWeeks(21);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '4 Weeks'){
+                            var date1 = calWeeks(28);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '1 Month'){
+                            var date1 = calMonth(1);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '2 Months'){
+                            var date1 = calMonth(2);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '3 Months'){
+                            var date1 = calMonth(3);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == '4 Months'){
+                            var date1 = calMonth(4);
+                            $("#topicFromDate").data("kendoDatePicker").value(date1);
+                        } else if(val == 'All'){
+                            $("#topicToDate").data("kendoDatePicker").value(null);
+                            $("#topicFromDate").data("kendoDatePicker").value(null);
+                        }
+                    }
+                    
+                    function hasUserTopic(){
+                        if($("#topicUserName").val() != null){
+                            $('#userErrTopic').css('display','none');
+                            getStrategyData();
+                        } else {
+                            $('#topicUserName').css('display','block');
+                        }
+                    }
+                    
+                    setTimeout(function(){
+                      calDatesTopic('1 Week');
+                    }, 2000);
+                    
+                    function disableStatus(){
+                        var phasesSelected = ''+$('#StrategyMapdecisionPhases').val();
+                        if(phasesSelected == 'Draft,Execute,Share,Propose,Decide,Evaluate'){
+                            var StrategyMapdecisionStatus = $("#StrategyMapdecisionStatus").data("kendoMultiSelect");
+                            StrategyMapdecisionStatus.enable(true);
+                        } else {
+                            var StrategyMapdecisionStatus = $("#StrategyMapdecisionStatus").data("kendoMultiSelect");
+                            StrategyMapdecisionStatus.enable(false);
+                        }
+                    }
+                    
+                    function disablePhase(){
+                        var statusSelected = ''+$('#StrategyMapdecisionStatus').val();
+                        if(statusSelected == 'Undecided,Approved,Rejected,Executed'){
+                            var StrategyMapdecisionPhases = $("#StrategyMapdecisionPhases").data("kendoMultiSelect");
+                            StrategyMapdecisionPhases.enable(true);
+                        } else { 
+                            var StrategyMapdecisionPhases = $("#StrategyMapdecisionPhases").data("kendoMultiSelect");
+                            StrategyMapdecisionPhases.enable(false);
+                        }
+                    }
+                    
+                    function setMyDefaultData(){
+                        document.getElementById('objectType').value = 'Topic';
+                        $('#filterHelp').css('display','none');
+                        $('#StrategyMapFilters').css('display','block');
+                        getStrategyData();
+                    }
+                    
+                    $('.demo-section').each(function(index,p){  
+                       $(p).find( 'input' ).css('display','none') ; 
+                       $(p).find('div').css('min-height','25px') ;
+                       $(p).find( 'input' ).next().css('display','none') ;
+                    })
+                   
+                </script>
+            </apex:outputPanel>
+               
+             <!-- // ========== used for progress indicator dropdown ========== // -->
+     
+      <!-- // ========== End of progress indicator dropdown ========== // -->
+            <apex:panelGroup id="WorkbenchTopicsView">  
+               <apex:panelGroup rendered="{!loadTopicWorkbench}">
+                    <c:WorkbenchTopicsView showTopic="{!loadTopicWorkbench}" />
+               </apex:panelGroup>
+            
+             <script>
+                function topicLoaded(){
+                    isTopic = 'Yes';
+                }
+                
+             </script>
+            </apex:panelGroup>
+            
+            
+       </div>
+       <!--    End of Topic workbench -->
+    
+       <div id="topic-network">
+        
+                                     <!-- -  network role phase and name filter -->  
+            <!--<div id="decisionSearch">
+                <span class="k-textbox k-space-right">
+                    <input type="text" placeholder="Search..." id="searchTopicText"/>
+                    <a href="#" class="k-icon k-i-search" onclick="getStrategyData();">&nbsp;</a>
+                </span>
+            </div>-->  
+                 <ul id="networkFiltersPanelbar" >
+                  
+                <li id="item" class="">
+               
+                    <span class="">Filters</span>
+                             <div class = "workbench-filter">
+                                 <div >  
+                                     
+                                    <div class = "floatLeft filtersMargin">
+                                        <div class = "">Role</div>
+                                            <select id="role" multiple="multiple" data-placeholder="Select roles..." >
+                                                <option value="Responsible"  >Responsible</option>
+                                                <option value="Consulted"  >Consulted</option>
+                                                 <option value="Accountable" selected="selected">Accountable</option>
+                                                <option value="Informed"  >Informed</option>
+                                            </select>
+                                    </div>   
+                                    <div class = "floatLeft filtersMargin">
+                                        <div class = "">Phase</div>
+                                            <select id="Phase" multiple="multiple" data-placeholder="Select Phases..." >
+                                                <option value="Draft" selected="selected">Draft</option>
+                                                <option value="Execute" selected="selected">Execute</option>
+                                                <option value="Share" selected="selected">Share</option>
+                                                <option value="Propose" selected="selected">Propose</option>
+                                                <option value="Decide" selected="selected">Decide</option>
+                                                <option value="Evaluate" selected="selected">Evaluate</option>
+                                            </select>
+                                    </div>
+                                   
+                                   <div class = "floatLeft filtersMargin">
+                                        <div class = "">Decision Name</div>
+                                        <input id = "decisionName" type="text"/>
+                                    </div> 
+                                    <div class="floatLeft filtersMargin">
+                                    <div>&nbsp;</div>
+                                   <div class="toClear">
+                                        <button class="k-button"  onclick="clearFilter();" >Clear</button></div>
+                                   </div>
+                                </div>
+                            </div>
+                            </li>
+                            </ul>
+                             
+                            <!--<div class="floatLeft" style="font-weight:bold;">(Beta)</div>
+                            <div class=" floatRight">
+                                <div id="fullscreen" class="">
+                                    <a href="#" class="requestfullscreen" ><span title="View in full screen" class="icon-expand" style="width:22px;height:22px;"></span></a>
+                                    <a href="#" class="exitfullscreen" style="display: none;"><span title="View in full screen" class="icon-contract" style="width:22px;height:22px;"></span></a>
+                                </div>
+                               
+                            </div>
+                            <div class="toClear ">            
+                                 <iframe src="/apex/networkgraph" id="networkframe" frameborder="1" width="1275px" height="400px"></iframe>
+                            </div>-->  
+                                <div >
+                                <div id="fullscreen" >
+                                        <div class="floatLeft" style="font-weight:bold;">(Beta)</div>
+                                         <a href="#" class="requestfullscreen"><span title="View in full screen" class="icon-expand" style="width:22px;height:22px;"></span></a>
+                                         <a href="#" class="exitfullscreen" style="display: none"><span title="View in full screen" class="icon-contract" style="width:22px;height:22px;"></span></a>
+                                         
+                                     <!--   <input id="slider" style="width: 200px;" />
+                                            <script>
+                                            function sliderOnSlide(e) {
+                                                kendoConsole.log("Slide :: new slide value is: " + e.value);
+                                            }
+                           
+                                            function sliderOnChange(e) {
+                                                kendoConsole.log("Change :: new value is: " + e.value);
+                                            }
+                                                $(document).ready(function() {
+                                                    $("#slider").kendoSlider(
+                                                    {
+                                                        change: sliderOnChange,
+                                                        slide: sliderOnSlide,
+                                                        min: 1,
+                                                        max: 10,
+                                                        smallStep: 1,
+                                                        largeStep: 10,
+                                                        value: 3,
+                                                        orientation: "vertical",
+                                                    });
+                                                   var slider = $("#slider").getKendoSlider();
+                                                    slider.wrapper.css("width", "200px");
+                                                    slider.wrapper.css("top", "35px");
+                                                    slider.wrapper.css("float", "right");
+                                                    
+                                                    slider.resize();
+                                                });
+                                            </script>  --> 
+                                           <script>
+                                           alert('frame');     
+                                          </script>
+                                         <iframe src="/apex/networkgraph" onload="hideLoaderAndFade()" id="networkframe" frameborder="0" width="1280px" height="400px" />
+                                </div>
+                            </div>
+                               
+                               
+                            <script>
+                            $("#networkFiltersPanelbar").kendoPanelBar({
+                                //expandMode: "single"
+                            });
+                         $(document).ready(function() {
+                            var dataRole = [
+                            {text: "Accountable", value:"Accountable"},
+                            {text: "Responsible", value:"Responsible"},
+                            {text: "Consulted", value:"Consulted"},
+                            {text: "Informed", value:"Informed"}                  
+                            ];
+                    
+                            $("#role").kendoMultiSelect({
+                                dataTextField: "text",
+                                dataValueField: "value",
+                                dataSource: dataRole,
+                                 maxSelectedItems:1,
+                                  
+                                change: function(e) {
+                                    $("#decisionName").data("kendoAutoComplete").setDataSource(new kendo.data.DataSource({  data: [] }))
+                                    $('#decisionName').data('kendoAutoComplete').value('') 
+
+                                }
+                            });
+                            
+                            var dataPhase = [
+                            {text: "Draft", value:"Draft"},
+                            {text: "Share", value:"Share"},
+                            {text: "Propose", value:"Propose"},
+                            {text: "Decide", value:"Decide"},
+                            {text: "Execute", value:"Execute"},
+                            {text: "Evaluate", value:"Evaluate"},
+                            {text: "Close", value:"Close"}
+        
+        
+                            ];
+                    
+                            $("#Phase").kendoMultiSelect({
+                                dataTextField: "text",
+                                dataValueField: "value",
+                                dataSource: dataPhase,
+                                maxSelectedItems:1,
+                                change: function(e) {
+                                    $("#decisionName").data("kendoAutoComplete").setDataSource(new kendo.data.DataSource({  data: [] }))
+                                    $('#decisionName').data('kendoAutoComplete').value('') 
+
+                                
+                                }
+                            });
+                        });
+                         var autoCompleteRun = false;
+                         var dataSource = new kendo.data.DataSource({
+                                  schema: {
+                                    data:[],
+                                    model: {
+                                      fields: {
+                                        decisionId: {
+                                            type: "string"
+                                        },
+                                        recordName: {
+                                            type: "string"
+                                        },
+                                      }
+                                    }
+                                  }
+                                });
+                                $("#decisionName").kendoAutoComplete({
+                                    dataTextField: "recordName",
+                                    filter: "contains",
+                                    dataSource :dataSource,
+                                    minLength: 1,
+                                    select: onSelect
+                                });
+                                
+                                // on name field keyup if length is zero then clear network
+                            $("#decisionName").keyup(function(){
+                            
+                                    if( $("#decisionName").val().length == 0 ) {
+                                            
+                                               d3.select("svg").remove();
+                                               $('#popupDecisionCard').css('display','none');
+                                               $('#popupPlanCard').css('display','none');
+                                              
+                                    }
+                            });
+                            
+                           // on name field keypress  if length is zero then search from database
+                            $("#decisionName").keypress(function(){
+                                      if( ! autoCompleteRun ){  
+                                                                      
+                                          
+                                          $("#decisionName").data("kendoAutoComplete").close();
+                                           var role =    $("#role").data("kendoMultiSelect").value().toString();
+                                           var phase =   $("#Phase").data("kendoMultiSelect").value().toString();
+                                           
+                                           if( $("#decisionName").val().length > 1 ){
+                                                   autoCompleteRun = true;
+                                                   NetworkView.runSearch( $("#decisionName").val(),role,phase,function(result,event){
+                                                       var dataSource = new kendo.data.DataSource({
+                                                          data: removeQuotes(result)
+                                                        }); 
+                                                        console.log(removeQuotes(result));
+                                                        $("#decisionName").data("kendoAutoComplete").setDataSource(dataSource);;
+                                                        $("#decisionName").data("kendoAutoComplete").search($("#decisionName").val() );
+                                                        autoCompleteRun = false;
+                                                  },{ escape: false  }) 
+                                             }
+                                       }
+                            
+                            })
+                            
+                            var decisionSelected;
+                            //if any of the autocomplete suggestion is selected create new network using buildnetwork
+                            function onSelect(e) {
+                                     showLoader();  
+                                    var dataItem = this.dataItem(e.item.index());
+                                     decisionSelected = dataItem.decisionId;
+
+                                    document.getElementById('networkframe').src = '/apex/networkgraph?id='+dataItem.decisionId;
+                                    //loadNodes(dataItem.decisionId);
+                                     
+                            } 
+                             // remove quate from json string 
+                            function removeQuotes(mystring) {
+                                    
+                                newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                                    return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                                });
+                                
+                                //var newJ= $.parseJSON(newString);
+                                var  newJ = eval ("(" + newString+ ")");
+                                return newJ;
+                            }
+                            //clear fileter resstes the filters
+                            function clearFilter(){
+                            
+                              
+                                $('#popupDecisionCard').css('display','none');
+                                $('#popupPlanCard').css('display','none');
+                                var roleselect = $("#role").data("kendoMultiSelect");
+                                var phaseselect = $("#Phase").data("kendoMultiSelect");
+                                
+                                // set the value of the multiselect.
+                                roleselect.value(["Accountable"]);
+                                phaseselect.value(["Draft"]);
+                                
+                                $('#decisionName').data('kendoAutoComplete').value('') 
+                                 
+                            }
+                            $('.demo-section').each(function(index,p){   
+                               $(p).find( 'input' ).css('display','none') ; 
+                               $(p).find('div').css('min-height','25px') ;
+                               $(p).find( 'input' ).next().css('display','none') ;
+                            })
+                    </script>
+       
+       </div>
+   </div>
+   
+   
+   <apex:outputpanel id="PIScriptholder">
+      
+      <script>
+        var selectedIndicatorID = "";
+        
+            function showIndicator(e,num){
+                var hoveredIndicator = document.getElementById("indicator"+num); 
+                  //console.log(e)
+                  var mouseOverDropDown = document.getElementById("indicatorDropDownDisplay");
+                  var containerPI =  document.getElementById("PIholder"+num);
+                  if(document.getElementById("indicatorDropDown").style.display=="none"){
+                       hoveredIndicator.style.cursor="default";
+                       $(containerPI).append($('#indicatorDropDownDisplay'));
+                        $('#indicatorDropDownDisplay').show();
+                        //$('#indicatorDropDownDisplay').css('position','absolute')
+                        //$('#indicatorDropDownDisplay').css('left', (e.pageX -175) );
+                        //$('#indicatorDropDownDisplay').css('top',(e.pageY -130));
+                          
+                   }
+            }
+            function hideIndicator(num){
+                    document.getElementById("indicatorDropDownDisplay").style.display="none";
+                   //$('#indicatorDropDownDisplay').hide();
+                    var containerPI =  document.getElementById("PIholder"+num);
+                   // alert($("containerPI div:first-child").attr('id') );
+                   if($(containerPI).length>0){
+                    //$(containerPI).children("div").remove();
+                   }
+                   
+            } 
+            var globalDecisionId ;
+            function openIndicator(e,decisionId, num, Role, Acc, Bac, Res,status){  
+               //console.log(e)
+               //console.log('123'+decisionId)
+               globalDecisionId = decisionId ;
+               selectedIndicatorID = document.getElementById("indicator"+num);
+               var containerPI =  document.getElementById("PIholder"+num);
+              // $(containerPI).remove($('#indicatorDropDownDisplay'));
+                $(containerPI).append($('#indicatorDropDown'));
+               // alert($(containerPI).html());
+                //$('#indicatorDropDown').css('position','absolute')
+                //$('#indicatorDropDown').css('left',(e.pageX -175) );
+                //$('#indicatorDropDown').css('top',(e.pageY -130));
+                var chkpermission = (convertStringToBoolean(Acc) ||  convertStringToBoolean(Bac)  ||  convertStringToBoolean(Res) )  ? true : false;
+                if( Role  == 'Approved/Accepted' )
+                {    
+                     if( status != 'Closed'  )
+                         chkpermission =   ( chkpermission == true) ? true :false; 
+                     else
+                         chkpermission = false;  
+                }  
+                else
+                     chkpermission = false;  
+                if(chkpermission ){
+                    if(document.getElementById("indicatorDropDown").style.display=="none"){
+                       // document.getElementById("indicatorDropDownDisplay").style.display="none";
+                       // $(containerPI).remove($('#indicatorDropDownDisplay'));
+                        document.getElementById("indicatorDropDown").style.display="block";
+                       // $(containerPI).append($('#indicatorDropDown'));
+                    }else{
+                        document.getElementById("indicatorDropDown").style.display="none";
+                         if($(containerPI).length>0){
+                            //$(containerPI).remove($('#indicatorDropDown'));
+                        }
+                    }
+                }
+            }
+           function selectIndicator(indicatorID){  
+         //console.log('indicator'+indicatorID);
+          //console.log('pulseStatus'+pulseStatus);
+                document.getElementById("indicatorDropDown").style.display="none";
+              //alert('indicatorID'+globalDecisionId);
+                switch(indicatorID) {
+                   case "notGiven":
+                        WorkbenchDecisionView.updatePulse('Not Given',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px 0px";
+                        break;
+                    case "good":
+                        WorkbenchDecisionView.updatePulse('Good',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -10px";
+                        break;
+                    case "minorChallenges":
+                        WorkbenchDecisionView.updatePulse('Minor Challenges',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -20px";
+                        break;
+                    case "critical":
+                        WorkbenchDecisionView.updatePulse('Critical',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -30px";
+                        break;
+                    case "completed":
+                        WorkbenchDecisionView.updatePulse('Completed',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -40px";
+                        break;
+                    case "completedProb":
+                        WorkbenchDecisionView.updatePulse('Completed with Problems',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -50px";
+                        break;        
+                    }
+            }
+            
+             
+            // convert string to boolean 
+            function convertStringToBoolean(srcValue) {
+                
+                var destinationValue;
+                if(srcValue == 'true') {
+                    destinationValue = true;
+                }
+                else if (srcValue == 'True') {
+                    destinationValue = true;
+                }
+                else if  (srcValue == true) {
+                    destinationValue = true;
+                }
+                else if  (srcValue == '1') {
+                    destinationValue = true;
+                }
+                else if  (srcValue == '0') {
+                    destinationValue = false;
+                }
+                else if(srcValue == 'false') {
+                    destinationValue = false;
+                }
+                else if (srcValue == 'False') {
+                    destinationValue = false;
+                }
+                else if  (srcValue == false) {
+                    destinationValue = false;
+                }
+                return destinationValue;
+            }
+     </script>
+      <!-- // ========== used for progress indicator dropdown ========== // -->
+                            <div id="indicatorDropDown" class="indicatorDropDown floatRight"  style="display:none;">
+                               <div id="notGiven" class="toClear " onclick="selectIndicator(this.id)" style="display:block;width:100%;height:100%"> 
+                                    <div class="floatLeft notGiven"> </div> <div class="floatLeft fontBold indicatorLable">Not Given</div>
+                               </div> 
+                                <div id="good" class="toClear topBorder" onclick="selectIndicator(this.id)" style="display:block;width:100%;height:100%">   
+                                    <div class="floatLeft good"> </div> <div class="floatLeft fontBold indicatorLable">Good</div>
+                                </div>    
+                                <div id="minorChallenges" class="toClear topBorder" onclick="selectIndicator(this.id)" style="display:block;width:100%;height:100%">
+                                   <div class="floatLeft minorChallenges"> </div> <div class="floatLeft fontBold indicatorLable">Minor Challenges</div>
+                                    </div>
+                                <div id="critical" class="toClear topBorder" onclick="selectIndicator(this.id)" style="display:block;width:100%;height:100%">
+                                    <div class="floatLeft critical"> </div><div class="floatLeft fontBold indicatorLable">Critical</div>
+                                </div>
+                                <div id="completed" class="toClear topBorder" onclick="selectIndicator(this.id)" style="display:block;width:100%;height:100%">
+                                    <div class="floatLeft completed"> </div><div class="floatLeft fontBold indicatorLable">Completed</div>
+                                </div>
+                                <div id="completedProb" class="toClear topBorder" onclick="selectIndicator(this.id)" style="display:block;width:100%;height:100%">
+                                    <div class="floatLeft completedProb"> </div><div class="floatLeft fontBold indicatorLable">Completed with Problems</div>
+                                </div>  
+                            </div>
+                            <div id="indicatorDropDownDisplay" class="indicatorDropDownDisplay floatRight"  style="display:none;">  
+                                <div id="notGiven" class="toClear "  >
+                                    <div class="floatLeft notGiven"> </div> <div class="floatLeft fontBold indicatorLable">Not Given</div>
+                                </div>
+                                <div id="good" class="toClear topBorder"  >
+                                    <div class="floatLeft good"> </div> <div class="floatLeft fontBold indicatorLable">Good</div>
+                                    </div>
+                                <div id="minorChallenges" class="toClear topBorder"  >
+                                    <div class="floatLeft minorChallenges"> </div> <div class="floatLeft fontBold indicatorLable">Minor Challenges</div>
+                                   </div>
+                                <div id="critical" class="toClear topBorder"  >
+                                    <div class="floatLeft critical"> </div><div class="floatLeft fontBold indicatorLable">Critical</div>
+                                </div>
+                               <div id="completed" class="toClear topBorder"  >
+                                    <div class="floatLeft completed"> </div><div class="floatLeft fontBold indicatorLable">Completed</div>
+                                </div>
+                                <div id="completedProb" class="toClear topBorder"  >
+                                    <div class="floatLeft completedProb"> </div><div class="floatLeft fontBold indicatorLable">Completed with Problems</div>
+                                </div>
+                            </div>
+                             <!-- // ========== End of progress indicator dropdown ========== // -->
+    
+    </apex:outputpanel>
+               <script type="text/javascript">
+                $(function() {
+                    // check native support
+                    $('#support').text($.fullscreen.isNativelySupported() ? 'supports' : 'doesn\'t support');
+
+                    // open in fullscreen
+                    $('#fullscreen > .requestfullscreen').click(function() {
+                        var winHeight = $(window).height();
+                        //alert(winHeight);
+                        document.getElementById('networkframe').src =  '/apex/networkgraph?id=' + decisionSelected;
+                        //document.getElementById('networkframe').height  =  "600px"
+                        $('#networkframe').css('height',winHeight+'px').css('margin-top','50px');
+                        
+                         showLoader()
+
+                        $('#fullscreen').fullscreen();
+                        return false;
+                    });
+
+                    // exit fullscreen
+                    $('#fullscreen > .exitfullscreen').click(function() {
+                    
+                        document.getElementById('networkframe').src =  '/apex/networkgraph?id=' + decisionSelected;
+                       //document.getElementById('networkframe').height  =  "400px"
+                         $('#networkframe').css('height','400px').css('margin-top','10px');
+                          showLoader()
+
+                        $.fullscreen.exit();
+                        return false;
+                    });
+
+                    // document's event
+                    $(document).bind('fscreenchange', function(e, state, elem) {
+                        // if we currently in fullscreen mode
+                        if ($.fullscreen.isFullScreen()) {
+                            $('#fullscreen .requestfullscreen').hide();
+                            $('#fullscreen .exitfullscreen').show();
+                        } else {
+                            $('#fullscreen .requestfullscreen').show();
+                            $('#fullscreen .exitfullscreen').hide();
+                        }
+
+                        $('#state').text($.fullscreen.isFullScreen() ? '' : 'not');
+                    });
+                });
+            </script>
+</apex:page>

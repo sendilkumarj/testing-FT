@@ -1,0 +1,271 @@
+<apex:page sidebar="false" controller="AddRelations" tabStyle="Plan__c" id="pg">
+<html>
+    <head>
+       <!--------- FT Stylesheets ----------->
+        
+       <apex:stylesheet value="{!$Page.CommonStyles}" />
+       <apex:stylesheet value="{!$Page.SocialInputStyles}" />
+       <apex:stylesheet value="{!$Page.OverrideStyles}" />
+       
+       <!--------- FT Scripts ----------->
+       <apex:includeScript value="{!$Page.CommonScripts}" />
+       
+       <!--------- jQuery ----------->
+        <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/> 
+       
+       <script>
+       		//FT Favicon
+		       (function() {
+		        var link = document.createElement('link');
+		        link.type = 'image/x-icon';
+		        link.rel = 'shortcut icon';
+		        link.href = '{!$Resource.Favicon}';
+		        document.getElementsByTagName('head')[0].appendChild(link);
+		         $(document).prop('title', 'Item');
+		    }());
+       
+           $(document).ready(function(){
+              changeFooterText(); 
+           });
+           
+           // script for google analytics
+         var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-34907619-2']);
+          _gaq.push(['_trackPageview']);
+        
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+       </script> 
+      <c:WalkMeAndSupportButton />
+<!--       <script type="text/javascript">(function() {var walkme = document.createElement('script'); walkme.type = 'text/javascript'; walkme.async = true; walkme.src = 'https://d3b3ehuo35wzeh.cloudfront.net/users/3d4e7e29fbce4945a03495f309d755c1/test/walkme_3d4e7e29fbce4945a03495f309d755c1_https.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(walkme, s);})();</script>-->
+    </head>
+    <body>
+            <!------------ Content -------------->
+       <div class = "wrapper">
+                <!------------ Page Header -------------->
+            <div class = "page-head header-border">
+                <div class = "object-icon ft-left">
+                    <img src = "{!URLFOR($Resource.Images, 'common/icon-relationship-32x32.png')}" />
+                </div>
+                <div class = "headers ft-left">
+                    <span class = "page-subhead ft-left">Add Item</span><br />
+                    <h2> <apex:outputText value="{!currentRecordName}" /> </h2>
+                </div>
+            </div>
+                <!------------ End Page Header -------------->
+                <!------------ Top Help Text -------------->
+            <div class = "content-text">
+                Add items to your plan.
+            </div>    
+                <!------------ End Top Help Text -------------->
+            
+                <!------------ Add reltionship Section -------------->
+            <div class = "social-section-head">
+                <img class = "ft-left" src = "{!URLFOR($Resource.Images, 'common/icon-recordAdd-24x24.png')}" />
+                <h3 class = "ft-left">Add Item</h3>
+            </div> 
+            <div class = "content-text">
+                Click search to get the complete list of records or type the name of the item you are looking for.
+            </div> 
+            <apex:form >    
+            <div class = "social-search-container">
+                Search within &nbsp;
+              
+                <select id="chooseObject">
+                  <apex:repeat value="{!userAccessibleobjects}" var="option">
+                     <option value="{!option.value}">{!option.label} </option>
+                  </apex:repeat>
+                </select>
+                &nbsp;&nbsp;for &nbsp;
+              <!--  <apex:inputText id="searchText" value="{!SearchText}"/>&nbsp;
+                <apex:commandButton action="{!searchItems}" value="Search" reRender="searchTable" /> -->
+                <input type="text" id="searchText" />
+                <button class="k-button" type="button" onclick="searchItems();">Search</button>
+                <apex:actionFunction name="searchMyItems" action="{!searchItems}" oncomplete="validateSearch('{!srchRelationship.size}');" reRender="searchTable" >
+                    <apex:param name="chooseObject" id="chooseObject" value="" />
+                    <apex:param name="searchText" id="searchText" value="" />
+                </apex:actionFunction>
+            </div> 
+            </apex:form>
+            <apex:form id="searchTable">
+            
+                
+            <div class = "social-table-container">    
+                <table cellspacing = "0" cellpadding = "0" class = "tbl-add-rel">
+                    <tr>
+                        <td class = "social-thead cell-width1">
+                            Select
+                        </td>
+                        <td class = "social-thead">
+                            Name
+                        </td>
+                        <td class = "social-thead cell-width2 thead-rborder">
+                            Type
+                        </td>
+                    </tr>
+                </table>    
+                <div class = "tbl-body-container-search">
+                    <table cellspacing = "0" cellpadding = "0" class = "tbl-add-rel"> 
+                        <apex:repeat value="{!srchRelationship}" var="rc"  >
+                        <tr>
+                            <td class = "social-tcell cell-center tcell-left cell-width1">
+                                <apex:inputCheckbox styleClass="item-check" value="{!rc.Select__c}"/>
+                            </td>
+                            <td class = "social-tcell">
+                                <apex:outputText value="{!rc.Child_Record_Name__c}"/>
+                            </td>
+                            <td class = "social-tcell tcell-right cell-width2">
+                                <apex:outputText value="{!rc.Child_Object_Name__c}"  />
+                            </td>
+                        </tr>
+                        </apex:repeat>                        
+                    </table>
+                </div>    
+            </div>
+            <div class = "tbl-buttons-add btn-hold-width1"> 
+                <button class="k-button"  type = "button" onclick = "checkForSelection();"> Add </button> 
+                <button class="k-button"  type = "button" onclick="checkForSelectionAndClose()">  <apex:outputText value="Add & Close" /> </button> 
+            </div>
+            <apex:actionFunction name="add" action="{!addFromSrch}"  oncomplete="removeSrchTxt();" reRender="itemTable,searchTable"/>
+             <script>
+             $('#searchText').keypress(function(e){
+                if (e.keyCode == '13'){
+                  //alert(this.value);
+                  searchItems();
+                  return false;
+                }
+            });
+             function checkForSelection()
+             { 
+                if( $('.item-check:checked').length > 0 ){
+                 add();
+                }
+                else{
+                 alert('Atleast you should select one item.');
+                } 
+                
+             }
+            function checkForSelectionAndClose(){
+             	if( $('.item-check:checked').length > 0 ){
+             	 $('#addAndCloseButton').addClass('btn-disabled');
+             	 $('#addbutton').addClass('btn-disabled');
+                 addAndClose();
+                }
+                else{
+                 alert('Atleast you should select one item.');
+                } 
+             }
+             
+             function removeSrchTxt(){
+               
+                document.getElementById('searchText').value = '';
+             }
+             function searchItems(){
+                   var chooseObject = document.getElementById('chooseObject').value;
+                   var searchText= document.getElementById('searchText').value;
+                   searchMyItems(chooseObject,searchText);
+             }
+             function validateSearch(lstSize){
+                  if(lstSize == 0)    
+                      alert('No items to display');
+             }
+             
+             
+            </script>  
+             <apex:actionFunction name="addAndClose" action="{!addAndClose}"/> 
+            </apex:form>      
+                <!------------ End Add reltionship Section -------------->  
+                
+                    <!------------ Selected List Section -------------->
+            <div class = "social-section-head">
+                <img class = "ft-left" src = "{!URLFOR($Resource.Images, 'common/icon-recordSelected-24x24.png')}" />
+                <h3 class = "ft-left">Selected List</h3>
+            </div> 
+            <div class = "content-text">
+                    Select the items you want to add to your plan.
+            </div > 
+                <div class="tbl-buttons-add btn-hold-width">
+                    <button  class="k-button"  type = "button" onclick="save()">  Save and Close </button> 
+                    <button  class="k-button"  type = "button" onclick="cancel()">  Cancel </button> 
+                </div>
+            
+           
+                <!------------ Selected List Table -------------->
+            <apex:form id="itemTable">   
+            <div class = "social-table-container">
+                <table cellspacing = "0" cellpadding = "0" class = "tbl-relationship">
+                    <tr>
+                        <td class = "social-thead cell-width1">
+                            Select
+                        </td>
+                        <td class = "social-thead">
+                            Name
+                        </td>
+                        <td class = "social-thead cell-width2">
+                            Type
+                        </td>
+                        <td class = "social-thead cell-width2 thead-rborder">
+                            Description
+                        </td>
+                    </tr>
+                </table>
+                <div class = "tbl-body-container">
+                    <table cellspacing = "0" cellpadding = "0" class = "tbl-relationship">
+                        <apex:repeat id="addItems" value="{!addItemsRelationship}" var="ai" >   
+                        <tr>
+                            <td class = "social-tcell tcell-left cell-width1">
+                               <apex:inputcheckBox selected="false"  id="raciSelect" value="{!ai.Select__c}" label=""/> 
+                            </td>
+                            <td class = "social-tcell">
+                               <apex:outputText id="raciName" value="{!ai.Child_Record_Name__c}" label=""/> 
+                            </td>
+                            <td class = "social-tcell cell-width2">
+                               <apex:outputText id="raciDept3" value="{!ai.Child_Object_Name__c}" label=""/> 
+                            </td>
+                            <td class = "social-tcell tcell-right cell-width2">
+                               <apex:inputField styleClass="social-textarea" value="{!ai.Description__c}"  />
+                            </td>
+                            
+                        </tr>
+                       </apex:repeat>
+                       <apex:repeat id="existingItems" value="{!existingRecords}" var="aii" >   
+                        <tr>
+                            <td class = "social-tcell tcell-left cell-width1">
+                                
+                            </td>
+                            
+                            <td class = "social-tcell">
+                               <apex:outputText id="raciName1" value="{!aii.Child_Record_Name__c}" label=""/> 
+                            </td>
+                            <td class = "social-tcell cell-width2">
+                               <apex:outputText id="raciDept12" value="{!aii.Child_Object_Name__c}" label=""/> 
+                            </td>
+                            <td class = "social-tcell tcell-right cell-width2">
+                               <apex:outputText value="{!aii.Description__c}" label="" /> 
+                            </td>
+                             
+                            
+                        </tr>
+                       </apex:repeat>
+                    </table>
+                </div>
+            </div>
+                <!------------ End Selected List Table -------------->
+            <div class = "tbl-buttons-add btn-hold-width"> 
+                <button  class="k-button" type = "button" onclick="save()">  Save and Close </button> 
+                <button  class="k-button" type = "button" onclick="cancel()">  Cancel </button> 
+            </div> 
+                
+               
+                <apex:actionFunction name="save" action="{!save_and_close}"/>
+                <apex:actionFunction name="cancel" action="{!cancel}"/>
+            </apex:form>   
+                <!------------ End Selected List Section -------------->        
+       </div>              
+            <!------------ End Content -------------->
+    </body>
+</html>    
+</apex:page>

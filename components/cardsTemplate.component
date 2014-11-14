@@ -1,0 +1,370 @@
+<apex:component >
+    <script id="decision-template" type="text/x-kendo-template">
+                    #if( cardType == 'Decision'){#
+                        <div class="viewCardContainer" id="viewCardContainer#:decisionId#">
+                          #if(showOvelay == true){#
+							<div Id="overLay#:decisionId#" class="overLay"> 
+
+									<div id="close#:decisionId#" class="closeOverlay" onclick="closeOverLay('#:decisionId#');">
+										<span role="presentation" class="k-icon k-i-close">Close</span>
+									 </div>
+                                    <div class="approvalOverlayButton toClear toCenter">
+                                       #if(showApprovalOvelay == 'role'){#
+											<div class="acceptButton toCenter" onclick="showDecisionApprovalModal('Role Acceptance','#:approvalProcessId#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"><span class="actionSpace">Accept/Reject</span></div>
+										#}#
+									   #if(showApprovalOvelay == 'Final'){#
+											<div class="approveButton toCenter" onclick="showDecisionApprovalModal('Decision Approval','#:approvalProcessId#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"><span class="actionSpace">Support/Oppose</span></div>
+										#}#
+									   #if(showApprovalOvelay == 'Stance'){#
+											<div class="supportButton toCenter" onclick="showDecisionApprovalModal('Stance Approval','#:approvalProcessId#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"><span class="actionSpace">Accept/Reject</span></div>
+										#}#
+                                     </div>
+							</div>
+							#}#
+                           <div class="topContainer"> 
+							<div class="viewCardTop"> </div> 
+                            <div class="viewCardIcon"></div>
+                            #if(priority=='High'){ #
+                            <div class="fontStyle fontWeightBold viewHighBtn">HIGH</div> 
+                            #}else# 
+                            #if(priority=='Low'){ #
+                            <div class="fontStyle fontWeightBold viewLowBtn">Low</div> 
+                            #}# 
+                             
+                            <div id="PIholder#:decisionId#"></div>  
+                            <div id="indicator#:decisionId#" class="indicator floatRight" style="background-position:0px #:-10*pulseStatusInt#px"  onclick="openIndicator(event,'#:decisionId#','#:decisionId#', '#:roleApprovalStatus#','#:Accountable#', '#:Backup#', '#:Responsible#','#:status#')" onmouseover="showIndicator(event,'#:decisionId#')" onmouseout="hideIndicator('#:decisionId#')"></div>
+                            <div class="viewDropBtn" id="dropBtnDecision#:decisionId#" onclick="showBottonDecision('#:decisionId#')"></div>
+                            <div class="viewCardText fontWeightBold"><a href="/#:decisionId#" id="namelinkDecision" data-bind="text:decisionName"></a></div>
+							
+                            <div class="vewDateBtns viewTopborder">
+                                <div class="dueDateDiv">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Due Date</div> 
+                                    #if(deadlineState=='Positive'){ #
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(102, 176, 45)" data-bind="text:deadlineNum"></div> 
+                                    #}else{# 
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(255, 60, 3)" data-bind="text:deadlineNum"></div> 
+                                    #}#
+                                </div>
+                                <div class="viewStatusDiv"> 
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Status</div> 
+									#if(showApprovalOvelay == 'Final'){#
+										<div class="approvalIcon" onclick="showDecisionApprovalModal('Decision Approval','#:approvalProcessId#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"></div>
+									#}#
+                                    <div class="fontCardContentText  secondLineTextPadding fontWeightBold" id="status" data-bind="text:status"></div>
+                                </div>
+                                <div class="statusColorDiv statusColorDivCurve" id="colorDivCurve#:decisionId#" style=""></div>
+                                <div class="statusColorDiv" id="colorDiv#:decisionId#" style="display:none;"></div> 
+                            </div>  
+							</div>
+                            <div class="viewCardBottom viewTopborder" id="cardBottomDecision#:decisionId#" style="display:none">
+
+                                <div>
+                                    <div class="phaseDiv">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Phase</div> 
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" id="phase" data-bind="text:phases"></div> 
+                                    </div>
+                                    <div class="mystanceDiv">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding commonCardPadding">My Stance</div>
+										#if(showApprovalOvelay == 'Stance'){#
+											<div class="stanceIcon" onclick="showDecisionApprovalModal('Stance Approval','#:approvalProcessId#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"></div>
+										#}#
+                                        <div class="fontCardContentText commonCardPadding secondLineTextPadding fontWeightBold" id="mystance" data-bind="text:stanceApprovalStatus"></div>
+                                    </div>  
+                                    <div class="mystanceColorDiv"  id="mystanceColorDiv" style=""></div> 
+                                </div>
+                                <div class="cardMyRole cardCellTopLine toClear bottomMargin">
+                                    <div class="cardTitleText fontWeightBold myRoleTitle commonCardPadding">My Role</div>
+                                    <div class="rolesIconGroup actionsDirect commonCardPadding">
+                                        <div class="raci-block floatLeft" id="a-block" style="background-color:#: AccountableRoleColor #">A</div>
+                                        <div class="raci-block floatLeft" id="r-block" style="background-color:#: ResponsibleRoleColor #">R</div>
+                                        <div class="raci-block floatLeft" id="c-block" style="background-color:#: ConsultedRoleColor  #">C</div>
+                                        <div class="raci-block floatLeft" id="i-block" style="background-color:#: InformedRoleColor #">I</div>
+                                        <div class="floatLeft splitLine"></div>
+                                        <div class="raci-block floatLeft" id="b-block" style="background-color:#: BackupRoleColor #">B</div>
+                                        <div class="raci-block floatLeft" id="v-block" style="background-color:#: VetoRoleColor  #">V</div>
+										#if(showApprovalOvelay == 'role'){#
+											<div class="roleIcon floatLeft" onclick="showDecisionApprovalModal('Role Acceptance','#:approvalProcessId#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"></div>
+										#}#
+                                    </div>
+                                </div>
+                                <div class="decisionByDiv cardCellTopLine commonCardPadding">
+                                    <div class="cardTitleText fontWeightBold ">Decision By</div>
+                                    <div class="toClear">
+                                        <div class="decisionCardProfilePic viewCardTopBottomMargin toClear floatLeft"><img src="#:ownerPhoto#" style="width:36px;height:36px;" title="#:OwnerName#" id="requestphoto"></img></div>
+                                        <div class="floatLeft viewCardProfileNameWidth">
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" id="decisionby" data-bind="text:OwnerName"></div> 
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" id="decisionbyDept" data-bind="text:ownerDept"></div>
+                                        </div>
+                                    </div>
+                                    <div class="toClear"></div>
+                                </div>
+                                <div class="qualityDiv cardCellTopLine toClear commonCardPadding">
+                                    <div class="cardTitleText fontWeightBold ">Tasks</div> 
+                                    <div class="fontCardContentText viewCardTopBottomMargin fontWeightBold" >
+                                        #if( pendingTaskCount > 0) { #
+                                        <div style="color:red;font-weight:bold;font-size:10px;" id="taskcount">#:pendingTaskCount# Task#: (pendingTaskCount>1?'s':'')# Late</div>  
+                                        #}#
+                                     </div> 
+                                </div>
+                                <div class="averageDiv cardCellTopLine commonCardPadding bottomMargin">
+                                    <div class="cardTitleText fontWeightBold">Average Relevance</div>
+                                    <div class="floatLeft viewCardTopBottomMargin " id="yourAveStars"><div class="viewAvgstar"><img src="/#:relevenceImage#" id="averagerelevance"></img></div></div>
+                                    <div class="floatLeft viewCardTopBottomMargin viewAveRat"><span style="font-family: Arial,Helvetica,sans-serif;color" id="rating" data-bind="text:AverageRating"></span> </div>
+                                </div>
+                                <div class="viewSocialGroupDiv   toClear floatLeft cardCellTopLine">   
+                                    <div class="floatLeft socialDiv ">
+                                        <div class="floatLeft topMargin"> 
+                                            <div class="viewSocialLike floatLeft " id="likeSpan"><div></div></div>
+                                            <div class="fontCardContentText  floatLeft likeDislikeCounts" id="totallikes" data-bind="text:TotalLikes">0</div>
+                                            <div class="viewSocialDislike floatLeft" id="disLikeSpan"><div></div></div>
+                                            <div class="fontCardContentText  floatLeft likeDislikeCounts" id="totaldislikes" data-bind="text:TotalDislikes">0</div>
+                                        </div>
+                                    </div>  
+                                    <div class="viewSocialMoodDiv floatLeft">
+                                        <div  id="moodimage" class="viewSmiely floatLeft" style='background:url("/#:moodImage#") #:moodImagePosition# no-repeat' ></div>
+                                        <div  id="moodnumber" class="fontCardContentText  viewSmielyRating fontWeightBold floatLeft">#:moodStatus# #:moodNumber#</div> 
+                                    </div>
+                                </div>
+                                <div class="toClear"> </div>                          
+                            </div>
+                            <div class="toClear"> </div>
+						</div>
+                    #}#
+                    #if( cardType == 'Task'){#
+                        <div id="popupDecisionCard" class="viewCardContainer">
+                            <div class="taskCardTop"> </div> 
+                            <div class="taskCardIcon"></div> 
+                            #if(priority=='High'){ #
+                            <div class="fontStyle fontWeightBold viewHighBtn">HIGH</div> 
+                            #}else# 
+                            #if(priority=='Low'){ #
+                            <div class="fontStyle fontWeightBold viewLowBtn">Low</div> 
+                            #}# 
+                                                              
+                            <div class="accessLock"><img class="lock-icon" src="/#:lockImg#"></div>
+                            <div class="viewDropBtn" id="dropBtnDecision#:taskId#" onclick="showBottonDecision('#:taskId#')"></div>
+                            <div class="viewCardText fontWeightBold">
+                                <a href="/#:taskId#" onclick="getPopupDetailsWithLoader('#:taskId#','#:recordAccess#')" data-bind="text:taskSubject"></a>    
+                            </div>                            
+                            <div class="dateBtns cardCellTopLine">
+                                <div class="dueDate"> 
+                                <div class="cardTitleText fontWeightBold commonCardPadding">Due Date</div> 
+                                    #if(deadlineState=='Positive'){ #
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(102, 176, 45)" data-bind="text:activitydate"></div> 
+                                    #}else{# 
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(255, 60, 3)" data-bind="text:activitydate"></div> 
+                                    #}# 
+                                </div>
+                                <div class="deadLine">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Deadline</div> 
+                                        #if(deadlineState=='Positive'){ #
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(102, 176, 45)" data-bind="text:deadlineNum"></div> 
+                                        #}else{# 
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(255, 60, 3)" data-bind="text:deadlineNum"></div> 
+                                        #}#                                
+                                </div>
+                            </div>  
+                            <div class="toClear"> 
+                                <div class="cardBottomDecision cardCellTopLine" id="cardBottomDecision#:taskId#" style="display:none"> 
+                                    <div class="qualityDiv toClear">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Status</div> 
+                                        <div class="secondLineTextPadding statusInput"> 
+                                             <select data-role="dropdownlist" id="status#:taskId#"  data-text-field="StatusName"    data-value-field="StatusValue"   data-bind="source: taskstatusData, value: status" onChange="onChangeCall('#:taskId#',this);"></select>                                        
+                                        </div>
+                                    </div>
+                                    <div class="cardCellTopLine">
+                                        <div class="relationBtn" id="relationBtn#:taskId#" onclick="showContents('relationBtn#:taskId#','relationTab#:taskId#','commentBtn#:taskId#','assignBtn#:taskId#','commentsTab#:taskId#','assignTab#:taskId#')"><div class="imgSizeTaskCardTab" style="background-position: -90px 0px;"></div></div>
+                                        <div class="commentBtn" id="commentBtn#:taskId#" onclick="showContents('commentBtn#:taskId#','commentsTab#:taskId#','relationBtn#:taskId#','assignBtn#:taskId#','relationTab#:taskId#','assignTab#:taskId#')"><div class="imgSizeTaskCardTab"></div></div>
+                                        <div class="assignBtn" id="assignBtn#:taskId#" onclick="showContents('assignBtn#:taskId#','assignTab#:taskId#','relationBtn#:taskId#','commentBtn#:taskId#','relationTab#:taskId#','commentsTab#:taskId#')"><div class="imgSizeTaskCardTab" style="background-position: -106px 0px;"></div></div>
+                                        <div class="openState">
+                                            <div class="relationTab" id="relationTab#:taskId#">  
+                                                <div class="selectedContent">
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding">Related to</div>
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding"><div><a class="task-title" href="/#:relatedToId#" data-bind="text:relatedTo"></a></div> </div>
+                                                </div>
+                                            </div> 
+                                            <div class="commentsTab" id="commentsTab#:taskId#" style="display:none"> 
+                                                <div class="selectedContent">
+                                                    <div class="cardTitleText fontWeightBold commonCardPadding">Comments</div>
+                                                    <div class="approvalDescriptionStatement fontWeightBold"><div data-bind="text:comments"></div></div>
+                                                </div>    
+                                            </div>      
+                                            <div class="assignTab" id="assignTab#:taskId#" style="display:none"> 
+                                                <div class="selectedContent">
+                                                    <div>
+                                                        <div class="assignedby-task">
+                                                            <div class="cardTitleText fontWeightBold ">Assigned By</div>
+                                                            <div class="assignedby-task-div">
+                                                                <div class="floatLeft"><img class="assignedby-img" src="#:userAssignedImgUrl#"></div>
+                                                                <div class="floatLeft commonCardPadding" style="width:70%"> 
+                                                                    <div class="fontCardContentText fontWeightBold" style="width:100%;padding-bottom:5px;" data-bind="text:userAssignedName"></div>
+                                                                    <div class="fontCardContentText fontWeightBold" data-bind="text:userAssignedDept"></div>
+                                                                </div> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="assignedto-task">  
+                                                            <div class="cardTitleText fontWeightBold floatRight" style="margin-bottom:5px;">Assigned To</div>
+                                                            <div class="assignedto-task-div toClear">
+                                                                <div class="floatRight"><img class="assignedto-img" src="#:userAssignImgUrl#"></div>  
+                                                                <div class="floatLeft" style="width:70%">
+                                                                    <div class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight" data-bind="text:userAssigneeName"></div>
+                                                                    <div class="fontCardContentText fontWeightBold taskCardAssignedTo floatRight" style="padding-top:5px" data-bind="text:userAssigneeDept"></div>
+                                                                </div>
+                                                            </div> 
+                                                        </div>
+                                                    </div>
+                                                    <div style="clear:both"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     #}#
+                     #if( cardType == 'Plan'){#
+                        <div class="viewCardContainer"> 
+                            <div class="planCardTop"> </div> 
+                            <div class="planCardIcon"></div>
+                            <div class="viewDropBtn" id="dropBtnDecision#:cardId#" onclick="showBottonDecision('#:cardId#')"></div>
+                            <div class="viewCardText fontWeightBold"><a href="/#:cardId#" data-bind="text:cardTitle"></a></div>
+                            <div class="vewDateBtns viewTopborder">
+                                <div class="dueDateDiv">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Start Date</div> 
+                                    #if(deadlineState=='Positive'){ #
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(102, 176, 45)" data-bind="text:startdate"></div> 
+                                    #}else{#
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(255, 60, 3)" data-bind="text:startdate"></div> 
+                                    #}#
+                                </div>
+                                <div class="viewStatusDiv">  
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">End Date</div>
+                                    #if(deadlineState=='Positive'){ #
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(102, 176, 45)" data-bind="text:enddate"></div> 
+                                    #}else{#
+                                    <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(255, 60, 3)" data-bind="text:enddate"></div> 
+                                    #}# 
+                                </div>
+                                
+                            </div>
+                            <div class="viewCardBottom viewTopborder" id="cardBottomDecision#:cardId#" style="display:none"> 
+                                <div class="decisionByDiv">
+                                    <div class="phaseDiv " style="border:none">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Modified Date</div> 
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" data-bind="text:modifieddate"></div> 
+                                    </div>
+                                    <div class="mystanceDiv planLocationDiv">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Location</div>
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" data-bind="text:location"></div>
+                                    </div>
+                                </div>
+                                <div class="cardCellTopLine toClear">
+                                    <div class="phaseDiv ">
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Items</div> 
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" data-bind="text:itemCount"></div> 
+                                    </div>
+                                    <div class="mystanceDiv ">  
+                                        <div class="cardTitleText fontWeightBold commonCardPadding">Activities</div>
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold">#:activityCount#<span style="color:red">#:(dueCount>0)? '('+dueCount+')':''#</span></div>
+                                    </div>
+                                </div>
+                                <div class="decisionByDiv cardCellTopLine toClear">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Description</div>
+                                    <div class="planDescriptionStatement fontWeightBold"><div data-bind="text:description"></div></div>
+                                    <div class="toClear"></div>
+                                </div>
+                                <div class="decisionByDiv cardCellTopLine commonCardPadding">
+                                    <div class="cardTitleText fontWeightBold ">Accountable</div>
+                                    <div class="toClear">
+                                        <div class="decisionCardProfilePic viewCardTopBottomMargin toClear floatLeft"><img src="#:accountableImage#" style="width:36px;height:36px;" title=""></div>
+                                        <div class="floatLeft viewCardProfileNameWidth">
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" data-bind="text:accountableName"></div>
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" data-bind="text:accountableDept"></div>
+                                        </div>
+                                    </div> 
+                                    <div class="toClear"></div>
+                                </div>                                                                             
+                                <div class="toClear"> </div>  
+                            </div>
+                            <div class="toClear"> </div>
+                        </div>
+                    #}#
+                    #if( cardType == 'Approval'){#
+                        <div class="viewCardContainer">   
+                            <div class="approvalCardTop"></div> 
+                            <div class="approvalCardIcon"></div>
+                            <div class="viewDropBtn" id="dropBtnDecision#:id#" onclick="showBottonDecision('#:id#')"></div>
+                            <div class="viewCardText fontWeightBold"><a href="/#:decisionId#" id="#:id#title" data-bind="text:title"></a></div>
+                            <div class="vewDateBtns viewTopborder">
+                                <div class="dueDateDiv">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Due Date</div> 
+                                        #if(deadlineState=='Positive'){ #
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(102, 176, 45)" data-bind="text:duedate"></div> 
+                                        #}else{#
+                                        <div class="fontCardContentText secondLineTextPadding fontWeightBold" style="color:rgb(255, 60, 3)" data-bind="text:duedate"></div> 
+                                        #}#                                
+                                     </div>
+                                <div class="viewStatusDiv"> 
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Status</div> 
+                                    <div class="fontCardContentText  secondLineTextPadding fontWeightBold" data-bind="text:approvalStatus"></div>
+                                </div>
+                                <div class="statusColorDiv statusColorDivCurve" id="colorDivCurve#:id#" style="background-color:rgb(255, 186, 0)"></div>
+                                <div class="statusColorDiv" id="colorDiv#:id#" style="display:none;" background-color:rgb(255, 186, 0)></div>  
+                            </div>
+                            <div class="viewCardBottom cardCellTopLine" id="cardBottomDecision#:id#" style="display:none"> 
+                                <div class="cardMyRole  toClear bottomMargin">
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">My Role</div>
+                                    <div class="rolesIconGroup actionsDirect commonCardPadding">
+                                        <div class="raci-block floatLeft" id="a-block" style="background-color:#: AccountableRoleColor #">A</div>
+                                        <div class="raci-block floatLeft" id="r-block" style="background-color:#: ResponsibleRoleColor #">R</div>
+                                        <div class="raci-block floatLeft" id="c-block" style="background-color:#: ConsultedRoleColor  #">C</div>
+                                        <div class="raci-block floatLeft" id="i-block" style="background-color:#: InformedRoleColor #">I</div>
+                                        <div class="floatLeft splitLine"></div>
+                                        <div class="raci-block floatLeft" id="b-block" style="background-color:#: BackupRoleColor #">B</div>
+                                        <div class="raci-block floatLeft" id="v-block" style="background-color:#: VetoRoleColor  #">V</div>
+                                    </div>
+                                </div>
+                                <div class="decisionByDiv cardCellTopLine commonCardPadding">
+                                    <div class="cardTitleText fontWeightBold ">Requested By</div>
+                                    <div class="toClear">
+                                        <div class="decisionCardProfilePic viewCardTopBottomMargin toClear floatLeft"><img src="#:requestedPhoto#" style="width:36px;height:36px;" title="#:nameOfRequeste#"></div>
+                                        <div class="floatLeft viewCardProfileNameWidth">
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" data-bind="text:nameOfRequeste"></div>
+                                            <div class="fontCardContentText fontWeightBold viewCardTopBottomMargin viewCardLeftMargin" data-bind="text:ownerDept"></div>
+                                        </div>
+                                    </div>  
+                                    <div class="toClear"></div>
+                                </div>
+                                <div class="cardCellTopLine toClear toCenter">
+                                    <div class="switchDecisionIcons floatLeft" id="switchProblemStatement#:id#" onclick="switchProblemStatement('#:id#')"> </div>
+                                    <div class="switchProblemIcons floatLeft" id="switchDecisionStatement#:id#" onclick="switchDecisionStatement('#:id#')"></div> 
+                                </div>
+                                
+                                 <div class="commentsTab cardCellTopLine toClear" id="problemstatement#:id#"> 
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Description</div>
+                                    <div class="fontWeightBold approvalDescriptionStatement"><div id="#:id#" style="display:none" data-bind="text:problemStatementFull"></div><div data-bind="text:problemStatement"></div></div>
+                                </div> 
+                                <div class="commentsTab cardCellTopLine toClear decisionHide" id="decisionstatement#:id#"> 
+                                    <div class="cardTitleText fontWeightBold commonCardPadding">Decision  Statement</div>
+                                    <div class="approvalDescriptionStatement fontWeightBold"><div id="#:id#append" style="display:none" data-bind="text:decisionNameFull"></div><div data-bind="text:decisionName"></div></div>
+                                </div>
+                                <span id="">
+                                    <div class="cardCellTopLine toClear toCenter">
+                                        #if( typeOfApproval ==  'Decision' ){#
+                                        <div class="approveButton toCenter" onclick="showDecisionApprovalModal('Decision Approval','#:id#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"><span class="actionSpace">Approve/Reject</span></div>
+                                        #}#
+                                        #if( typeOfApproval ==  'Stance' ){#
+                                        <div class="supportButton toCenter" onclick="showDecisionApprovalModal('Stance Approval','#:id#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"><span class="actionSpace">Support/Oppose</span></div>
+                                        #}#
+                                        #if( typeOfApproval ==  'Role' ){#
+                                        <div class="acceptButton toCenter" onclick="showDecisionApprovalModal('Role Acceptance','#:id#','#:decisionId#','important','#:role#','#:Veto#','#:Backup#')"><span class="actionSpace">Accept/Reject</span></div>
+                                        #}#
+                                     </div>
+                                </span>                                                                                 
+                                <div class="toClear"> </div>
+                            </div>
+                            <div class="toClear"></div>
+                        </div>
+                    #}#
+                </script>
+</apex:component>
