@@ -1,0 +1,804 @@
+<apex:page sidebar="false" id="mainPage" controller="AddEditPeopleClone" tabStyle="Decision__c">
+<html>
+    <head>
+       <!--------- FT Stylesheets -----------> 
+     
+       <apex:stylesheet value="{!$Page.CommonStyles}" />
+       <apex:stylesheet value="{!$Page.SocialInputStyles}" />
+       <apex:stylesheet value="{!$Page.OverrideStyles}" />
+       
+       <!--------- FT Scripts ----------->
+       <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/>
+       <apex:includeScript value="{!$Page.CommonScripts}" />
+       <apex:includeScript value="{!$Page.SocialInputScripts}" />
+       
+       <!-- Kendo Library -->
+       <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+       <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+       <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+       <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/>
+       
+       <script>
+           $(document).ready(function(){
+              changeFooterText(); 
+              dragModal();
+              //setDimension();
+           });
+       </script>
+       
+    </head>
+    <body>
+       
+            <!------------ Content -------------->
+       <div class = "wrapper">
+                <!------------ Page Header -------------->
+            <div class = "page-head header-border">
+                <div class = "object-icon left">
+                    <img src = "{!URLFOR($Resource.Images, 'common/icon-addEditPeople-32x32.png')}" />
+                </div>
+                <div class = "headers left">
+                    <span class = "page-subhead left">Add / Edit People</span><br />
+                    <h2>{!HTMLENCODE(headerName)}</h2>
+                </div>
+            </div>
+            <div id="chkStatus" style="font-size:4px;color:white">{!HTMLENCODE(decisionPhase)}</div>
+                <!------------ End Page Header -------------->
+                <!------------ Top Help Text -------------->
+            <apex:pageMessages />
+            <div class = "content-text"> 
+                <div class = "text-icon-hold">
+                    <span class = "left">Add or Edit People, and assign their roles in decision making.</span>&nbsp;
+                    
+                    <div class = "left">
+                        <div class = "popover-gen-arrow people-hover" id = "people-arrow"></div>
+                        <div class = "popover-gen popover-width people-hover people-hover-area" onmouseout = "hideInformationOnPeople()">                                    
+                            <div class = "popover-icon left">
+                                <img src = "{!URLFOR($Resource.Images, 'common/icon-info-24x24.png')}" />
+                            </div>
+                            <div class = "popover-gen-content popover-body-width right" id  = "people-content">
+                                The RACI role analysis is very useful when considering exactly who should be involved in decision and to what extent. It sets out all stakeholders in the decision and looks at whether they should be:
+                                <ul>
+                                    <li>Responsible for Decision</li>
+                                    <li>Accountable for Decision</li>
+                                    <li>Consulted about Decision</li>
+                                    <li>Informed about Decision</li>
+                                </ul>
+                            </div>
+                        </div>  
+                        <img class = "people-hover-area" onmouseover = "showInformationOnPeople()" onmouseout = "hideInformationOnPeople()" src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" /> 
+                    </div>    
+                </div> 
+            </div>    
+                <!------------ End Top Help Text -------------->
+                <!------------ Edit Collaborators Section -------------->
+            <div class = "social-section-head">
+                <img class = "left" src = "{!URLFOR($Resource.Images, 'common/icon-editPeople-24x24.png')}" />
+                <h3 class = "left">Edit People</h3>
+            </div> 
+            <div class = "content-text">
+                Use the checkboxes to edit the roles of the added people. If approval is required for role acceptance, please select the approval required checkbox. 
+            </div> 
+                <!------------ Edit Collaborators Table -------------->
+            <apex:form id="existingUserForm">
+                <div class = "social-table-container" id = "editTable">
+                    <div class = "tbl-disable"></div>
+                    <div class = "ci-help right">
+                        <label><apex:inputCheckbox disabled="{!IF(OR(myRole.Accountable__c,myRole.Responsible__c),false,true)}"  id="permissionToCI" value="{!decisionData.Add_C_I_Members__c}" rendered="{!If(objType == 'Decision',true,false)}"/>
+                        <apex:inputCheckbox disabled="{!IF(OR(myRole.Accountable__c,myRole.Responsible__c),false,true)}"  id="permissionToCIOnPlan" value="{!planData.Add_C_I_Members__c}" rendered="{!If(objType == 'Plan',true,false)}"/>Consulted or Informed collaborators can add/edit others to be Consulted or Informed</label>&nbsp;
+                        <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Normally, only the Accountable and Responsibles can edit a decision and invite people. Checking this checkbox allows Consulted or Informed collaborators to invite other users to be Consulted or Informed." /> 
+                    </div>
+                    <table cellspacing = "0" cellpadding = "0" class = "tbl-people">
+                        <tr>
+                          <!--<td class = "social-thead cell-width7">
+                                Action
+                            </td>   -->
+                            <td class = "social-thead" colspan = "2">
+                                Name
+                            </td>
+                            <td class = "social-thead cell-width2">
+                                Department
+                            </td>
+                            <td class = "social-thead cell-width3">
+                                Responsible
+                            </td>
+                            <td class = "social-thead cell-width3">
+                                Accountable
+                            </td>
+                            <td class = "social-thead cell-width4">
+                                Consulted
+                            </td>
+                            <td class = "social-thead cell-width4">
+                                Informed
+                            </td>
+                            <td class = "social-thead cell-width3">
+                                Role<br />Acceptance<br />Required
+                            </td>
+                            <td class = "thead-seperator" >
+                               &nbsp; 
+                            </td>
+                            <td class = "social-thead cell-width5">
+                                Backup<br />For<br />Accountable
+                                <img title="A collaborator with the Backup option ticked gets the same privileges as the Accountable. There can only be one Backup at the time. Only the Accountable or the Backup can edit this column." src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" /> 
+                            </td>
+                            <td class = "social-thead cell-width6">
+                                Veto<br />Rights
+                                <img title="A collaborator with the Veto option can reject a decision. I.e. by giving his own rejection, the decision status will also become Rejected regardless of the opinion of the other collaborators." src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" />
+                            </td>
+                            <td class = "social-thead cell-width2 thead-rborder">
+                                Description
+                                <img title="Include further information on the role. You might indicate 'Legal' or 'Marketing' to indicate what stakeholder a collaborator represents" src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" />
+                            </td>
+                        </tr>
+                        <apex:variable value="{!0}" var="count"/> 
+                        <apex:repeat id="peopleRepeat" value="{!existingPeopleWrapperList}" var="exist" >
+                        <script>
+                            $('.group-link').hover(function(e) {                                   
+                                var content = $(this).next().html();
+                                if(content != ''){
+                                    content = content.replace(/,/g, '<br>');
+                                    $('.popover-social-content').html(content);                   
+                                    $('.popover-social').show()
+                                    .css('top', e.pageY - 25)
+                                    .css('left', e.pageX + 50)
+                                    .appendTo('body');
+                                }
+                             },function() {
+                                $('.popover-social').hide();
+                             });
+                        </script>
+                        <tr>
+                        <!--     <td class = "social-tcell tcell-left cell-center">
+                                    
+                            </td>  -->
+                            <td class = "social-tcell tcell-left">
+                                <apex:outputPanel rendered="{!if(exist.socialRec.User__r.name != '',true,false)}">
+                                    <apex:outputPanel rendered="{!If(exist.socialRec.User__c != null,true,false)}" >
+                                        <a href="/{!exist.socialRec.User__c}" target="_blank"><apex:outputText value="{!exist.socialRec.User__r.name}" /></a>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(exist.socialRec.User__r.name == '',true,false)}">
+                                    <apex:outputPanel rendered="{!If(exist.socialRec.User__c != null,true,false)}" >
+                                        <a href="/{!exist.socialRec.User__c}" target="_blank"><apex:outputText value="{!exist.socialRec.Name_of_the_User__c}" /></a>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!If(exist.socialRec.User__c == null,true,false)}" >
+                                        <a class="group-link" href="javascript:void(0)" onclick="groupMemberPopup('{!exist.socialRec.GroupId__c}','{!exist.groupName}');"><apex:outputText value="{!exist.groupName}" /></a>
+                                        <div class="hidden">{!exist.userFromGroup}</div>
+                                    </apex:outputPanel>
+                                    <!-- <apex:outputText value="{!exist.Name_of_the_User__c}" />  -->
+                                </apex:outputPanel>                                
+                            </td>
+                            <td class = "social-tcell info-cell cell-width8">
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Group_Name__c != '',true,false)}">
+                                    <apex:image styleClass="group-img" url="{!URLFOR($Resource.Images,'common/icon-info-16x16.png')}" title="{!exist.socialRec.Group_Name__c}"/>
+                                </apex:outputPanel>
+                            </td>
+                            <td class = "social-tcell">
+                                
+                            </td>
+                            <td class = "social-tcell cell-center">
+                                <!-- <apex:inputField id="responsible" value="{!exist.socialRec.Responsible__c}" /> -->
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c == false,true,false)}" >
+                                   <apex:outputPanel rendered="{!If(AND(decisionData.Phase__c != 'Draft',decisionData.Phase__c != 'Decide'),TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="responsibleRole"  onchange="enableVetoRightsRes({!FLOOR(count)});" disabled="{!IF(OR($Profile.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),IF(OR(decisionData.Phase__c == 'Approve',decisionData.Phase__c == 'Execute',decisionData.Phase__c == 'Evaluate'),TRUE,FALSE),True)}"  value="{!exist.socialRec.Responsible__c}" label="" />
+                                   </apex:outputPanel>
+                                   <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Draft',TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="responsibleRoleDraft"  onchange="enableVetoRightsResDraft({!FLOOR(count)});" disabled="{!IF(OR($Profile.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),False,True)}"  value="{!exist.socialRec.Responsible__c}" label="" />
+                                   </apex:outputPanel>
+                                   <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Decide',TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="responsibleRoleDecide"  onchange="enableVetoRightsResDecide({!FLOOR(count)});" disabled="{!IF(exist.socialRec.Id == '',IF(OR(myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),False,true ),True)}"  value="{!exist.socialRec.Responsible__c}" label="" />
+                                   </apex:outputPanel>
+                               </apex:outputPanel>
+                               <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c,true,false)}" >
+                                   <input type="checkbox"  id="mainPage:existingUserForm:peopleRepeat:{!FLOOR(count)}:responsibleRole" disabled="true" />
+                               </apex:outputPanel>
+                            </td>
+                            <td class = "social-tcell cell-center">
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c == false,true,false)}" >    
+                                    <apex:outputpanel rendered="{!If(AND(decisionData.Phase__c != 'Draft',decisionData.Phase__c != 'Decide'),TRUE,FALSE)}" >
+                                        <apex:inputCheckbox id="accountableRole" onchange="accountableSelect({!FLOOR(count)})" disabled="{!IF(OR($Profile.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),IF(OR(decisionData.Phase__c == 'Approve',decisionData.Phase__c == 'Execute',decisionData.Phase__c == 'Evaluate'),TRUE,FALSE),True)}" value="{!exist.socialRec.Accountable__c}" />
+                                    </apex:outputpanel>
+                                    <apex:outputpanel rendered="{!If(decisionData.Phase__c == 'Draft',TRUE,FALSE)}" >
+                                        <apex:inputCheckbox id="accountableRoleDraft" disabled="TRUE"  value="{!exist.socialRec.Accountable__c}" label=""/>
+                                    </apex:outputpanel>
+                                    <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Decide',TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="accountableDecide"  disabled="true"  value="{!exist.socialRec.Accountable__c}" label="" />
+                                    </apex:outputPanel> 
+                               </apex:outputPanel> 
+                               <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c,true,false)}" >
+                                   <input type="checkbox" id="mainPage:existingUserForm:peopleRepeat:{!FLOOR(count)}:accountableRole" disabled="true" />
+                               </apex:outputPanel> 
+                            </td>
+                            <td class = "social-tcell cell-center">
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c == false,true,false)}" >
+                                   <apex:outputPanel rendered="{!If(AND(decisionData.Phase__c != 'Draft',decisionData.Phase__c != 'Decide'),TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="consultedRole" onchange="enableVetoRightsCon({!FLOOR(count)});" disabled="{!IF(AND($Profile.Name != 'System Administrator',myRole.Responsible__c==false,myRole.Accountable__c==false,myRole.Backup_for_Accountable__c==false),IF(AND(OR(myRole.Consulted__c,myRole.Informed__c),exist.socialRec.Id==null,decisionData.Add_C_I_Members__c),IF(OR(decisionData.Phase__c == 'Approve',decisionData.Phase__c == 'Execute',decisionData.Phase__c == 'Evaluate'),TRUE,FALSE),TRUE),IF(OR(decisionData.Phase__c == 'Approve',decisionData.Phase__c == 'Execute',decisionData.Phase__c == 'Evaluate'),TRUE,FALSE))}" value="{!exist.socialRec.Consulted__c}" label=""/>
+                                   </apex:outputPanel>
+                                   <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Draft',TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="consultedRoleDraft" onchange="enableVetoRightsConDraft({!FLOOR(count)});" disabled="{!IF(AND($Profile.Name != 'System Administrator',myRole.Responsible__c==false,myRole.Accountable__c==false,myRole.Backup_for_Accountable__c==false),IF(AND(OR(myRole.Consulted__c,myRole.Informed__c),exist.socialRec.Id==null,decisionData.Add_C_I_Members__c),FALSE,TRUE),FALSE)}"  value="{!exist.socialRec.Consulted__c}" label=""/>
+                                   </apex:outputPanel>
+                                   <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Decide',TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="consultedRoleDecide" onchange="enableVetoRightsConDecide({!FLOOR(count)});" disabled="{!IF(exist.socialRec.User__r.name != '',True,False)}"  value="{!exist.socialRec.Consulted__c}" label="" />
+                                   </apex:outputPanel> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c,true,false)}" >
+                                      <input type="checkbox" id="mainPage:existingUserForm:peopleRepeat:{!FLOOR(count)}:consultedRole" disabled="true" />
+                                </apex:outputPanel>    
+                            </td>
+                            <td class = "social-tcell cell-center">
+                               <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c == false,true,false)}" >
+                                   <apex:outputPanel rendered="{!If(AND(decisionData.Phase__c != 'Draft',decisionData.Phase__c != 'Decide'),TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="informedRole" onchange="disableVetoInformed({!FLOOR(count)});" disabled="{!IF(AND($Profile.Name != 'System Administrator',myRole.Responsible__c==false,myRole.Accountable__c==false,myRole.Backup_for_Accountable__c==false),IF(AND(OR(myRole.Consulted__c,myRole.Informed__c),exist.socialRec.Id==null,decisionData.Add_C_I_Members__c),FALSE,TRUE),FALSE)}"  value="{!exist.socialRec.Informed__c}" label="" />
+                                   </apex:outputPanel>
+                                   <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Draft',TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="informedRoleDraft" onchange="disableVetoInformedDraft({!FLOOR(count)});" disabled="{!IF(AND($Profile.Name != 'System Administrator',myRole.Responsible__c==false,myRole.Accountable__c==false,myRole.Backup_for_Accountable__c==false),IF(AND(OR(myRole.Consulted__c,myRole.Informed__c),exist.socialRec.Id==null,decisionData.Add_C_I_Members__c),FALSE,TRUE),FALSE)}"  value="{!exist.socialRec.Informed__c}" label="" />
+                                   </apex:outputPanel>
+                                   <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Decide',TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="informedRoleDecide" onchange="disableVetoInformedDecide({!FLOOR(count)});" disabled="{!IF(exist.socialRec.User__r.name != '',True,False)}"  value="{!exist.socialRec.Informed__c}" label="" />
+                                   </apex:outputPanel>
+                               </apex:outputPanel>
+                               <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c,true,false)}" >
+                                   <input type="checkbox" checked="checked" id="mainPage:existingUserForm:peopleRepeat:{!FLOOR(count)}:informedRole" disabled="true"  label="" />
+                               </apex:outputPanel>
+                            </td>
+                            <td class = "social-tcell cell-center">
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c == false,true,false)}" >
+                                    <!-- <apex:inputField id="roleAcceptance" value="{!exist.socialRec.Role_Acceptance_Required__c}" /> -->
+                                    <apex:outputPanel rendered="{!If(decisionData.Phase__c != 'Decide',TRUE,FALSE)}">
+                                        <apex:inputCheckbox id="acceptReqd" disabled="{!IF(AND($Profile.Name != 'System Administrator',myRole.Responsible__c==false,myRole.Accountable__c==false,myRole.Backup_for_Accountable__c==false),IF(AND(OR(myRole.Consulted__c,myRole.Informed__c),exist.socialRec.Id==null,decisionData.Add_C_I_Members__c),FALSE,TRUE),IF(OR(decisionData.Phase__c=='Decide',decisionData.Phase__c=='Approve',decisionData.Phase__c=='Execute',decisionData.Phase__c=='Evaluate',decisionData.Phase__c=='Close'),TRUE,IF(exist.socialRec.Accountable__c,True,false)))}"  value="{!exist.socialRec.Role_Acceptance_Required__c}" label=""/>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!If(decisionData.Phase__c == 'Decide',TRUE,FALSE)}">
+                                        <apex:inputCheckbox id="acceptReqd1" disabled="true"  value="{!exist.socialRec.Role_Acceptance_Required__c}" label=""/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c,true,false)}" >
+                                    <input type="checkbox"  disabled="true" />
+                                </apex:outputPanel>   
+                            </td>
+                            <td class = "tcell-seperator" >
+                               &nbsp; 
+                            </td>
+                            <td class = "social-tcell cell-center">
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c == false,true,false)}" >
+                                   <!-- <apex:inputField id="backup" onclick="singleBackup({!FLOOR(count)});" value="{!exist.socialRec.Backup_for_Accountable__c}" /> -->
+                                    <apex:outputpanel rendered="{!If(AND(decisionData.Phase__c != 'Draft',decisionData.Phase__c != 'Decide'),TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="backup" onchange="singleBackup({!FLOOR(count)})" disabled="{!IF(OR($Profile.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),IF(OR(decisionData.Phase__c == 'Approve',decisionData.Phase__c == 'Execute',decisionData.Phase__c == 'Evaluate'),TRUE,FALSE),True)}" value="{!exist.socialRec.Backup_for_Accountable__c}"/>
+                                    </apex:outputpanel>
+                                    <apex:outputpanel rendered="{!If(OR(decisionData.Phase__c == 'Draft',decisionData.Phase__c == 'Decide'),TRUE,FALSE)}" >
+                                       <apex:inputCheckbox id="backups" onchange="singleBackups({!FLOOR(count)})" disabled="{!if(exist.socialRec.Accountable__c,true,IF(OR($Profile.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),false, true))}" value="{!exist.socialRec.Backup_for_Accountable__c}"/>
+                                    </apex:outputpanel>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c,true,false)}" >
+                                    <apex:outputpanel rendered="{!If(AND(decisionData.Phase__c != 'Draft',decisionData.Phase__c != 'Decide'),TRUE,FALSE)}" >
+                                        <input type="checkbox" id="mainPage:existingUserForm:peopleRepeat:{!FLOOR(count)}:backup" disabled="true" />
+                                    </apex:outputpanel>
+                                    <apex:outputpanel rendered="{!If(OR(decisionData.Phase__c == 'Draft',decisionData.Phase__c == 'Decide'),TRUE,FALSE)}" >
+                                        <input type="checkbox" id="mainPage:existingUserForm:peopleRepeat:{!FLOOR(count)}:backups" disabled="true" />
+                                    </apex:outputpanel>
+                                </apex:outputPanel>      
+                            </td>
+                            <td class = "social-tcell cell-center">
+                            <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c == false,true,false)}" >
+                                <!-- <apex:inputField id="veto" value="{!exist.socialRec.Veto_Rights__c}" /> -->
+                                <apex:outputpanel rendered="{!If(decisionData.Phase__c == 'Draft',TRUE,FALSE)}" >
+                                    <apex:inputCheckbox id="vetoDraft" disabled="{!IF(exist.socialRec.Accountable__c,true,false)}" value="{!exist.socialRec.Veto_Rights__c}" /> 
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!If(AND(decisionData.Phase__c != 'Draft',decisionData.Phase__c != 'Decide'),TRUE,FALSE)}" >
+                                    <apex:inputCheckbox id="veto" disabled="{!IF(OR($Profile.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),IF(OR(decisionData.Phase__c == 'Approve',decisionData.Phase__c == 'Execute',decisionData.Phase__c == 'Evaluate'),TRUE,FALSE),True)}" value="{!exist.socialRec.Veto_Rights__c}" /> 
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!If(decisionData.Phase__c == 'Decide',TRUE,FALSE)}" >
+                                    <apex:inputCheckbox id="vetoDecide" disabled="{!IF(OR(exist.socialRec.Accountable__c,AND(exist.socialRec.Informed__c,!exist.socialRec.Responsible__c,!exist.socialRec.Consulted__c)),true,false)}" value="{!exist.socialRec.Veto_Rights__c}" /> 
+                                </apex:outputpanel>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!if(exist.socialRec.Is_Group__c,true,false)}" >
+                                <input type="checkbox" id="mainPage:existingUserForm:peopleRepeat:{!FLOOR(count)}:veto" disabled="true" />
+                            </apex:outputPanel>     
+                            </td>
+                            <td class = "social-tcell tcell-right">
+                                <apex:inputField styleClass="social-textarea" value="{!exist.socialRec.Description__c}" />
+                            </td>
+                        </tr>
+                        <apex:variable var="count" value="{!count+ 1}"/>
+                        </apex:repeat>
+                    </table>
+                </div> 
+                    <!------------ End Edit Collaborators Table -------------->
+                <div class = "tbl-buttons-add">
+                   <!--  <button type = "button"  onclick="saveNow()">Save</button>   -->
+                    <button type = "button" onclick="saveClose()">Save and Close</button>
+                    <button type = "button" onclick="cancel()">Cancel</button>
+                    <apex:actionFunction name="saveNow" action="{!saveCurrentPeople}" /> 
+                    <apex:actionFunction name="saveClose" action="{!savePeople}" />
+                    <apex:actionFunction name="cancel" action="{!cancel}" /> 
+                    
+                    
+                    <apex:actionFunction name="DelPeople" action="{!deletePeople}" reRender="existingUserForm" oncomplete="disableChkOnLoadVeto();removePreloader();" >
+                        <apex:param name="socialInputId" id="socialInputId" value="" />
+                        <apex:param name="existType" id="existType" value="" />
+                        <apex:param name="userType" id="userType" value="" />
+                        <apex:param name="recordsId" id="recordsId" value="" />
+                    </apex:actionFunction>   
+                </div>
+            </apex:form>
+                <!------------ End Edit Collaborators Section --------------> 
+            <div class = "social-section-head">
+                <img class = "left" src = "{!URLFOR($Resource.Images, 'common/icon-addPeople-24x24.png')}" />
+                <h3 class = "left">Add People&nbsp;<img title="Click Search to get a complete list of users who are not yet collaborators of this decision or type the name you are looking for. You can use * as a wildcard at the end of your search criteria." src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" /></h3>                
+            </div> 
+            <div class = "content-text"></div>
+            <div class = "social-search-container">
+                Search &nbsp;
+                <select id="selectList">
+                  <option value="User">Users</option>
+                  <option value="Group">Public Groups</option>
+                </select>
+                &nbsp;&nbsp;for &nbsp;
+                
+                <input type = "text" id="searchText"/>&nbsp;&nbsp;
+                <button type = "button" onclick="searchUsers()">Search</button>
+                
+            </div>
+            <apex:form id="searchTable">
+            <div class = "warn-msg">{!message}</div>
+            <div class = "social-table-container">    
+                
+                 <div class = "tbl-container-search">
+                 <div id="gridSearchUsers"></div>
+                    <script>
+                        $(document).ready(function () {
+                              kendoSearchTable($.parseJSON('{!JSENCODE(searchedUserJSON)}'));
+                        });
+                    </script>    
+                 </div>   
+            </div>
+            <apex:outputPanel rendered="{!IF(OR(searchType == null,searchType == 'User'),true,false)}" >
+                    <!------------- User Button -------------->
+                <!---<div class = "tbl-buttons-add btn-hold-width1" id = "userBtn">
+                   
+                    <button type="button" onclick="addAsUsers()">Add</button>
+                    
+                </div> --->
+                
+                <div class = "tbl-buttons-add btn-hold-width2" id = "groupBtn">
+                    <div class = "group-as">
+                        <div class = "add-as-btn left">
+                            <button type="button" onclick="addAsUsers()">Add As</button>
+                        </div>                    
+                        
+                        <div class = "add-as-option option-user left">                                  
+                            <apex:outputPanel rendered="{!IF(AND(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(decisionData.Phase__c=='Draft',decisionData.Phase__c=='Share',decisionData.Phase__c=='Decide')),True,False)}" >          
+                                <input type="checkbox" id="responsibleUser" />Responsible
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(AND(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(decisionData.Phase__c=='Approve',decisionData.Phase__c=='Execute',decisionData.Phase__c=='Evaluate')),True,False)}" >          
+                                <input type="checkbox" disabled = "disabled" id="responsibleUser" />Responsible
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(AND(p.Name != 'System Administrator',myRole.Accountable__c==false,myRole.Responsible__c==false,myRole.Backup_for_Accountable__c==false),True,False)}" >          
+                                <input type="checkbox" disabled = "disabled" id="responsibleUser" />Responsible
+                            </apex:outputPanel>                   
+                        </div>
+                        <div class = "add-as-option option-user left">                                  
+                            <apex:outputPanel rendered="{!IF(AND(OR(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(AND(OR(myRole.Consulted__c,myRole.Informed__c),decisionData.Add_C_I_Members__c))),OR(decisionData.Phase__c=='Draft',decisionData.Phase__c=='Share',decisionData.Phase__c=='Decide')),True,False)}" >          
+                                <input type="checkbox" checked="true" id="consultedUser" />Consulted
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(AND(OR(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(AND(OR(myRole.Consulted__c,myRole.Informed__c),decisionData.Add_C_I_Members__c))),OR(decisionData.Phase__c=='Approve',decisionData.Phase__c=='Execute',decisionData.Phase__c=='Evaluate')),True,False)}" >          
+                                <input type="checkbox" disabled = "disabled" id="consultedUser" />Consulted
+                            </apex:outputPanel>    
+                        </div>
+                        <div class = "add-as-option option-user left">                                  
+                            <input type="checkbox" id="informedUser" />Informed
+                        </div>                    
+                    </div>
+                </div> 
+                    <!------------- End User Button -------------->
+            </apex:outputPanel>
+            <apex:actionFunction name="AddUsers" action="{!addingUserBasedOnType}" oncomplete="disableChkOnLoadVeto();" reRender="existingUserForm,searchTable" >
+                <apex:param name="selectedUsers" id="selectedUsers" value="" />
+                <apex:param name="userType" id="userType" value="" />
+                <apex:param name="addingAsInformed" id="addingAsInformed" value="" />
+                <apex:param name="addingAsResponsible" id="addingAsResponsible" value="" />
+                <apex:param name="addingAsConsulted" id="addingAsConsulted" value="" />
+            </apex:actionFunction> 
+            <apex:outputPanel rendered="{!IF(searchType == 'Group',true,false)}" >    
+                <!------------- Group Button -------------->
+            <div class = "tbl-buttons-add btn-hold-width2" id = "groupBtn">
+                <div class = "group-as">
+                    <div class = "add-as-btn left">
+                        <button type = "button" onclick="addAsGroup();">Add As</button>
+                    </div>
+                    <div class = "add-as-option left">
+                        <apex:outputPanel rendered="{!IF(AND(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(decisionData.Phase__c=='Draft',decisionData.Phase__c=='Share',decisionData.Phase__c=='Decide')),True,False)}" >          
+                            <input type="checkbox" id="responsibleGroup" />Responsible (as Individuals)
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(AND(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(decisionData.Phase__c=='Approve',decisionData.Phase__c=='Execute',decisionData.Phase__c=='Evaluate')),True,False)}" >          
+                            <input type="checkbox" disabled = "disabled" id="responsibleGroup" />Responsible (as Individuals)
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(AND(p.Name != 'System Administrator',myRole.Accountable__c==false,myRole.Responsible__c==false,myRole.Backup_for_Accountable__c==false),True,False)}" >          
+                            <input type="checkbox" disabled = "disabled" id="responsibleGroup" />Responsible (as Individuals)
+                        </apex:outputPanel>
+                    </div>
+                    <div class = "add-as-option left">
+                        <apex:outputPanel rendered="{!IF(AND(OR(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(AND(OR(myRole.Consulted__c,myRole.Informed__c),decisionData.Add_C_I_Members__c))),OR(decisionData.Phase__c=='Draft',decisionData.Phase__c=='Share',decisionData.Phase__c=='Decide')),True,False)}" >          
+                            <input type="checkbox" id="consultedGroup" />Consulted (as Individuals)
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(AND(OR(OR(p.Name == 'System Administrator',myRole.Accountable__c,myRole.Responsible__c,myRole.Backup_for_Accountable__c),OR(AND(OR(myRole.Consulted__c,myRole.Informed__c),decisionData.Add_C_I_Members__c))),OR(decisionData.Phase__c=='Approve',decisionData.Phase__c=='Execute',decisionData.Phase__c=='Evaluate')),True,False)}" >          
+                            <input type="checkbox" disabled = "disabled" id="consultedGroup" />Consulted (as Individuals)
+                        </apex:outputPanel>    
+                            
+                    </div>
+                    <div class = "add-as-option left option-informed">
+                        <input type="checkbox" checked="checked" disabled = "disabled"/>Informed (as Group)
+                    </div> 
+                </div>
+            </div>   
+                <!------------- End Group Button -------------->
+            </apex:outputPanel>
+            </apex:form>      
+       </div>
+           <!------------ End Content -------------->
+           <apex:form >
+               <apex:actionFunction name="searchSelectedUsers" action="{!searchUsers}" reRender="searchTable" >
+                   <apex:param name="searchText" id="searchText" value="" />
+                   <apex:param name="searchType" id="searchType" value="" />
+               </apex:actionFunction>
+           </apex:form>
+           
+           <!--------- Popup ----------->
+    <div class = "bg-fade"></div>
+    <div class = "modal-window">
+        <div class = "modal-head">
+            <!--------- Popup Group Member Header -----------> 
+            <div class = "modal-group-header left" id = "groupMember-header" style="display:none">
+                Members of Group - <span class = "group-name" ></span>
+            </div>
+            <!--------- End Group Member Header ----------->
+            <a class = "modal-close" href = "javascript: void(0);" onclick = "hideModal()"></a>
+        </div>    
+        <!--------- Popup Group Member Content ----------->
+        <div class = "modal-content" id = "groupMember-body">
+            <div id="gridGroupMember"></div>
+        </div>
+        <!--------- End Popup Group Member Content ----------->
+        <div class = "modal-btm">
+            <!--------- Popup Popup Group Member Footer ----------->  
+           <div class = "modal-footer" id = "groupMember-footer">                   
+                <button type = "button" onclick = "hideModal()">Close</button>
+           </div>
+           <!--------- End Popup Popup Group Member Footer ----------->  
+        </div>        
+     </div> 
+         <!--------- End Popup ----------->
+         <!----------- Popover Group -------------->
+     <div class = "popover-social">
+         <div class = "popover-arrow-hold"><div class = "popover-social-arrow"></div></div>
+         <div class = "popover-social-top">Group Members</div>
+         <div class = "popover-social-content"></div>
+         <div class = "popover-social-btm">Click on the link to see more</div>
+     </div>
+         <!----------- End Popover Group -------------->   
+    </body>
+    <script>
+        
+        var selectedUsers = new Array();
+        disableChkOnLoadVeto();
+        
+        
+        function disableChkOnLoadVeto(){
+            selectedUsers = [];
+            var chk = document.getElementById('chkStatus').innerHTML;
+            
+            if(chk == 'Draft'){
+                for(i=0;i<5000;i++){
+                    if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':informedRoleDraft').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':consultedRoleDraft').checked == false) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':responsibleRoleDraft').checked == false) ){
+                        document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':vetoDraft').checked = false;
+                        document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':vetoDraft').disabled = true;
+                    }
+                }    
+            }else{
+                for(i=0;i<5000;i++){
+                    if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':informedRole').disabled == false) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':consultedRole').disabled == false) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':responsibleRole').disabled == false) ){
+                        if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':informedRole').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':consultedRole').checked == false) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':responsibleRole').checked == false) ){
+                            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':veto').checked = false;
+                            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':veto').disabled = true;
+                        }
+                    }else{
+                        //if(chk == 'Share'){
+                            //document.getElementById('disableDel'+i).style.display = 'none';
+                            //document.getElementById('enableDel'+i).style.display = 'block';
+                        //}
+                    }
+                    if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':accountableRole').disabled == false)){
+                        if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':accountableRole').checked == true) ){
+                            //document.getElementById('disableDel'+i).style.display = 'block';
+                            //document.getElementById('enableDel'+i).style.display = 'none';
+                            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':acceptReqd').disabled = true;
+                            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':backup').disabled = true;
+                            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':veto').disabled = true;
+                        }
+                        if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':accountableRole').checked == false) ){
+                            //document.getElementById('disableDel'+i).style.display = 'none';
+                            //document.getElementById('enableDel'+i).style.display = 'block';
+                        }
+                    }
+                }
+            }
+        }
+        
+        function enableVetoRightsCon(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRole').checked == true || document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRole').checked == true )) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled = false;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRole').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRole').checked == false )) {
+                if( document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRole').checked == false ){
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').checked = false;
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled = true;    
+                }
+            }
+              
+        }
+        
+        function enableVetoRightsConDecide(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDecide').checked == true || document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDecide').checked == true )) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled = false;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDecide').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDecide').checked == false )) {
+                if( document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDecide').checked == false ){
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').checked = false;
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled = true;    
+                }
+            }
+              
+        }
+        
+        function enableVetoRightsConDraft(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDraft').checked == true || document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDraft').checked == true )) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled = false;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDraft').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDraft').checked == false )) {
+                if( document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDraft').checked == false ){
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').checked = false;
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled = true;    
+                }
+            }
+              
+        }
+        
+        function enableVetoRightsResDraft(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDraft').checked == true || document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDraft').checked == true )) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled = false;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDraft').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDraft').checked == false )) {
+                if( document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDraft').checked == false ){
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').checked = false;
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled = true;    
+                }
+            }
+              
+        }
+        
+        
+        
+        function enableVetoRightsRes(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRole').checked == true)) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled = false;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRole').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRole').checked == false)) {
+                if( document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRole').checked == false ){    
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').checked = false;
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled = true;    
+                }
+            }
+        }
+        
+        function enableVetoRightsResDecide(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDecide').checked == true)) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled = false;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDecide').checked == true) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDecide').checked == false)) {
+                if( document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDecide').checked == false ){    
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').checked = false;
+                    document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled = true;    
+                }
+            }
+        }
+        
+        function disableVetoInformed(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRole').checked == true)&&((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRole').checked == false)&&(document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRole').checked == false))) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled = true;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRole').checked == false)&& (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':accountableRole').checked == false)) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled = false;
+            }
+        }
+        
+        function disableVetoInformedDecide(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDecide').checked == true)&&((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDecide').checked == false)&&(document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDecide').checked == false))) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled = true;    
+            }
+            if(document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDecide').checked == false) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDecide').disabled = false;
+            }
+        }
+        
+        function disableVetoInformedDraft(checkbox){
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDraft').checked == true)&&((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':consultedRoleDraft').checked == false)&&(document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':responsibleRoleDraft').checked == false))) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').checked = false;
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled = true;    
+            }
+            if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':informedRoleDraft').checked == false)&& (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':accountableRole').checked == false)) {
+                document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':vetoDraft').disabled = false;
+            }
+        }
+        
+        function accountableSelect(checkbox) {
+            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':accountableRole').checked = true;
+            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':backup').checked = false;
+            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':backup').disabled = true;
+            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').checked = false;
+            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':veto').disabled = true;
+            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':acceptReqd').checked = false;
+            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+checkbox+':acceptReqd').disabled = true;
+            //document.getElementById('disableDel'+checkbox).style.display = 'block';
+            //document.getElementById('enableDel'+checkbox).style.display = 'none';
+            for(i=0;i<5000;i++){
+                if(i != checkbox){
+                    if(document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':accountableRole').disabled != true){        
+                        document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':accountableRole').checked = false;        
+                        document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':backup').disabled = false;
+                        document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':acceptReqd').disabled = false;
+                        //document.getElementById('disableDel'+i).style.display = 'none';
+                        //document.getElementById('enableDel'+i).style.display = 'block';
+                        if((document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':consultedRole').checked == false) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':responsibleRole').checked == false) && (document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':informedRole').checked == true) ){
+                            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':veto').disabled = true;
+                        }else{
+                            document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':veto').disabled = false;
+                        }
+                    }
+                }
+            }
+        }
+        
+        function singleBackup(checkbox){
+            for(i=0;i<5000;i++){
+                if(document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':backup').disabled == false){
+                    if(i != checkbox){
+                        document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':backup').checked = false;
+                    }
+                }
+            }
+        }
+        
+        function singleBackups(checkbox){
+           for(i=0;i<5000;i++){
+                if(document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':backups').disabled == false){
+                    if(i != checkbox){
+                        document.getElementById('mainPage:existingUserForm:peopleRepeat:'+i+':backups').checked = false;
+                    }
+                }
+            }
+         }   
+        // remove quate from json string 
+        function removeQuotes(mystring) {
+                
+            newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                //console.log(p);
+                return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+            });
+            
+            var newJ= $.parseJSON(newString);
+            return newJ;
+        }
+     </script>
+   
+  
+     
+    <script>
+        // **************** Kendo table Java script  ********************//
+        
+        function kendoGroupMember(gridData) {
+            
+            $("#gridGroupMember").kendoGrid({
+               dataSource:{
+                   data:gridData ,
+                   schema: {
+                       model: {
+                          name: "name",
+                          fields: {
+                              name: { type: "string" },
+                              userImage: { type: "string" },
+                              department: { type: "string" }
+                          }
+                      }
+                   },
+                   pageSize: 10
+               },
+               columns: [
+                   {
+                       field: "name",
+                       title: "Name",
+                       template: '<div class="grid-user-img"><img src=#=userImage# title= "#=name#" height="24px" width="24px"  /></div><div class="grid-user-img group-link">#=name#</div>'
+                      
+                   },
+                   {
+                       field: "department",
+                       title: "Department",                       
+                       width: 180
+                   }
+              ],
+              sortable: true,
+              pageable: true,
+           });
+           
+        }
+        
+        function kendoSearchTable(gridData) {
+            $("#gridSearchUsers").kendoGrid({
+               dataSource:{
+                   data:gridData ,
+                   schema: {
+                       model: {
+                          id: "id",
+                          fields: {
+                              id: { type: "string" },
+                              selectUser:{type: "boolean" },
+                              userName:{type: "string" },
+                              dept:{type: "string" }
+                          }
+                      }
+                   },
+                   pageSize: 7
+               },
+               columns: [
+                   {
+                       field: "selectUser",
+                       title: "Select",
+                       sortable: false,
+                       template: "<div align='center'><input type='checkbox' onchange=\"selectUserFunc('#=userId#')\"; value=/#=selectUser# /></div>",
+                       width: 55
+                   },
+                   {
+                       field: "userName",
+                       title: "Name",
+                       template: "<div class='grid-user-img'><img src=#=userImage# height='24px' width='24px' title='#=userName#'></div><div class='grid-user-img group-link'><a class='group-link' href='javascript:void(0);' onclick=\"redirectUserTo('#=userId#','#=redirectUrl#','#=userName#')\"; >#=userName#</a><div id = 'decHidden'>#=userNameList#</div></div>"
+                   },
+                   {
+                       field: "dept",
+                       title: "Department",
+                       width: 180
+                   },
+              ],
+              sortable: true,
+              pageable: true
+           });
+           
+           $('.group-link').hover(function(e) {                                   
+              var content = $(this).next().html();
+              if(content != ''){
+                  content = content.replace(/,/g, '<br>');
+                  $('.popover-social-content').html(content);                   
+                  $('.popover-social').show()
+                  .css('top', e.pageY - 25)
+                  .css('left', e.pageX + 50)
+                  .appendTo('body');
+              }
+           },function() {
+           $('.popover-social').hide();
+          });
+        }
+        
+        
+       
+        
+    </script>
+    
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jqueryui-1.9.1.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/kendo.all.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/>
+</html>               
+</apex:page>

@@ -1,0 +1,45 @@
+<apex:page docType="html-5.0" controller="TagCloud">
+  <!-- Begin Default Content REMOVE THIS -->
+    <apex:includeScript value="{!URLFOR($Resource.TagCloud, '/TagCloud/jquery.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.TagCloud, '/TagCloud/tagcloud.js')}"/>
+    <body>
+        <div id="cloud">
+    <canvas width="700" height="700" id="myCanvas">
+        
+        <ul class="weighted" style="font-size: 50%" id="weightTags">
+            <apex:repeat value="{!hashTag}" var="tag">
+                <li><a href="/_ui/core/chatter/topics/TopicPage?name={!tag.Name}"  target="_blank" data-weight="{!if(tag.HashtagCount > 100, 100,tag.HashtagCount) }" style="font-size: 5ex">{!tag.Name}</a></li>
+                
+            </apex:repeat>
+        </ul>
+    </canvas>
+    </div>
+    </body>
+    <script>
+        jQuery(function ($) {
+    
+    $('#myCanvas').tagcanvas({
+        weight: true,
+        weightFrom: 'data-weight',
+        shadow: '#ccf',
+        shadowBlur: 3,
+        interval: 20,
+        textFont: 'Impact,Arial Black,sans-serif',
+        textColour: '#82797B',
+        textHeight: 50,
+        outlineColour: '#F2F0F0',
+        outlineThickness: 5,
+        maxSpeed: 0.01,
+        minBrightness: 0.1,
+        depth: 0.92,
+        pulsateTo: 0.2,
+        pulsateTime: 0.75,
+        initial: [0.1, -0.1],
+        decel: 0.98,
+        reverse: true,
+        hideTags: false
+    }, 'weightTags');
+
+});
+    </script>
+</apex:page>

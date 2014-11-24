@@ -1,0 +1,91 @@
+<apex:page contentType="text/javascript"  >
+
+
+ // FT Footer
+ 
+ 
+ 
+ function changeFooterText(){
+     $('.bPageFooter div').hide();
+     $('.bPageFooter').html('<div class="footText"> Copyright © 2010-2014 Fingertip, Oy. All rights reserved. | Privacy Statement | Security Statement | Terms of Use | 508 Compliance </div>');  
+ } 
+ 
+ // Popup Draggable
+
+ function dragModal(){
+    // $(".modal-window").draggable( {containment: "document", cursor:"move", handle: ".modal-head", cancel: ".modal-close", scroll: false} );
+    //  $(".modal-window-newTaskPopup").draggable( {containment: "document", cursor:"move", handle: ".modal-activitywarning-head", cancel: ".modal-close", scroll: false} );
+     // $(".modal-AddItem-CRMObj").draggable( {containment: "document", cursor:"move", handle: ".modal-activitywarning-head", cancel: ".modal-close", scroll: false} );
+ }
+ function dragModalApprove(){
+     //$(".modal-window-approve").draggable( {containment: "document", cursor:"move", handle: ".modal-approval-head", cancel: ".modal-close", scroll: false} );
+ }
+ function dragModalQCD(){
+     //$(".qcd-modal-window").draggable( {containment: "document", cursor:"move", handle: ".page-head", cancel: ".modal-close", scroll: false} );
+ }
+ function dragModalUpload(){
+     //$(".modal-window-upload").draggable( {containment: "document", cursor:"move", handle: ".modal-head-upload", cancel: ".modal-close", scroll: false} );
+ }
+ 
+ 
+ function dragModalRelation(){
+    // $(".modal-window-relation").draggable( {containment: "document", cursor:"move", handle: ".modal-relation-head", cancel: ".modal-close", scroll: false} );
+   //  $(".modal-window-phasewarning").draggable( {containment: "document", cursor:"move", handle: ".modal-activitywarning-head", cancel: ".modal-close", scroll: false} );
+    // ----------------- Added for Mass task edit popup ------------- sendil - 10-07-2014
+   //  $(".modal-window-massEditing").draggable( {containment: "document", cursor:"move", handle: ".modal-activitywarning-head", cancel: ".modal-close", scroll: false} );
+  //   $(".modal-window-massDelete").draggable( {containment: "document", cursor:"move", handle: ".modal-activitywarning-head", cancel: ".modal-close", scroll: false} );
+     //$(".modal-window-noPermission").draggable( {containment: "document", cursor:"move", handle: ".modal-activitywarning-head", cancel: ".modal-close", scroll: false} );
+     //$(".modal-window-addTopic").draggable( {containment: "document", cursor:"move", handle: ".modal-addTopic-head", cancel: ".modal-close", scroll: false} );
+ }
+ 
+ // Dragable functionality for decision warning
+ function dragModaldecisionWarning(){
+    // $(".modal-window-approval").draggable( {containment: "document", cursor:"move", handle: ".modal-approval-head", cancel: ".modal-close", scroll: false} );
+ }
+ 
+ // Dragable functionality for activities warning
+ function dragModaldecisionActivitiesWarning(){
+     //$(".modal-window-activitywarning").draggable( {containment: "document", cursor:"move", handle: ".modal-activitywarning-head", cancel: ".modal-close", scroll: false} );
+ }
+ 
+ // Dragable functionality for veto reject warning
+ function dragModaldecisionVetoRejectWarning(){
+     //$(".modal-window-vetorejection").draggable( {containment: "document", cursor:"move", handle: ".modal-vetorejection-head", cancel: ".modal-close", scroll: false} );
+ }
+ 
+ // Dragable functionality for veto reject warning on home page
+ function dragModaldecisionVetoRejectWarningonHome(){
+    // $(".modal-window-vetorejectiononhome").draggable( {containment: "document", cursor:"move", handle: ".modal-vetorejection-head", cancel: ".modal-close", scroll: false} );
+ }
+ function dragModalTopic(){
+     //$(".modal-window-topic").draggable( {containment: "document", cursor:"move", handle: ".add-topic-header", cancel: ".modal-close", scroll: false} );
+ }
+function btnDisable(){
+    $(':button').click(function(){   
+       $(this).attr('disabled', true);
+       setTimeout($(':button').attr('disabled', false),2000); 
+    }); 
+}    
+
+// Show and Hide Preloader
+
+function showLoader(){
+    $('.preloader').css('display','block');
+    $('.bg-fade').css('display','block');
+}
+function hideLoader(){
+    $('.preloader').css('display','none');
+}
+
+document.title = "Fingertip";
+
+   /*$(document).ready(function(){
+       $('link[rel="shortcut icon"]').attr( "href","http://cdn.sstatic.net/stackoverflow/img/favicon.ico"); 
+    });*/
+    
+    function hideLoaderAndFade(){
+        $('.preloader').css('display','none');
+        $('.bg-fade').css('display','none');
+    }      
+
+</apex:page>

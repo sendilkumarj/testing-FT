@@ -1,0 +1,422 @@
+<apex:page contentType="text/javascript"  >
+    function approveReject(decisionId,processInstance,action,comments,typeOfApproval){
+            var selectedValue = document.getElementById('chooseTime').value;
+            var searchValue = document.getElementById('searchUrgentTable').value;
+            $('#approvalComments').css({'height': '80px','width': '590px'});
+            HomePageOld.approvedRejectWithSearchTimeFrame(decisionId,processInstance, action, comments,typeOfApproval, selectedValue , searchValue , function(result, event)
+            {    
+                if (event.status)
+                {  
+                    if(result != 'Please re-share the decision'){
+                    
+                    
+                    
+                          var newItemViewOne = removeQuotes(result);
+                          if(typeOfApproval == 'important')
+                          {  
+                            var grid;
+                            if(  urgentApprovalLoaded ){
+                                grid =$("#kendoUrgentApprovals").data("kendoGrid");
+                                grid.dataSource.data(newItemViewOne);
+                            }
+                            $('#urgentApprovalsNo').html('('+newItemViewOne.length+')');
+                            HomePageOld.approvalTab( function(result, event)
+                            {   
+                                    if (event.status)
+                                    {   
+                                        var newItemViewOne = removeQuotes(result);
+                                        var grid =$("#itemsToAprove").data("kendoGrid");
+                                        grid.dataSource.data(newItemViewOne );
+                                        if($('#vetoRightsId').val() == 'true'){
+                                            cancelVetoRejectPopup();
+                                        }
+                                    }
+                                
+                                    var grid =$("#itemsToAprove").data("kendoGrid");
+                                    grid.dataSource.data(newItemViewOne );
+                                    var selectedValue = document.getElementById('chooseTime').value;
+                                    var searchValue = document.getElementById('searchUrgentTable').value;
+                                    HomePageOld.UrgentApprovalTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event)
+                                    {
+                                        if (event.status)
+                                        {  
+                                            var newItemViewOne = removeQuotes(result);
+                                            var grid;
+                                            if( urgentApprovalLoaded ) {
+                                                grid =$("#kendoUrgentApprovals").data("kendoGrid");
+                                                grid.dataSource.data(newItemViewOne ); 
+                                            }  
+                                            $('#urgentApprovalsNo').html('('+newItemViewOne.length+')');
+                                            if($('#vetoRightsId').val() == 'true'){
+                                                cancelVetoRejectPopup();
+                                            }
+                                        }
+                                        updateImportant();
+                                    }, {escape:true});
+                            }, {escape:true});
+                            
+                          
+                            
+                          
+                            
+                         }
+                         else                        
+                         if(typeOfApproval == 'urgent')
+                          {  
+                            var grid =$("#kendoUrgentApprovals").data("kendoGrid");
+                            grid.dataSource.data(newItemViewOne);
+                            $('#urgentApprovalsNo').html('('+newItemViewOne.length+')');
+                            HomePageOld.approvalTab( function(result, event)
+                            {   
+                                if (event.status)
+                                {   
+                                    var newItemViewOne = removeQuotes(result);
+                                    var grid =$("#itemsToAprove").data("kendoGrid");
+                                    grid.dataSource.data(newItemViewOne );
+                                   // kendoApprovals(newItemViewOne);
+                                    if($('#vetoRightsId').val() == 'true'){
+                                        cancelVetoRejectPopup();
+                                    }
+                                    updateImportant();
+                                }
+                            }, {escape:true});
+                            
+                        } 
+                        else{  
+                            var grid =$("#itemsToAprove").data("kendoGrid");
+                            grid.dataSource.data(newItemViewOne );
+                            
+                           // kendoApprovals(newItemViewOne);
+                            var selectedValue = document.getElementById('chooseTime').value;
+                            var searchValue = document.getElementById('searchUrgentTable').value;
+                            HomePageOld.UrgentApprovalTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event)
+                            {
+                                if (event.status)
+                                {  
+                                    var newItemViewOne = removeQuotes(result);
+                                    var grid ;
+                                    if( urgentApprovalLoaded ) {
+                                        grid = $("#kendoUrgentApprovals").data("kendoGrid");
+                                        grid.dataSource.data(newItemViewOne );
+                                    }   
+                                    $('#urgentApprovalsNo').html('('+newItemViewOne.length+')');
+                                    if($('#vetoRightsId').val() == 'true'){
+                                        cancelVetoRejectPopup();
+                                    }
+                                    updateImportant();                               
+                                }
+                            }, {escape:true});
+                        }
+                    }else{
+                        alert(result);
+                    }
+                }
+            }, {escape:true});
+        }
+        
+        
+        function updateMyCollegueTask(recodsId, recodsSubject, recodsPriority, recodsStatus,recodsDueDate  ){
+            HomePageOld.updateMyCollegueTask(recodsId, recodsSubject, recodsPriority, recodsStatus, recodsDueDate , function(result, event)
+            {
+                if (event.status)
+                {  
+                    var newMyTasks = removeQuotes(result);
+                    kendoMyCollegueList(newMyTasks);
+                }
+            }, {escape:true});
+        }
+        
+        function updateMyTask(recodsId, recodsSubject, recodsPriority, recodsStatus,recodsDueDate  ){
+           
+            HomePageOld.updateMyTask(recodsId, recodsSubject, recodsPriority, recodsStatus, recodsDueDate , function(result, event)
+            {      
+                if (event.status)
+                {  
+                        var newMyTasks = removeQuotes(result);
+                        var grid =$("#myTasks").data("kendoGrid");
+                        grid.dataSource.data(newMyTasks );
+                         //kendoMyTasks(newMyTasks);
+                        if( urgentTaskLoaded )
+                        HomePageOld.UrgentTaskTabWithSearchTimeFrame('','', function(result, event)
+                        {
+                            if (event.status)
+                            {    
+                                var newMyTasks = removeQuotes(result);
+                                grid =$("#kendoUrgentTasks").data("kendoGrid");
+                                grid.dataSource.data(newMyTasks );  
+                                $('#urgentTaskNo').html('('+newMyTasks.length+')');
+                               // grid.dataSource.update();
+                            }
+                        }, {escape:true});
+                } 
+            }, {escape:true});
+        }
+        
+        function parseModifiedData(modifiedData , selectedTimeFrame, searchValue){
+            HomePageOld.saveModifiedDataWithSearchTimeFrame(modifiedData , selectedTimeFrame , searchValue, function(result, event)
+            {    
+                
+                if (event.status)
+                {  //alert(result);  
+                
+                    var urgentTasksNew = removeQuotes(result);  
+                    var grid =$("#kendoUrgentTasks").data("kendoGrid");
+                    grid.dataSource.data(urgentTasksNew );
+                    viewModel.ds.data(
+                        viewModel.ds.options.schema.parse(urgentTasksNew || []) //just in case thenew data is null
+                    );
+                    $('#urgentTaskNo').html('('+urgentTasksNew.length+')');
+                    HomePageOld.myTasks( function(result, event) 
+                    {
+                        if (event.status)
+                        {   if(result != null){
+                                var newMyTasks = removeQuotes(result);
+                                grid =$("#myTasks").data("kendoGrid");
+                                grid.dataSource.data(newMyTasks );
+                            }
+                        }
+                    }, {escape:true});
+                     
+                }
+            }, {escape:true});
+        }
+        
+        function updateModifiedData(modifiedData , selectedTimeFrame, searchValue){
+            HomePageOld.updateIssuesDataWithSearchTimeFrame(modifiedData , selectedTimeFrame, searchValue , function(result, event)
+            {
+                if (event.status)
+                {  
+                    var urgentIssuesNew = removeQuotes(result);
+                    //kendoUrgentIssues(urgentIssuesNew);
+                    var grid =$("#kendoUrgentIssues").data("kendoGrid");
+                    grid.dataSource.data(urgentIssuesNew);
+                    $('#urgentIssues').html('('+urgentIssuesNew.length+')');
+                }
+            }, {escape:true});
+        }
+        
+        function showDecisionApprovalModal(ele,id,decisionId,type,userRole,vetoRights,backupRights){
+            $('#modal-decision-approve').css('top','80px');  
+            //$('body').css('overflow','hidden');
+            $('.bg-fade').fadeIn('slow');           
+           if(type == "items"){ // this will get the unique area
+                   $('#modal-decision-approve').css('top','500px');
+           } 
+          // document.getElementById("modal-decision-approve").style.top =  (( ((screen.availHeight)/2) - 152)+'px');     
+            if(ele == 'Role Acceptance') {
+                $('#approveAccpetBtn').html('Accept');
+                $('#opposeRejectBtn').html('Reject');
+                $('#approve-header').html('Accept / Reject your role');
+                var backupandveto = '';
+                if( backupRights == 'true' )
+                if( vetoRights  == 'true' )
+                backupandveto  = true;
+                $('#approve-header').html('Accept / Reject your role as '+userRole +' '+ ( ( backupRights == 'true' || vetoRights  == 'true' ) ? ' with ' :'' ) +  ( backupRights == 'true' ? 'Backup' : '' ) + ( backupandveto   ? ' and ' :' ' ) +  ( vetoRights == 'true' ? 'Veto' : '' )  ); 
+               // $('#approve-header').html(stanceHeader);  
+            } 
+            else if(ele == 'Stance Approval'){ 
+                
+                var stanceHeader = 'Provide your stance as "'+userRole+ ( vetoRights == 'true' ? '\" with \"Veto' : '' ) +'" to the following proposal';
+                $('#approveAccpetBtn').html('Support');
+                $('#opposeRejectBtn').html('Oppose');
+                $('#approve-header').html(stanceHeader);  
+            }else{
+                $('#approveAccpetBtn').html('Approve');
+                $('#opposeRejectBtn').html('Reject');
+                $('#approve-header').html('Provide the verdict for the decision proposal');
+            }
+            $('#vetoRightsId').val(vetoRights);
+            $('#processInstanceId').val(id) ;
+            $('#decisionId').val(decisionId) ;
+           
+            var prblmStmt = document.getElementById(id).innerHTML;
+            var decisionTaken = document.getElementById(id+'append').innerHTML;
+            var decisionTitle = document.getElementById(id+'title').innerHTML;
+            $('#decisionTitleInPopup').html(decisionTitle);
+            $('#prblmStmt').html(prblmStmt);
+            $('#typeOfApproval').html(type);
+            $('#decisionTaken').html(decisionTaken);
+            $('#modal-decision-approve').slideDown('slow');
+            document.getElementById('approvalComments').value = '';
+        }
+        function hideDecisionApprovalModal(){ 
+            document.getElementById('approvalComments').value = '';           
+            $('#modal-decision-approve').css('display','none');
+            $('.bg-fade').fadeOut('slow');
+            $('body').css('overflow','auto');  
+            $('#approvalComments').css({'height': '80px','width': '590px'});
+        }
+        
+        
+        
+        function changeText() {      
+           var activeTab = $( "#tabsImportant" ).tabs( "option", "active" );
+           var selectedValue = document.getElementById('chooseTime').value;
+           var searchValue = document.getElementById('searchUrgentTable').value;
+           searchWithSelectedTime(activeTab,selectedValue,searchValue);
+        }
+        function changeRole() {
+             var selectedValue = document.getElementById('chooseRole').value;
+              HomePageOld.myDecisions( selectedValue , function(result, event) {
+                if (event.status) { 
+                    var myDecision = removeQuotes(result); 
+                    grid = $("#myDecisions").data("kendoGrid");
+                    grid.dataSource.data(myDecision );  
+                }
+            }, {escape:true});  
+             
+             
+        }
+        function changeTiming() {
+            var selectedValue = document.getElementById('chooseTime').value; 
+            var searchValue = document.getElementById('searchUrgentTable').value;
+                      HomePageOld.UrgentTaskTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                            if (event.status) { 
+                                var urgentTaskNew = removeQuotes(result);
+                                //kendoUrgentTasks(urgentTaskNew);
+                                if( urgentTaskLoaded )
+                                { grid =$("#kendoUrgentTasks").data("kendoGrid");
+                                  grid.dataSource.data(urgentTaskNew );
+                                }
+                               $('#urgentTaskNo').html('('+urgentTaskNew.length+')');
+                            }
+                        }, {escape:true});
+                     
+                        HomePageOld.UrgentDecisionTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                            if (event.status) {  
+                                var urgentDecisionNew = removeQuotes(result);
+                                //kendoUrgentDecisions(urgentDecisionNew);
+                                if(  urgentDcecisionLoaded )
+                                {
+                                    grid =$("#kendoUrgentDecisions").data("kendoGrid");
+                                    grid.dataSource.data(urgentDecisionNew );
+                                }
+                                $('#urgentDecisionNo').html('('+urgentDecisionNew.length+')');
+                            }
+                        }, {escape:true});
+                     
+                        HomePageOld.UrgentApprovalTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                            if (event.status) {  
+                                var urgentApprovalNew = removeQuotes(result);
+                                //kendoUrgentApprovals(urgentApprovalNew);
+                                if( urgentApprovalLoaded )
+                                {
+                                    grid =$("#kendoUrgentApprovals").data("kendoGrid");
+                                    grid.dataSource.data(urgentApprovalNew );
+                                }
+                                $('#urgentApprovalsNo').html('('+urgentApprovalNew.length+')');
+                            }
+                        }, {escape:true});
+                    
+                        HomePageOld.assignedTaskDataWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                            if (event.status) {  
+                                var urgentAssignedTaskNew = removeQuotes(result);
+                                //kendoMyCollegueList(urgentAssignedTaskNew);
+                                if( urgentAssignedDelayedLoaded )
+                                {
+                                    grid =$("#myCollegueTasks").data("kendoGrid");
+                                    grid.dataSource.data(urgentAssignedTaskNew );
+                                 }
+                                $('#urgentAssignedNo').html('('+urgentAssignedTaskNew.length+')');
+                            }
+                        }, {escape:true});
+                      
+                    /*HomePageOld.urgentIssuesTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                        if (event.status) {  
+                            var urgentIssuesNew = removeQuotes(result);
+                            var grid =$("#kendoUrgentIssues").data("kendoGrid");
+                            grid.dataSource.data(urgentIssuesNew);
+                            $('#urgentIssues').html('('+urgentIssuesNew.length+')');
+                        }
+                    }, {escape:true});*/
+                    
+                     
+                        HomePageOld.pendingApprovalsWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                            if (event.status) {  
+                                var urgentPendingApprovalssNew = removeQuotes(result);
+                                //kendoPendingApprovals(urgentPendingApprovalssNew);
+                                if( urgentPendingLoaded )
+                                {
+                                    var grid =$("#pendingApprovals").data("kendoGrid");
+                                    grid.dataSource.data(urgentPendingApprovalssNew);
+                                }
+                                $('#pendingApprovalsNo').html('('+urgentPendingApprovalssNew.length+')');
+                            }
+                        }, {escape:true});
+            
+        }
+         
+        function searchWithSelectedTime(activeTab, selectedValue, searchValue){
+            if(activeTab == 1){
+                HomePageOld.UrgentTaskTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                    if (event.status) { 
+                        var urgentTaskNew = removeQuotes(result);
+                        //kendoUrgentTasks(urgentTaskNew);
+                        grid =$("#kendoUrgentTasks").data("kendoGrid");
+                        grid.dataSource.page(1);
+                        grid.dataSource.data(urgentTaskNew );
+                        $('#urgentTaskNo').html('('+urgentTaskNew.length+')');
+                    }
+                }, {escape:true});
+            } else if(activeTab == 2){
+                HomePageOld.UrgentDecisionTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                    if (event.status) {  
+                        var urgentDecisionNew = removeQuotes(result);
+                        //kendoUrgentDecisions(urgentDecisionNew);
+                        grid =$("#kendoUrgentDecisions").data("kendoGrid");
+                        grid.dataSource.page(1);
+                        grid.dataSource.data(urgentDecisionNew );
+                        $('#urgentDecisionNo').html('('+urgentDecisionNew.length+')');
+                    }
+                }, {escape:true});
+            } else if(activeTab == 3){
+                HomePageOld.UrgentApprovalTabWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                    if (event.status) {  
+                        var urgentApprovalNew = removeQuotes(result);
+                        //kendoUrgentApprovals(urgentApprovalNew);
+                        grid =$("#kendoUrgentApprovals").data("kendoGrid");
+                        grid.dataSource.page(1);
+                        grid.dataSource.data(urgentApprovalNew );
+                        $('#urgentApprovalsNo').html('('+urgentApprovalNew.length+')');
+                    }
+                }, {escape:true});
+            } else if(activeTab == 4){
+                HomePageOld.assignedTaskDataWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                    if (event.status) {  
+                        var urgentAssignedTaskNew = removeQuotes(result);
+                        //kendoMyCollegueList(urgentAssignedTaskNew);
+                        grid =$("#myCollegueTasks").data("kendoGrid");
+                        grid.dataSource.page(1);
+                        grid.dataSource.data(urgentAssignedTaskNew );
+                        $('#urgentAssignedNo').html('('+urgentAssignedTaskNew.length+')');
+                    }
+                }, {escape:true});
+            } else if(activeTab == 5){ 
+                HomePageOld.pendingApprovalsWithSearchTimeFrame(searchValue , selectedValue , function(result, event) {
+                    if (event.status) {  
+                        var urgentPendingApprovalssNew = removeQuotes(result);
+                        //kendoPendingApprovals(urgentPendingApprovalssNew);
+                        var grid =$("#pendingApprovals").data("kendoGrid");
+                        grid.dataSource.page(1);
+                        grid.dataSource.data(urgentPendingApprovalssNew);
+                        $('#pendingApprovalsNo').html('('+urgentPendingApprovalssNew.length+')');
+                    }
+                }, {escape:true});
+            }
+        }
+        
+        // Cancel veto rejection popup
+        function cancelVetoRejectPopup(){
+            $('.modal-window-vetorejectiononhome').css('display','none');
+            $('.bg-fade').fadeOut('slow'); 
+        }
+        // ========= added script to hide and show scrollbar on mouse over in important section ==== //
+        function showScroll(x)
+        {
+             $(x).find('.thumb').show();
+        }
+        function hideScroll(x)
+        {
+             $(x).find('.thumb').hide();
+        }
+</apex:page>

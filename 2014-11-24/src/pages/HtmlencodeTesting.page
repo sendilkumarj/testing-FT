@@ -1,0 +1,5 @@
+<apex:page >
+  {!HTMLENCODE('<This is Feb\'14 period>')}<br/>
+  <apex:variable value="'" var="apos"/><br/>
+   {!SUBSTITUTE(JSENCODE('<This is Feb\'14 period>'),"\'",apos)}
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page standardController="User" sidebar="false" showHeader="false">
+    <c:CustomRelatedList objType="User" recId="{!User.Id}" recName="{!User.Name}"/>
+</apex:page>

@@ -1,0 +1,87 @@
+<apex:page standardStylesheets="false" showHeader="false" showChat="false"  standardController="Social_Input__c" extensions="DecisionApproveReject" sidebar="false">
+      
+       <style>
+       textarea{
+                width: 100%;
+            }
+
+        @media only screen and (max-width: 800px) {
+            textarea{
+                width: 100%;
+            }
+        }
+    </style>
+       <apex:outputPanel rendered="{! NOT(alreadyApproved) }" id="approvalform">
+           <span style="margin-left:10%"><b> You do not have sufficent permission</b></span>
+       </apex:outputPanel>
+       <apex:form rendered="{!alreadyApproved }" >
+          
+               <apex:outputPanel id="approvalform">
+
+               <apex:panelGroup rendered="{!sin.Stance_Approval_Status__c == 'Pending Approval'}">
+                  <br/><br/>
+                  <span style="margin-left:10%"><b>Your Stance for the proposed decision</b></span>
+                  <br/><br/>
+               </apex:panelGroup>
+              <apex:panelGroup rendered="{!sin.Final_Approval_Status__c == 'Pending Approval'}">
+                  <br/><br/>
+                  <span style="margin-left:10%"><b>Verdict for the proposed decision</b></span>
+                  <br/><br/>
+               </apex:panelGroup>      
+               <apex:pageBlock >
+                  <apex:pageBlockSection columns="1" >
+                       <apex:pageBlockSectionItem >
+                         <apex:outputPanel >
+                              Title<br/>
+                              <apex:inputTextarea readonly="true" value="{!Decision.Title__c}"/>
+                          </apex:outputPanel>                                                
+                      </apex:pageBlockSectionItem>
+                      <apex:pageBlockSectionItem >                         
+                         <apex:outputPanel >
+                              Deccription<br/>
+                              <apex:inputTextarea readonly="true" value="{!Decision.Problem_Idea_Advice__c}"/>
+                          </apex:outputPanel>                                                 
+                      </apex:pageBlockSectionItem>
+                      <apex:pageBlockSectionItem >
+                          <apex:outputPanel >
+                              Decision<br/>
+                              <apex:inputTextarea readonly="true" value="{!Decision.Decision_Taken__c}"/>
+                          </apex:outputPanel>                          
+                      </apex:pageBlockSectionItem>
+                      <apex:pageBlockSectionItem >
+                          <apex:outputPanel >
+                              Comment<br/>
+                              <apex:inputTextarea value="{!decisionComment}"/>
+                          </apex:outputPanel>                          
+                      </apex:pageBlockSectionItem>
+                   </apex:pageBlockSection>
+                   
+                    <apex:pageBlockButtons location="bottom" rendered="{!sin.Stance_Approval_Status__c == 'Pending Approval'}">
+                       <apex:commandButton action="{!approvedReject}" reRender="approvalform"  value="Support">
+                        <apex:param assignTo="{!approvalAction}"   value="Approve"/> 
+                      </apex:commandButton>
+                      <apex:commandButton action="{!approvedReject}" reRender="approvalform" value="Oppose">
+                        <apex:param assignTo="{!approvalAction}" value="Reject"/> 
+                      </apex:commandButton>
+                   </apex:pageBlockButtons>
+                   <apex:pageBlockButtons location="bottom" rendered="{!sin.Final_Approval_Status__c == 'Pending Approval'}">
+                         <apex:commandButton action="{!approvedReject}" reRender="approvalform"  value="Approve">
+                            <apex:param assignTo="{!approvalAction}"   value="Approve"/> 
+                          </apex:commandButton>
+                          <apex:commandButton action="{!approvedReject}" reRender="approvalform" value="Reject">
+                            <apex:param assignTo="{!approvalAction}" value="Reject"/> 
+                          </apex:commandButton>
+                   </apex:pageBlockButtons> 
+                  </apex:pageBlock>
+               
+               <script>  
+                var approvedRejected  = {!approvedRejected};
+                      if( approvedRejected   )
+                      {   
+                          window.history.back()
+                      }
+                     
+                 </script>
+              </apex:outputPanel>    
+       </apex:form>      
+</apex:page>

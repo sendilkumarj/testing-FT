@@ -1,0 +1,7 @@
+<apex:page standardController="Decision__c" renderAs="pdf">
+  <style>
+      
+  </style>
+  
+  <chatter:feed id="chatter" showPublisher="false" entityId="{!$CurrentPage.parameters.Id}"/> 
+</apex:page>

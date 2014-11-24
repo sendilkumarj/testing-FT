@@ -1,0 +1,1069 @@
+<apex:page cache="true" standardStylesheets="false"  controller="HomePage" showChat="true" tabStyle="Fingertip__tab">
+       <!-- Load Jquery -->
+    <script>
+		//FT Favicon
+		(function() {
+		    var link = document.createElement('link');
+		    link.type = 'image/x-icon';
+		    link.rel = 'shortcut icon';
+		    link.href = '{!$Resource.Favicon}';
+		    document.getElementsByTagName('head')[0].appendChild(link);
+		}());
+		
+	</script>
+     <apex:includeScript value="{!$Page.CommonScripts}" /> 
+     <div class = "preloader"></div>     
+     <div class = "bg-fade"></div> 
+     <!-- Load minimum css classes --> 
+     <style>    
+        #important_section .ui-tabs .ui-tabs-nav li{border:none!important}.clearwrap{width: 1250px;height: 45px;background: #fff;margin-left: -1em;position: absolute;}.ui-state-active a:link{border:1px solid #ccc!important;border-bottom:1px solid #fff!important}.ui-tabs-nav>.ui-state-hover a{border-color:#ccc!important}.ui-tabs-nav .ui-state-default,.ui-tabs-nav>.ui-state-default a{margin:0 -1px 0 0!important;border:1px solid #d4d4d4}.ui-state-active a:hover{border-bottom:1px solid #fff!important}.ui-tabs .ui-tabs-nav li a{font-size:1em!important;color:#333!important}/*#kendoUrgentTasks .k-button{-webkit-border-radius:0!important;border-radius:0!important}*/#kendoUrgentTasks .k-grid-content{height:430px!important}#kendoUrgentApprovals .k-grid-content,#kendoUrgentDecisions .k-grid-content,#myCollegueTasks .k-grid-content,#pendingApprovals .k-grid-content{height:464px!important}#important_section .ui-tabs .ui-tabs-nav li{top:0!important}#columnsContainer{background-color:#f2f2f2;width:1240px;height:580px}.k-list{overflow:hidden!important;height:100%}.cardTop,.dropBtn,.viewCardTop{position:static!important}.viewDropBtn{// position:static!important}.important_container{width:1240px;height:620px}.important_column{min-width:222px;height:100%;//border:solid 1px red;float:left;margin-right:10px;margin-left:10px}#tabs-done{height:500px;border-top:solid 1px #d4d4d4!important}.important_head{width:100%;height:39px;margin-bottom:8px;-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px;position: relative; }.important_column_body{width:218px;height:466px;border:1px solid #ccc;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;//overflow-y:hidden;padding-right:6px!important;padding-bottom:0!important;padding-left:0}.head_left{float:left;width:8px;height:37px;background-color:green;border-top-left-radius:6px;border-bottom-left-radius:6px}.head_center{width:217px;height:37px;background-color:#373737;text-align:center;color:#FFF;line-height:37px;border-bottom-right-radius:6px;border-top-right-radius:6px;float:left;font-size:13px}.head_right{width:10%;height:100%;float:left;background-color:green}#tskplanTab .ui-state-active a{border-color:#ccc!important;background:#fff!important;color:#727272!important;border-bottom:none!important}#tskplanTab .ui-state-hover a{border-color:#ccc!important;background:#ccc!important;border-bottom:none!important}.checkboxHeight{height:40px}#tskplanTab{border-bottom:none!important}html { font-family: Arial, Helvetica, sans-serif !important; }#tabs-2 .k-dropdown .k-input{background: #fff;}#tabs-2 .k-edit-cell>.k-widget{width: 100px !important;}#decisionHighlights .k-pager-wrap .k-dropdown{width: 4.4em !important;}#decisionHighlights .k-dropdown .k-input{background: #fff !important;}#kendoUrgentTasks .k-edit-cell>.k-widget{width: 100% !important;}      
+     </style>
+     
+     <c:CommonLibraries userLocaleSidKey="{!userLocaleSidKey}" /> 
+     <script>
+       kendo.culture('{!userLocaleSidKey}'); // set kendo locale for  current user.
+       var dateFormat = '{0:'+kendo.culture().calendar.patterns.d+'}';  // Hold dateformat for kendo grids
+       var dateTimeFormat =  '{0:'+kendo.culture().calendar.patterns.g+'}'; // Hold datetime format for kedo grids
+     </script>     
+    <!-- Load minmum required  js and css libraries -->
+    <apex:includeScript value="{!URLFOR($Resource.jqueryCustomScrollbar, '/jquery-custom-scrollbar-0.5.5/jquery.custom-scrollbar.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jqueryCustomScrollbar, '/jquery-custom-scrollbar-0.5.5/jquery.custom-scrollbar.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs10, '/tabs/jquery-ui-1.10.3.js')}"/> 
+    <!--<apex:stylesheet value="{!URLFOR($Resource.JqueryUITabs, '/tabs/decision-jquery-ui.css')}"/>-->
+    <!--------- FT Stylesheets ----------->
+    <script>
+                                                        var columnLoadNumber = 0;
+                                                        var viewModel;
+                                                        var viewModelUrgentDecision;
+                                                        var viewModelApproval;
+                                                        var viewModelmyCollegueTasks;
+                                                        var viewModelpendingApprovals;
+                                                        var viewModelmyDecisions;
+                                                        var viewModelitemsToAprove;
+                                                        var viewModeldecisionHighlights;
+                                                        // Show preloader
+                                                        showLoader();
+                                                         // remove quotes from json string  
+                                                        function removeQuotes(mystring) { 
+                                                            newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                                                                return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                                                            });
+                                                            
+                                                            var newJ= $.parseJSON(newString);
+                                                            //var  newJ = eval ("(" + newString+ ")");
+                                                            return newJ;
+                                                        }
+                                                        //Enable jqury scrollbar
+                                                        function customScroll(count){
+                                                            $('#'+count+'.important_column_body').customScrollbar({
+                                                                  skin: "default-skin",
+                                                                  hScroll: false                                                             
+                                                             });
+                                                         }  
+                                                         //Get count for  urgent section
+                                                        HomePage.UrgentTabsCount('','',function(result,event){
+                                                            var urgentTabsCount = removeQuotes(result)
+                                                            $('#urgentTaskNo').html('('+urgentTabsCount.urgentTaskCount +')');
+                                                            $('#urgentDecisionNo').html('('+urgentTabsCount.urgentDecisionCount+')');
+                                                            $('#urgentApprovalsNo').html('('+urgentTabsCount.urgentApprovalCount+')');
+                                                            $('#urgentAssignedNo').html('('+urgentTabsCount.urgentAssignedDelayedCount+')');
+                                                            $('#pendingApprovalsNo').html('('+urgentTabsCount.urgentPendingApproverCount+')');
+                                                            //Close preloder and fade once all remote call finished
+                                                            columnLoadNumber++;
+                                                            if( columnLoadNumber == 7){
+                                                                hideLoaderAndFade();
+                                                            }
+                                                       
+                                                        }) 
+                                                        // Get count for To do Tab columns 
+                                                       function updateToDoCount(cardTypes){
+                                                        HomePage.importantCount(cardTypes,function(result,event){
+                                                            var toDo = removeQuotes(result)
+                                                            $('#count0').html('Overdue ('+toDo.OverdueCount +')');
+                                                            $('#count1').html('Today ('+toDo.todayCount+')');
+                                                            $('#count2').html('1 week('+toDo.weekCount+')');
+                                                            $('#count3').html('1 month+ ('+toDo.monthCount+')');
+                                                            $('#count4').html('No deadline('+toDo.noDeadlineCount+')');
+                                                            //Close preloder and fade once all remote call finished
+                                                            columnLoadNumber++;
+                                                            if( columnLoadNumber == 7){
+                                                                hideLoaderAndFade();
+                                                            }
+                                                       
+                                                        })
+                                                       }
+     
+                                                        var columnTimeLowerBound ;   // Not used 
+                                                        var columnTimeUpperBound;    // Not used
+                                                        var cardTypes = 'APDT';      // Initialy load all type of cards
+                                                        updateToDoCount(cardTypes)   // Get count for all crads on al columns
+                                                        
+                                                        var timeMillisNow = {!nowinmilliseconds};  //set the current time
+                                                        var taskstatusPicklistData = [{!taskStatusPicklist} ];   // Get task status values for this org  
+                                                        // Set column data for lazy loading   for later use
+                                                        var columns = [   
+                                                                      {done:'',columnId:'bind0',columnTimeLowerBound:'',columnTimeUpperBound:'',dataSetUpperBound:'',viewModel:''},
+                                                                      {done:'',columnId:'bind1',columnTimeLowerBound:'',columnTimeUpperBound:'',dataSetUpperBound:'',viewModel:''},
+                                                                      {done:'',columnId:'bind2',columnTimeLowerBound:'',columnTimeUpperBound:'',dataSetUpperBound:'',viewModel:''},
+                                                                      {done:'',columnId:'bind3',columnTimeLowerBound:'',columnTimeUpperBound:'',dataSetUpperBound:'',viewModel:''},
+                                                                      {done:'',columnId:'bind4',columnTimeLowerBound:'',columnTimeUpperBound:'',dataSetUpperBound:timeMillisNow,viewModel:''}
+                                                                     ];
+            
+        
+                                                           
+                                                        var columnsRestore = columns.slice(0);  
+                                                        //Call remote method to fill Overdue column
+                                                        HomePage.viewImportantColumnCards(false,cardTypes,{!nowinmilliseconds},{!nowinmilliseconds},0 ,function(result,event){ 
+                                                               var  cardsJson =  removeQuotes(result);
+                                                                //Create  Kendo Observable
+                                                                cardsJson.importantWrapperList.sort(function(a, b){
+                                                                    if(a.lastmodifiedTime == b.lastmodifiedTime) return 0;
+                                                                    return a.lastmodifiedTime < b.lastmodifiedTime? 1: -1;
+                                                                });
+                                                                columns[0].viewModel = kendo.observable({
+                                                                     cards:  cardsJson.importantWrapperList,
+                                                                     taskstatusData : taskstatusPicklistData                         
+                                                                });    
+                                                                // Set the returned paramets for  this column 
+                                                                columns[0].columnTimeUpperBound = cardsJson.columnTimeUpperBound;        
+                                                                columns[0].dataSetUpperBound    = cardsJson.dataSetUpperBound;        
+                                                                columns[0].columnTimeLowerBound = cardsJson.columnTimeLowerBound;
+                                                                columns[0].done = cardsJson.done;  
+                                                                // Bind it it to this column                                                             
+                                                                kendo.bind($("#bind0"), columns[0].viewModel);         
+                                                                //Update scrollbar
+                                                                customScroll(0)     
+                                                                //Close preloder and fade once all remote call finished
+                                                                columnLoadNumber++;
+                                                                if( columnLoadNumber == 7){
+                                                                    hideLoaderAndFade();
+                                                                }    
+                                                        },{ buffer: false, escape: false, timeout: 30000 })  
+                                                        //Call remote method to fill Today column
+                                                           HomePage.viewImportantColumnCards(false,cardTypes,{!nowinmilliseconds},{!nowinmilliseconds+ 86400000},{!nowinmilliseconds},function(result,event){ 
+                                                                //Create kendo Observable
+                                                                var  cardsJson =  removeQuotes(result);
+                                                                cardsJson.importantWrapperList.sort(function(a, b){
+                                                                    if(a.lastmodifiedTime == b.lastmodifiedTime) return 0;
+                                                                    return a.lastmodifiedTime < b.lastmodifiedTime? 1: -1;
+                                                                });
+                                                                columns[1].viewModel = kendo.observable({
+                                                                     cards:  cardsJson.importantWrapperList,    
+                                                                     taskstatusData : taskstatusPicklistData
+                                                                });     
+                                                                // Set parameters for tis column
+                                                                columns[1].columnTimeUpperBound = cardsJson.columnTimeUpperBound;        
+                                                                columns[1].dataSetUpperBound    = cardsJson.dataSetUpperBound;        
+                                                                columns[1].columnTimeLowerBound = cardsJson.columnTimeLowerBound;                                                               
+                                                                columns[1].done = cardsJson.done;   
+                                                                // Bind MVVM to this column                                                            
+                                                                kendo.bind($("#bind1"), columns[1].viewModel);  
+                                                                //Update scrollbar
+                                                                customScroll(1);
+                                                                columnLoadNumber++;
+                                                                if( columnLoadNumber == 7){
+                                                                    hideLoaderAndFade();
+                                                                }                    
+                                                         },{ buffer: false, escape: false, timeout: 30000 })  
+                                                             
+                                                             // Remote call for ! week column
+                                                             HomePage.viewImportantColumnCards(false,cardTypes,{!nowinmilliseconds},{!nowinmilliseconds+604800000},{!nowinmilliseconds+ 86400000},function(result,event){ 
+                                                                var  cardsJson =  removeQuotes(result);
+                                                                // Create kendo observable
+                                                                cardsJson.importantWrapperList.sort(function(a, b){
+                                                                    if(a.lastmodifiedTime == b.lastmodifiedTime) return 0;
+                                                                    return a.lastmodifiedTime < b.lastmodifiedTime? 1: -1;
+                                                                });
+                                                                columns[2].viewModel = kendo.observable({
+                                                                     cards:  cardsJson.importantWrapperList,    
+                                                                     taskstatusData : taskstatusPicklistData
+                                                                });     
+                                                                //Set parametrs for this column
+                                                                columns[2].columnTimeUpperBound = cardsJson.columnTimeUpperBound;        
+                                                                columns[2].dataSetUpperBound    = cardsJson.dataSetUpperBound;        
+                                                                columns[2].columnTimeLowerBound = cardsJson.columnTimeLowerBound;                                                               
+                                                                columns[2].done = cardsJson.done; 
+                                                                // Bind MVVM to this column                                                              
+                                                                kendo.bind($("#bind2"), columns[2].viewModel);
+                                                                //Update scrollbar 
+                                                                customScroll(2);
+                                                                columnLoadNumber++;
+                                                                if( columnLoadNumber == 7){
+                                                                    hideLoaderAndFade();
+                                                                }                 
+                                                        },{ buffer: false, escape: false, timeout: 30000 })  
+                                                             // Remote call for 1 moth + column
+                                                             HomePage.viewImportantColumnCards(false,cardTypes,{!nowinmilliseconds},32503660200000,{!nowinmilliseconds+ 604800000} ,function(result,event){ 
+                                                                //Create kendo observable
+                                                                var  cardsJson =  removeQuotes(result);
+                                                                cardsJson.importantWrapperList.sort(function(a, b){
+                                                                    if(a.lastmodifiedTime == b.lastmodifiedTime) return 0;
+                                                                    return a.lastmodifiedTime < b.lastmodifiedTime? 1: -1;
+                                                                });
+                                                                columns[3].viewModel = kendo.observable({
+                                                                     cards:  cardsJson.importantWrapperList,    
+                                                                     taskstatusData : taskstatusPicklistData  
+                                                                }); 
+                                                                // Set parameters for this column      
+                                                                columns[3].columnTimeUpperBound = cardsJson.columnTimeUpperBound;        
+                                                                columns[3].dataSetUpperBound    = cardsJson.dataSetUpperBound;        
+                                                                columns[3].columnTimeLowerBound = cardsJson.columnTimeLowerBound;                                                               
+                                                                columns[3].done = cardsJson.done;    
+                                                                // Bind MVVM to this column                                                           
+                                                                kendo.bind($("#bind3"), columns[3].viewModel);   
+                                                                //  Update scrollbar  
+                                                                customScroll(3);
+                                                                columnLoadNumber++;
+                                                                if( columnLoadNumber == 7){
+                                                                    hideLoaderAndFade();
+                                                                }                    
+                                                        },{ buffer: false, escape: false, timeout: 30000 })  
+                                                           //Remote call for  No deadline column
+                                                           HomePage.viewImportantColumnCards(false,cardTypes,{!nowinmilliseconds},0,0 ,function(result,event){ 
+                                                                var  cardsJson =  removeQuotes(result);
+                                                                //create kendo Observable
+                                                                cardsJson.importantWrapperList.sort(function(a, b){
+                                                                    if(a.lastmodifiedTime == b.lastmodifiedTime) return 0;
+                                                                    return a.lastmodifiedTime < b.lastmodifiedTime? 1: -1;
+                                                                });
+                                                                columns[4].viewModel = kendo.observable({
+                                                                     cards:  cardsJson.importantWrapperList,    
+                                                                     taskstatusData : taskstatusPicklistData
+                                                                }); 
+                                                                //Update paramets for this column    
+                                                                columns[4].columnTimeUpperBound = cardsJson.columnTimeUpperBound;        
+                                                                columns[4].dataSetUpperBound    = cardsJson.dataSetUpperBound;        
+                                                                columns[4].columnTimeLowerBound = cardsJson.columnTimeLowerBound;                                                               
+                                                                columns[4].done = cardsJson.done;                                                               
+                                                                kendo.bind($("#bind4"), columns[4].viewModel);
+                                                                customScroll(4);
+                                                                columnLoadNumber++;
+                                                                if( columnLoadNumber == 7){ 
+                                                                    hideLoaderAndFade();
+                                                                }                  
+                                                         },{ buffer: false, escape: false, timeout: 30000 })    
+                                                </script> 
+            
+    <apex:stylesheet value="{!$Page.CommonStyles}" /> 
+    <apex:stylesheet value="{!$Page.HomeStyles}" />
+     <apex:stylesheet value="{!$Page.OverrideStyles}" /> 
+    
+     <apex:stylesheet value="{!$Page.cardStyles}" />     <input type="hidden" id="FT_walkme_loggedin_user_has_decision_created" value="{!walkmeDecisionVar}" ></input>
+        <!-- Begin code for urgent section  -->
+        <div class = "tabs-block border-blue-light" id="urgent_section" style="display:none">
+            <div class = "tabs-block-head">
+                <div class = "tabs-block-left">                
+                   <h3 class = "ft-left" title = "This section displays all the items that require your immediate attention.">Urgent</h3>
+                </div> 
+                <div class="toClear"></div> 
+            </div>
+            
+            <div id="tabs">              
+              <ul>
+              </ul>
+            </div>
+        </div>    
+        <!----- important starts here  ----->
+         <div class = "tabs-block border-blue-light" id="important_section" style="display:block">
+            <div class = "tabs-block-head">
+                <div class = "tabs-block-left">
+                <div id="dropBtnDecision" class="dropBtnImportantSection floatLeft"  onclick="showhideImportant();"></div>                
+                   <h3 class = "ft-left" title = "This section displays all the items that require your immediate attention.">Important</h3>
+                </div>
+                    <div class="floatRight " id ="filterHide" style = "display:none">
+                            <div class = "urgent-right ft-right">                    
+                    <div class = "urgent-sel ft-left">
+                        <span  class="home-font">Due Date within</span> &nbsp;
+                        <select id="chooseTime"  class="home-font" onchange="changeTiming()">
+                               <option value="24hours">24 Hours</option>
+                               <option value="48hours">48 Hours</option>
+                               <option value="7days" selected = "selected">7 Days</option>
+                               <option value="1month">1 Month</option>
+                               <option value="All">All</option>
+                        </select>
+                    </div>
+                    <div class = "urgent-search">
+                        <input   id="searchUrgentTable" type = "text" class = "search-input ft-left"/>  &nbsp;
+                        <script>
+                            $('#searchUrgentTable').keypress(function(e){ 
+                                if (e.keyCode == '13'){
+                                  changeText();
+                                  return false;
+                                }
+                            });
+                        </script>
+                        <a href="javascript:void(0);" onclick="changeText();" class="search-urgent ft-left" ></a>
+                    </div>
+                    </div>
+                 </div>  
+                <div class="toClear"></div> 
+            </div>
+            <div id="tabsImportant" class="ui-tabs" style="height:600px">              
+              <ul class="ui-tabs-nav">
+                  <li><a href="#tabs-1" onclick="$('#importantsection .k-grid-content').css('height','156px');hideSearch();">To Do<span id="importantsection"></span></a></li>
+                  <li><a href="#tabs-2" onclick="$('#kendoUrgentTasks .k-grid-content').css('height','156px');showSearch();">Tasks<span id="urgentTaskNo"></span></a></li>
+                  <li><a href="#tabs-3" onclick="$('#kendoUrgentDecisions .k-grid-content').css('height','188px');showSearch();" >Decisions<span id="urgentDecisionNo"></span></a></li>
+                  <li><a href="#tabs-4" onclick="$('#kendoUrgentApprovals .k-grid-content').css('height','188px');showSearch();" >Approvals<span id="urgentApprovalsNo"></span></a></li>
+                  <li><a href="#tabs-5" onclick="$('#myCollegueTasks .k-grid-content').css('height','188px');showSearch();">Assigned &amp; Delayed<span id="urgentAssignedNo"></span></a></li>
+                  <li><a href="#tabs-6" onclick="$('#pendingApprovals .k-grid-content').css('height','188px');showSearch();">Pending Approvers<span id="pendingApprovalsNo"></span></a></li>
+             </ul>
+              <div id="tabs-1">                  
+                <div id="importantsection" class="important_container">
+                                            <div class="floatRight checkboxHeight">
+                                               <div  class="important-options fontStyle fontWeightBold floatLeft" >
+                                                     <div class="important-item">
+                                                        <input type="checkbox" id="plancheckbox" checked="checked" onclick="updateColumns()" ></input>
+                                                         Plans
+                                                     </div> 
+                                                     <div class="important-item">
+                                                        <input type="checkbox" id="decisioncheckbox" checked="checked" onclick="updateColumns()" ></input>
+                                                         Decisions
+                                                     </div>
+                                                        <div class="important-item">
+                                                            <input type="checkbox" id="taskcheckbox" checked="checked" onclick="updateColumns()" ></input>
+                                                             Tasks 
+                                                     </div>                                     
+                                                    <div class="important-item">
+                                                        <input type="checkbox" id="approvalcheckbox" checked="checked" onclick="updateColumns()"></input>
+                                                         Approvals
+                                                </div> 
+                                            </div>
+                                        </div>                                        
+                                            <div id="columnsContainer" class="toClear"> 
+                                            
+                                                     <div class="important_column"  >
+                                                         <div class="clearwrap"></div>
+                                                        <div class="important_head">
+                                                           <div class="head_left"  style="height: 37px; background-color:#c60000"></div>
+                                                           <div class="head_center" id="count0">  </div>
+                                                        </div>
+                                                        <!-- ---  important_column_body class will make  column scrollable this applicable for all important_column_body columns  -->
+                                                        <div id="0" class="important_column_body " onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            <!-- - This div will hold kendo observable MVVM applicable for bind0 - bind4 ids  data-template is the template used from cards html  databind source is the datasource  -->
+                                                            <div id="bind0" data-template="decision-template" data-bind="source: cards"  onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            </div>
+                                                        </div>
+                                                       
+                                                     </div>
+                                                     <div class="important_column"  >
+                                                        <div class="important_head">
+                                                           <div class="head_left"  style="height: 37px; background-color:#16a43e"></div>
+                                                           <div class="head_center" id="count1">   </div>
+                                                        </div>
+                                                        <div id="1" class="important_column_body " onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            <div id="bind1" data-template="decision-template" data-bind="source: cards"  onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            </div>
+                                                        </div>
+                                                        
+                                                     </div>
+                                                     <div class="important_column"  >
+                                                        <div class="important_head">
+                                                           <div class="head_left"  style="height: 37px; background-color:#16a43e"></div>
+                                                           <div class="head_center" id="count2"> </div>
+                                                        </div>
+                                                        <div id="2" class="important_column_body " onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            <div id="bind2" data-template="decision-template" data-bind="source: cards"  onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            </div>
+                                                        </div>
+                                                        
+                                                     </div>
+                                                     <div class="important_column"  >
+                                                        <div class="important_head">
+                                                           <div class="head_left"  style="height: 37px; background-color:#16a43e"></div>
+                                                           <div class="head_center" id="count3">  </div>
+                                                        </div>
+                                                        <div id="3" class="important_column_body " onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            <div id="bind3" data-template="decision-template" data-bind="source: cards"  onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            </div>
+                                                        </div>
+                                                        
+                                                     </div>
+                                                     <div class="important_column">
+                                                        <div class="important_head">
+                                                           <div class="head_left"  style="height: 37px; background-color:#16a43e"></div>
+                                                           <div class="head_center" id="count4"></div>
+                                                        </div>
+                                                        <div id="4" class="important_column_body " onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            <div id="bind4" data-template="decision-template" data-bind="source: cards"  onmouseover="showScroll(this)" onmouseout="hideScroll(this)">
+                                                            </div>
+                                                        </div>
+                                                     </div>
+                                            </div>
+                                 </div>
+               </div>
+                <div id="tabs-2">       
+                <div class="toClear"></div> 
+                <div id="kendoUrgentTasks" ></div>
+                </div>
+              <div id="tabs-3">
+                <div class="toClear"></div>
+                <div id="kendoUrgentDecisions" ></div>                
+              </div>
+              <div id="tabs-4">
+                <div class="toClear"></div>
+                <div id="kendoUrgentApprovals" ></div>
+              </div>     
+              <div id="tabs-5">
+                <div class="toClear"></div>
+               <div id="myCollegueTasks" ></div>
+               </div>
+
+                  <div id="tabs-6">
+                <div class="toClear"></div>
+                    <div id="pendingApprovals" ></div>
+                    </div>
+            </div>
+          </div>
+
+        <!----- important starts here  ----->
+
+        <!-- End code for urgent section -->
+        
+        <!-- Begin code for My Decisions and Approval/Stance  -->
+        <div class = "home-table-wrap"> 
+            <table cellspacing = "0" cellpadding = "0" class = "home-tbl">
+                <tr>
+                    <td class = "home-cell-left">
+                        <div class = "tabs-block border-blue-light">
+                            <div class = "tabs-block-head">
+                                <div class = "tabs-block-left">                
+                                    <h3 class = "ft-left" title="This section displays all the decisions for the role selected except the decisions that are closed.">Recent Decisions</h3>
+                                </div>
+                                <div class = "tabs-block-right ft-right">        
+                                  <span  class="home-font">My Role</span> &nbsp;
+                                    <select id="chooseRole"  class="home-font" onchange="changeRole()">
+                                           <option value="Accountable">Accountable</option>
+                                           <option value="Responsible">Responsible</option> 
+                                           <option value="Consulted">Consulted</option>
+                                           <option value="Informed">Informed</option>
+                                           <option value="Backup">Backup</option>
+                                           <option value="Veto">Veto</option> 
+                                           <option value="All" selected = "selected">All</option>  
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="myDecisions"></div>
+                        </div>     
+                    </td>
+                    <td class = "home-cell-right">
+                        <div class = "tabs-block border-blue-light">
+                            <div class = "tabs-block-head">
+                                <div class = "tabs-block-left">                
+                                    <h3 class = "ft-left" title="This section displays all your pending role, stance & approval requests.">Approval/Stance</h3>
+                                </div>
+                            </div>
+                        
+                            <div id="itemsToAprove"></div>                            
+                        </div>    
+                    </td>
+                </tr>
+            </table> 
+        </div>       
+        <!-- End code for My Decisions and Approval/Stance  -->
+        
+        
+        <!-- Accordion menu for kendo  -->
+        <div class = "home-table-wrap">
+            <div class = "tabs-block border-blue-light">
+                <div class = "tabs-block-head">
+                    <div class = "tabs-block-left">                
+                       <h3 class = "ft-left" >Decisions Overview</h3>
+                    </div>
+                </div>
+                <div class="k-content">
+                    <ul id="panelbar">
+                        <li id="decisionHighlistList1">
+                            <span title="This section displays all the decisions you are a part of with additional social information except the decisions that are closed."><span style="font-weight: bold">Decision Highlights</span></span>
+                            <div id="decisionHighlights" >Loading...</div>
+                        </li>
+                        <li id="dashboardList1" >
+                            <span style="font-weight: bold">Dashboards</span>
+                            <div id="link2">
+                                <table cellspacing = "0" cellpadding = "0" class = "home-tbl">
+                                    <tr>
+                                        <td class = "chart-cell"><a href="/{!linkDecisionCreated}" target="_parent"><div id="Decision1"></div></a></td>
+                                        <td class = "chart-cell"><a href="/{!linkDecisionProgress}" target="_parent"><div id="DecisionProgress1"></div></a></td>
+                                        <td class = "chart-cell"><a href="/{!linkDecisionCreatedByUser}" target="_parent"><div id="DecisionUserCreatedBy1"></div></a></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>    
+        </div>
+        <!-- Begin code for Decision Highlights  -->
+        <!-- <div class = "home-table-wrap">
+            <div class = "tabs-block border-blue-light">
+                <div class = "tabs-block-head">
+                    <div class = "tabs-block-left">                
+                       <h3 class = "ft-left" title="This section displays all the decisions you are a part of with additional social information except the decisions that are closed."> Decision Highlights</h3>
+                    </div>
+                </div>
+                
+                
+            </div>     
+        </div>  -->
+       <div id="hiddencontent"></div>
+       <div id="hiddencontentWalkme"></div>
+        <!-- End code for Decision Highlights  -->
+        <script>
+      
+        $( "#tabsImportant" ).tabs();  // create tabs for urgent section
+         var id;
+         var status;
+         var dropdownlist;
+         var priorities;
+         var urgentTaskLoaded  = false;
+         var urgentDcecisionLoaded  = false;
+         var urgentApprovalLoaded  = false;
+         var urgentAssignedDelayedLoaded  = false;
+         var urgentPendingLoaded  = false;
+         var firstLine,secondLine;
+         var viewModel;
+         var columnUpdateNumber= 0;   // Colun update to enable/disable progress bar while updating columns
+         var incall = false;
+         var dateFormat = '{0:'+kendo.culture().calendar.patterns.d+'}';  // Hold dateformat for kendo grids
+         var dateTimeFormat =  '{0:'+kendo.culture().calendar.patterns.g+'}';
+         var priorities = [
+            {!taskPriorityPicklist},  // task priority values for this org
+        ];
+        var types = [
+            { typesName: "Inactivity" }, 
+            { typesName: "Quality"}, 
+            { typesName: "Lack of Resources" },   
+        ];
+        var statusValue = [
+            {!taskStatusPicklist}, // task priority values for this org
+        ];
+        
+         //Code to disable keybord navigation Jquery ui tabs
+         $.widget( "ui.tabs", $.ui.tabs, {
+             options: {  
+               keyboard: true
+             },
+             _tabKeydown: function(e) {
+               if(this.options.keyboard) {
+                 this._super( '_tabKeydown' );
+               } else {
+                 return false;
+               }
+             }
+         });
+              
+          
+</script> 
+ <!-- cards template from component -- -->
+<c:cardsTemplate ></c:cardsTemplate>
+  <script type="text/javascript">
+
+ // Add a script element as a child of the body  
+ //Purpose is to make the page load faster, load only component minimum required.
+ // Once finished page load  window.load will get fired and the below files are loaded
+ function downloadJSAtOnload() {
+  var fileref=document.createElement("link")
+  fileref.setAttribute("rel", "stylesheet")
+  fileref.setAttribute("type", "text/css")
+  fileref.setAttribute("href", "{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}")
+  document.getElementsByTagName("head")[0].appendChild(fileref) 
+  //fileref=document.createElement('link')
+  //fileref.setAttribute("rel", "stylesheet")
+ //fileref.setAttribute("type", "text/css")
+  //fileref.setAttribute("href", "{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}")
+  //document.getElementsByTagName("head")[0].appendChild(fileref) 
+  fileref=document.createElement('link')
+  fileref.setAttribute("rel", "stylesheet")
+  fileref.setAttribute("type", "text/css")
+  fileref.setAttribute("href", "{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.default.min.css')}")
+  document.getElementsByTagName("head")[0].appendChild(fileref)    
+  $("#hiddencontent").load('{!$Page.HomePageHtml}');
+  $("#hiddencontentWalkme").load('{!$Page.WalkmePage}');
+  fileref=document.createElement('script')
+  fileref.setAttribute("type","text/javascript")
+  fileref.setAttribute("src", '{!$Page.HomeFunctions}')
+  document.getElementsByTagName("head")[0].appendChild(fileref);
+  
+  fileref=document.createElement('script')  
+  fileref.setAttribute("type","text/javascript")
+  fileref.setAttribute("src", '{!$Page.HomePageScripts}') 
+  document.getElementsByTagName("head")[0].appendChild(fileref);   
+  
+ }
+
+
+
+ // Check for browser support of event handling capability 
+ if (window.addEventListener)
+ window.addEventListener("load", downloadJSAtOnload, false);
+ else if (window.attachEvent)
+ window.attachEvent("onload", downloadJSAtOnload);
+ else window.onload = downloadJSAtOnload;
+ //Kendo mydecision grid
+function kendoMyDecision(gridData) {
+    function SortByValue1(x, y) {
+        return x.Position - y.Position
+    }
+    data1 = gridData;
+    if (data1 != null) {}
+    var dataSource = new kendo.data.DataSource({
+        data: data1,
+        transport: {
+            read: function (event) {
+                dataSource.sync();
+                event.success(gridData)
+            },
+            update: function (e) {}
+        },
+        schema: {
+            parse: function(response) {  
+                $.each(response, function(idx, elem) {
+                    if (typeof elem.lastModifiedDateSort === "string") {
+                        elem.lastModifiedDateSort = kendo.parseDate(elem.lastModifiedDateSort)
+                    } 
+                    if (typeof elem.dueDateSort === "string") {
+                        elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                    } 
+                });
+                return response
+            },
+            model: {
+                id: "Id",
+                fields: {
+                    Id: {
+                        type: "string",
+                        editable: false
+                    },
+                    Name: {
+                        type: "string",
+                        editable: false
+                    },
+                    phase: {
+                        type: "string",
+                        editable: false
+                    },
+                    lastModifiedDate: {
+                        type: "dateTime",
+                        editable: false
+                    },
+                    dueDate: {
+                        type: "string",
+                        editable: false
+                    },
+                    lastModifiedDateSort: {
+                        type: "date",
+                        editable: false
+                    },
+                    dueDateSort: {
+                        type: "date",
+                        editable: false
+                    },
+                }
+            }
+        },
+        pageSize: 5
+    });
+    viewModelmyDecisions = new kendo.observable({
+        ds: dataSource
+    });
+    
+    var grid = $("#myDecisions").kendoGrid({
+        dataSource: dataSource,
+        scrollable: true,
+        sortable: true,
+        editable: false,
+        resizable: true,
+        height: 250,
+        pageable: true,
+        columns: [{
+            field: "Name",
+            title: "Name/Title",
+            template: '<a href=/#:Id# target="_parent">#:Name#</a>'
+        }, {
+            field: "phase",
+            title: "Phase",
+            template: '<div align = "center"><img src=/#:phaseImg# title=#:phase# /><div>',
+            width: 60
+        }, {
+            field: "lastModifiedDateSort",
+            title: "Last Activity Date",
+            format: dateTimeFormat,
+            width: 130
+        }, {
+            field: "dueDateSort",
+            title: "Due Date",
+            format: dateTimeFormat,
+            width: 130
+        }],
+    }).data("kendoGrid")
+}
+//Kendo grid for approvals 
+function kendoApprovals(gridData) {
+    function SortByValue1(x, y) {
+        return x.Position - y.Position
+    }
+    data1 = gridData;
+    if (data1 != null) {
+        data1.sort(SortByValue1)
+    }
+    var dataSource = new kendo.data.DataSource({
+        data: data1,
+        transport: {
+            read: function (event) {
+                dataSource.sync();
+                event.success(gridData)
+            },
+            update: function (event) {
+                event.success()
+            }
+        },
+        schema: {
+            parse: function(response) {  
+                $.each(response, function(idx, elem) {
+                    if (typeof elem.dueDateSort === "string") {
+                        elem.dueDateSort = kendo.parseDate(elem.dueDateSort)
+                    } 
+                    if (typeof elem.dueDate === "string") {
+                        elem.dueDate = kendo.parseDate(elem.dueDate)
+                    } 
+                });
+                return response
+            },
+            model: {
+                id: "id",
+                fields: {
+                    id: {
+                        type: "string",
+                        editable: false
+                    },
+                    status: {
+                        type: "string",
+                        editable: false
+                    },
+                    Title: {
+                        type: "string",
+                        editable: false
+                    },
+                    dueDate: {
+                        type: "string",
+                        editable: false
+                    },
+                    createdBy: {
+                        type: "string",
+                        editable: false
+                    },
+                    step: {
+                        type: "string",
+                        editable: false
+                    },
+                    userRole: {
+                        type: "string",
+                        editable: false
+                    },
+                    vetoRights: {
+                        type: "boolean",
+                        editable: false
+                    },
+                    backupRights: {
+                        type: "boolean",
+                        editable: false
+                    },
+                    titleHover: {
+                        type: "string",
+                        editable: false
+                    },
+                    dueDateSort: {
+                        type: "date",
+                        editable: false
+                    },
+                }
+            }
+        },
+        pageSize: 15
+    });
+    
+    viewModelitemsToAprove  = new kendo.observable({
+        ds: dataSource
+    });
+    var grid = $("#itemsToAprove").kendoGrid({
+        dataSource: dataSource,
+        scrollable: true,
+        editable: true,
+        sortable: true,
+        resizable: true,
+        height: 250,
+        pageable: true,
+        columns: [{
+            field: "step",
+            title: "Action",
+            template: "<div align = 'center'><img class='home-app-rej' id = 'img#:id#' onclick=\"showDecisionApprovalModal('#:step#','#:id#','#:decisionId#','items','#:userRole#','#:vetoRights#','#:backupRights#')\";   src=/#:approveImg# title=#:titleHover# /><div id='#:id#' class='home-hidden-field'>#=problemStmt#</div><div id='#:id#append' class='home-hidden-field'>#=decision#</div><div id='#:id#title' class='home-hidden-field'>#=Title#</div><div>",
+            width: 70,
+        }, {
+            field: "Title",
+            title: "Title",
+            template: '<a href=/#:decisionId# target="_parent">#:Title#</a>',
+        }, {
+            field: "createdBy",
+            title: "Requested By",
+            template: "#:createdBy#",
+            width: 120,
+        }, {
+            field: "dueDateSort",
+            title: "Due Date",
+            format: dateTimeFormat,
+            width: 130,
+        }],
+    }).data("kendoGrid")
+}
+function onSelect(e) {
+            //alert("Select: " + $(e.item).find("> .k-link").text());
+        }
+        
+        function onExpand(e) {
+            
+            //alert("Expand: " + $(e.item).find("> .k-link").text());
+            if($(e.item).find("> .k-link").text() == 'Decision Highlights'){
+                if(contentLoadChkForDecisionHighlights == 'stateless'){
+                    
+                    HomePage.DecisionHighlist( function(result, event)
+                    {
+                        if (event.status)
+                        {  
+                            $('#decisionHighlights').html('');      
+                            var decisionHighlightsJson = removeQuotes(result);
+                            kendoDecisionHighlights (decisionHighlightsJson); 
+                            contentLoadChkForDecisionHighlights = 'statefull';                     
+                        }
+                    }, {escape:false});
+                }
+            }else{
+                if(contentLoadChkForDashboards == 'stateless'){
+                    
+                    HomePage.DefineHomeCharts( function(result, event)
+                    {
+                        if (event.status)
+                        {  
+                            decisionProgressVal = removeQuotes(result.decisionProgressStr);
+                            decisionUserCreatedBy = removeQuotes(result.decisionCreatedStr);
+                            lastWeekDecisionSize = result.lastWeekDecisionSizeStr;
+                            twoWeekAgoDecisionSize = result.twoWeekAgoDecisionSizeStr;
+                            threeWeekAgoDecisionSize = result.threeWeekAgoDecisionSizeStr;
+                            fourWeekAgoDecisionSize = result.fourWeekAgoDecisionSize;
+                            internetUsers = [ {
+                                
+                                "year": "Last Week",
+                                "value": lastWeekDecisionSize <!--XSS Fixed-->
+                                
+                            }, {
+                               
+                                "year": "2 Weeks Ago",
+                               "value": twoWeekAgoDecisionSize <!--XSS Fixed-->
+                               
+                            }, {
+                               
+                                "year": "3 Weeks Ago",
+                                "value":threeWeekAgoDecisionSize <!--XSS Fixed-->
+                                
+                            }, {
+                               
+                                "year": "4 Weeks Ago",
+                                 "value": fourWeekAgoDecisionSize <!--XSS Fixed-->
+                              
+                            } ];
+                            setTimeout(function() {
+                                    decisionProgress();
+                                    decisionUser();
+                                    createDecision();
+                                    $("#example").bind("kendo:skinChange", function(e) {
+                                       
+                                       decisionProgress();
+                                       decisionUser();
+                                       createDecision();
+                                    });
+                            }, 400); 
+                            
+                            contentLoadChkForDashboards = 'statefull';                     
+                        }
+                    }, {escape:false});
+                }
+            }
+        }
+        function onCollapse(e) {
+            //alert("Collapse: " + $(e.item).find("> .k-link").text());
+            
+        }
+
+        function onActivate(e) {
+            //alert("Activate: " + $(e.item).find("> .k-link").text());
+            $('#decisionHighlights .k-grid-content').css('height','250px');
+            $('#decisionHighlights .k-grid-content').css('font-weight','normal');   
+        }
+
+        function onContentLoad(e) {
+            //alert("Content loaded in <b>"+ $(e.item).find("> .k-link").text() +
+                             //"</b> and starts with <b>" + $(e.contentElement).text().substr(0, 20) + "...</b>");
+            
+            
+        }
+        //Create kendo panelbar for decision hihlights and charts
+         $("#panelbar").kendoPanelBar({
+                        
+                        select: onSelect,
+                        expand: onExpand,
+                        collapse: onCollapse,
+                        activate: onActivate,
+                        contentLoad: onContentLoad
+          });  
+          // Open PI to update avaliable only for RAB
+          function selectIndicator(indicatorID){
+                document.getElementById("indicatorDropDown").style.display="none";
+              // alert('indicatorID'+globalDecisionId);
+                switch(indicatorID) {
+                    case "notGiven":
+                        HomePage.updatePulse('Not Given',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px 0px";
+                        break;
+                    case "good":
+                        HomePage.updatePulse('Good',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -10px";
+                        break;
+                    case "minorChallenges":
+                        HomePage.updatePulse('Minor Challenges',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -20px";
+                        break;
+                    case "critical":
+                        HomePage.updatePulse('Critical',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -30px";
+                        break;
+                    case "completed":
+                        HomePage.updatePulse('Completed',globalDecisionId,function(result,event){}) 
+                        selectedIndicatorID.style.backgroundPosition="0px -40px";
+                        break;
+                    case "completedProb":
+                        HomePage.updatePulse('Completed with Problems',globalDecisionId,function(result,event){})
+                        selectedIndicatorID.style.backgroundPosition="0px -50px";
+                        break;         
+                    }
+         }
+         //Call remote method to get more cards while user scrolling down.
+         $(document).ready(function () {  
+         
+         
+         $("#tabsImportant").kendoTabStrip({ 
+     select: function(event) {
+         var activeTab =  $("#tabsImportant").kendoTabStrip().data("kendoTabStrip").select();
+         alert($("#tabsImportant").tabs('option', 'active'));
+           
+          
+         var selectedValue = document.getElementById('chooseTime').value;
+         var searchValue = document.getElementById('searchUrgentTable').value;
+         if ($("#tabsImportant").tabs('option', 'active') == 1) {
+             if (!urgentTaskLoaded) HomePage.UrgentTaskTabWithSearchTimeFrame(searchValue, selectedValue, function(result, event) {
+                 if (event.status) {
+                     var newMyTasks = removeQuotes(result);
+                     kendoUrgentTasks(newMyTasks);
+                     $('#urgentTaskNo').html('(' + newMyTasks.length + ')');
+                     urgentTaskLoaded = true
+                 }
+             }, {
+                 buffer: false,
+                 escape: false
+             })
+         } else if ($("#tabsImportant").tabs('option', 'active') == 2) {
+             if (!urgentDcecisionLoaded) HomePage.UrgentDecisionTabWithSearchTimeFrame(searchValue, selectedValue, function(result, event) {
+                 if (event.status) {
+                     var urgentDecisionNew = removeQuotes(result);
+                     kendoUrgentDecisions(urgentDecisionNew);
+                     $('#urgentDecisionNo').html('(' + urgentDecisionNew.length + ')');
+                     urgentDcecisionLoaded = true
+                 }
+             }, {
+                 buffer: false,
+                 escape: false
+             })
+         } else if ($("#tabsImportant").tabs('option', 'active') == 3) {
+             if (!urgentApprovalLoaded) HomePage.UrgentApprovalTabWithSearchTimeFrame(searchValue, selectedValue, function(result, event) {
+                 if (event.status) {
+                     var urgentApprovalNew = removeQuotes(result);
+                     kendoUrgentApprovals(urgentApprovalNew);
+                     viewModelApproval.ds.data(viewModelApproval.ds.options.schema.parse(urgentApprovalNew || []));
+                     $('#urgentApprovalsNo').html('(' + urgentApprovalNew.length + ')');
+                     urgentApprovalLoaded = true
+                 }
+             }, {
+                 buffer: false,
+                 escape: false
+             })
+         } else if ($("#tabsImportant").tabs('option', 'active') == 4) {
+             if (!urgentAssignedDelayedLoaded) HomePage.assignedTaskDataWithSearchTimeFrame(searchValue, selectedValue, function(result, event) {
+                 if (event.status) {
+                     var urgentAssignedTaskNew = removeQuotes(result);
+                     kendoMyCollegueList(urgentAssignedTaskNew);
+                     $('#urgentAssignedNo').html('(' + urgentAssignedTaskNew.length + ')');
+                     urgentAssignedDelayedLoaded = true
+                 }
+             }, {
+                 buffer: false,
+                 escape: false
+             })
+         } else if ($("#tabsImportant").tabs('option', 'active') == 5) {
+             if (!urgentPendingLoaded) HomePage.pendingApprovalsWithSearchTimeFrame(searchValue, selectedValue, function(result, event) {
+                 if (event.status) {
+                     var urgentPendingApprovalssNew = removeQuotes(result);
+                     kendoPendingApprovals(urgentPendingApprovalssNew);
+                     $('#pendingApprovalsNo').html('(' + urgentPendingApprovalssNew.length + ')');
+                     urgentPendingLoaded = true
+                 }
+             }, {
+                 buffer: false,
+                 escape: false
+             })
+         }
+     }
+ }); 
+         
+         
+         
+         
+         
+         
+         
+            $(".important_column_body").customScrollbar({onCustomScroll:function (event, scrollData) { 
+                  //Should not call if there is already a call.. and if the column is filled with all cards avaliable
+                  if(!incall && columns[$(this).attr('id')].done != 'done') {  
+                    incall = true;
+                      HomePage.viewImportantColumnCards(false,cardTypes,columns[$(this).attr('id')].dataSetUpperBound,columns[$(this).attr('id')].columnTimeUpperBound,columns[$(this).attr('id')].columnTimeLowerBound,function(result,event){ 
+                            var  cardsJson =  removeQuotes(result); 
+                            //Set column parameters
+                            cardsJson.importantWrapperList.sort(function(a, b){
+                                if(a.lastmodifiedTime == b.lastmodifiedTime) return 0;
+                                return a.lastmodifiedTime < b.lastmodifiedTime? 1: -1;
+                            });
+                            columns[cardsJson.columnId].columnTimeUpperBound = cardsJson.columnTimeUpperBound;        
+                            columns[cardsJson.columnId].dataSetUpperBound    = cardsJson.dataSetUpperBound;        
+                            columns[cardsJson.columnId].columnTimeLowerBound = cardsJson.columnTimeLowerBound; 
+                            columns[cardsJson.columnId].done = cardsJson.done; 
+                            //Push each card into current column                                                             
+                            for(var i=0;i< cardsJson.importantWrapperList.length;i++)
+                            columns[cardsJson.columnId].viewModel.cards.push(cardsJson.importantWrapperList[i]) 
+                            //resize scrollbar
+                            $('#'+cardsJson.columnId+'.important_column_body').customScrollbar("resize", true) 
+                            //set incall as false
+                            incall= false;      
+                        },{ buffer: false, escape: false, timeout: 30000 }) 
+                }  
+            }});
+            HomePage.approvalTab(function(result,event){
+                kendoApprovals(removeQuotes(result));   
+            },{ buffer: false, escape: false } );
+            HomePage.myDecisions('All',function(result,event){
+                kendoMyDecision (removeQuotes(result));
+            },{ buffer: false, escape: false } );
+              $('.thumb').hide(); 
+            }); 
+</script> 
+  
+<!-- Template for urgent approval action column as it was not running directly with urgent upproval method -->
+<script id="action-template" type="text/x-kendo-template">
+          <div align = "center"><img class="home-app-rej" onclick="showDecisionApprovalModal('#:step#','#:id#','#:decisionId#','urgent','#:myRole#','#:vetoRights#','#:backupRights#')";   src="/#:approveImg#" title="#:titleHover#" /><div id="#:id#" class="home-hidden-field">#=problemStmt#</div><div id="#:id#append" class="home-hidden-field">#=decision#</div><div id="#:id#title" class="home-hidden-field">#=Title#</div><div>
+</script>
+</apex:page>

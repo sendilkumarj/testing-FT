@@ -1,0 +1,503 @@
+<apex:page controller="DecisionTab">
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs10, '/tabs/jquery-ui-1.10.3.js')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.JqueryUITabs, '/tabs/plan-jquery-ui.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/>   
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jqueryui-1.9.1.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JqueryUITabs, '/tabs/decision-jquery-ui.css')}"/>
+    
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/> 
+    
+    <apex:stylesheet value="{!$Page.CommonStyles}" />
+    <apex:stylesheet value="{!$Page.OverrideStyles}" />
+    <apex:stylesheet value="{!$Page.WorkbenchStyles}" /> 
+    <apex:stylesheet value="{!$Page.DecisionStyles}" />    
+    
+    <!-- Kendo Library -->
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetroNewLibrary, '/kendoMetroNewLibrary/kendo.all.min.js')}"/> 
+    
+    <apex:includeScript value="{!URLFOR($Resource.TokenInput, '/TokenInput/Tokeninputjavascript1.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.TokenInput, '/TokenInput/TokenInput.css')}"/>
+     
+    <!--------- FT Scripts ----------->
+    <apex:includeScript value="{!$Page.CommonScripts}" />
+    <head>
+        <c:WalkMeAndSupportButton />
+        <!--<script type="text/javascript">(function() {var walkme = document.createElement('script'); walkme.type = 'text/javascript'; walkme.async = true; walkme.src = 'https://d3b3ehuo35wzeh.cloudfront.net/users/3d4e7e29fbce4945a03495f309d755c1/test/walkme_3d4e7e29fbce4945a03495f309d755c1_https.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(walkme, s);})();</script>-->
+    
+        <style>
+            ul.token-input-list{
+                width: 200px !important;
+            }
+        </style>
+        <script>
+            $(function (){
+                changeFooterText();
+                $( "#tabs" ).tabs({ active: 0 });
+                $('#tabs').css('display','block');
+            });
+            
+            // script for google analytics
+            var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-34907619-2']);
+          _gaq.push(['_trackPageview']);
+        
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
+    </head>
+    <!---------- Tabs ------------->
+    <div id="tabs" class = "ui-tabs"> 
+        <!---------- Start of Tabs ------------->
+        <ul class = "ui-tabs" id = "decisionTab">
+            <li><a href="#tabs-phase">Phase Board</a></li>
+            <li><a href="#tabs-card">Table View</a></li>
+        </ul>
+        <!---------- End of Tabs ------------->
+        <!---------- Start of Table View ------------->
+        <div id="tabs-card">
+                    
+                <div id="Dec-rec">
+                     <div >
+                         <div style="text-align:right"><label><input type="checkbox" name="Show Closed Decisions" value="Show Closed Decisions" onclick='closedDecisions(this);'/>Show Closed Decisions</label></div>
+                         <div id="gridDecision"></div>
+                         <script>
+                             $(document).ready(function () {
+                                  //alert($.parseJSON('{!JSENCODE(decisionJSON)}'));
+                                  kendoDecision($.parseJSON('{!JSENCODE(decisionJSON)}'));
+                             });
+                         </script>
+                     </div>    
+                </div>  
+                
+                <script>
+                    function closedDecisions(isChecked){
+                        if(isChecked.checked){
+                            DecisionTab.DecisionRecord('Close', function(result, event)
+                            {    
+                                if (event.status)
+                                {  
+                                   var newTaskEvent = removeQuotes(result);
+                                   var grid = $("#gridDecision").data("kendoGrid");
+                                   grid.dataSource.data(newTaskEvent);
+                                }
+                            }, {escape:true});
+                        }
+                        else{
+                            DecisionTab.DecisionRecord('', function(result, event)
+                            {    
+                                if (event.status)
+                                {  
+                                   var newTaskEvent = removeQuotes(result);
+                                   var grid = $("#gridDecision").data("kendoGrid");
+                                   grid.dataSource.data(newTaskEvent);
+                                }
+                            }, {escape:true});
+                        }
+                    }
+                    
+                    function editDecision(container, options){
+                        //console.log(options);
+                        //alert(options.model.isEditable);
+                        if(options.model.isEditable || options.model.isEditable == 'true'){
+                            $('<input type="text" data-text-field="title" data-value-field="title" data-bind="value:' + options.field + '"/>' )
+                             .appendTo(container);
+                        } else {
+                            $('<a href=/'+options.model.id+'><output type="text" data-text-field="title" data-value-field="title" data-bind="value:' + options.field + '"/></a>' )
+                            .appendTo(container);
+                        }
+                    }
+                
+                    function kendoDecision(gridData) {
+                    
+                       var dataSource = new kendo.data.DataSource({   
+                            autoSync: true, 
+                            batch :true,
+                            sort: { field: "lastActivityDate", dir: "desc" },
+                            transport: {
+                                read: function(e) {
+                                    dataSource.sync();
+                                    e.success(gridData);
+                                },
+                                update: function(e) { 
+                                    //console.log(JSON.stringify(e.data.models));
+                                    var stringifiedData = JSON.stringify(e.data.models); 
+                                    var updatedData = parsingModifieDataforDecision(stringifiedData);
+                                    e.success();
+                                }
+                             },
+                             schema: {
+                                   model: {
+                                      id: "id",
+                                      fields: {
+                                          id: { type: "string" },
+                                          name:{type: "string" },
+                                          icon:{type:"string",editable: false},
+                                          title:{type: "string",editable: true },
+                                          lastActivityDate:{type: "DateTime",editable: false },
+                                          nextDueDate:{type: "DateTime",editable: false },
+                                          dType:{type:"string",editable: false},
+                                          phase:{type: "string",editable: false },
+                                          status:{type:"string",editable: false},
+                                          myRole:{type:"string",editable: false},
+                                          accountable:{type:"string",editable: false},
+                                          stance:{type:"string",editable: false},
+                                          activitiesTask:{type:"string",editable: false},
+                                          readsOfDecision:{type:"string",editable: false},
+                                          chatterPosts:{type:"number",editable: false},
+                                          chatterPostLikes:{type:"number",editable: false},
+                                          chatterPostLikesForME:{type:"number",editable: false},
+                                          thanksBadgesForMe:{type:"string",editable: false},
+                                          thanksBadges:{type:"string",editable: false},
+                                          isEditable:{type:"Boolean"},
+                                          stanceColour:{type:"String"},
+                                          activityColour:{type:"String"}
+                                      }
+                                  }
+                               },
+                               pageSize: 10
+                           });
+                           
+                       var grid = $("#gridDecision").kendoGrid({
+                           
+                           dataSource:dataSource,
+                           sortable: true,
+                           toolbar:    ["save","cancel"] ,
+                           editable:true,
+                           filterable: true,
+                           scrollable: true,
+                           columns: [
+                              
+                               {
+                                   field: "icon",
+                                   title: "Decision Image",
+                                   filterable: false,
+                                   width: 120,
+                                   //template: '<div><img class="user-image" height="128px" width="128px" id="dImage"  src="#:icon#" /></div>'
+                                   template: '<div style="text-align:center"><img height="64px" width="64px" id="dImage"  src="#:icon#" /></div>'
+                               },
+                               {
+                                   field: "title",
+                                   title: "Title",
+                                   width: 200,
+                                   editor: editDecision,
+                                   template: '<div><a href=/#:id# >#=title#</div>'
+                               },
+                                {
+                                   field: "lastActivityDate",
+                                   title: "Last Activity Date",
+                                   //format:'{0:{!JSENCODE(dateFormat)} HH:mm}',
+                                   //editor: dateTimeEditorforActivities,
+                                   width: 175,
+                                  //template: "<div>#:kendo.toString(( lastActivityDate== null ? '' :lastActivityDate),'{!JSENCODE(dateFormat)}')#</div>"
+                               },
+                               {
+                                   field: "nextDueDate",
+                                   title: "Next Due Date",
+                                   //format:'{0:{!JSENCODE(dateFormat)} HH:mm}',
+                                   //editor: dateTimeEditorforActivities,
+                                   width: 175,
+                                   //template: "<div>#:kendo.toString(( nextDueDate== null ? '' :nextDueDate),'{!JSENCODE(dateFormat)}')#</div>"
+                               },
+                               {
+                                   field: "dType",
+                                   title: "Type",
+                                   width: 100,
+                                   template: '<div>#:dType#</div>'
+                               },
+                               {
+                                   field: "phase",
+                                   title: "Phase",
+                                   
+                                   width: 100,
+                                   template: '<div>#:phase#</div>'
+                               },
+                               {
+                                   field: "status",
+                                   title: "Status",
+                                   //editor: statusDropDownEditor ,
+                                   width: 100,
+                                   template: '<div>#:status#</div>'
+                               },
+                               {
+                                   field: "myRole",
+                                   title: "My Role",
+                                   width: 100,
+                                   template: '<div>#:myRole#</div>'
+                               },
+                                {
+                                   field: "accountable",
+                                   title: "Accountable",
+                                   width: 120,
+                                   template: '<div style="word-wrap: break-word;">#:accountable#</div>'
+                               },
+                               {
+                                   field: "stance",
+                                   title: "Stances",
+                                   width: 100,
+                                   template: '<div class = "#:stanceColour#"  style="text-align:center">#:stance#</div>'
+                                   
+                               },
+                               {
+                                   field: "activitiesTask",
+                                   title: "Activities / Tasks",
+                                   width: 140,
+                                   template: '<div class = "#:activityColour#"  style="text-align:center">#:activitiesTask#</div>'
+                               },
+                               /*{
+                                   field: "readsOfDecision",
+                                   title: "Reads of Decision",
+                                   width: 200,
+                                   template: '<div>#:readsOfDecision#</div>'
+                               },*/
+                               {
+                                   field: "chatterPosts",
+                                   title: "Chatter Posts",
+                                   width: 120,
+                                   template: '<div style="word-wrap: break-word;text-align:center" >#:chatterPosts#</div>'
+                               },
+                               {
+                                   field: "chatterPostLikes",
+                                   title: "Chatter post likes",
+                                   width: 140,
+                                   template: '<div  style="text-align:center">#:chatterPostLikes#</div>'
+                               },
+                               {
+                                   field: "chatterPostLikesForME",
+                                   title: "Chatter post likes for ME",
+                                   width: 180,
+                                   template: '<div  style="text-align:center">#:chatterPostLikesForME#</div>'
+                               }/*,
+                               {
+                                   field: "thanksBadgesForMe",
+                                   title: "Thanks / badges for Me",
+                                   width: 200,
+                                   template: '<div>#:thanksBadgesForMe#</div>'
+                               },
+                               {
+                                   field: "thanksBadges",
+                                   title: "Thanks / badges",
+                                   width: 170,
+                                   template: '<div>#:thanksBadges#</div>'
+                               }*/
+                               
+                          ],
+                          sortable: true,
+                          pageable: true
+                       });
+                       
+                    }
+                    
+                
+                </script>
+    
+                <script>
+                    function parsingModifieDataforDecision(t){
+                        parseModifiedData(t);
+                    }
+                
+                     //Batch update for Decision tab method
+                    function parseModifiedData(modifiedData){
+                        // Calling controller method to update task and event
+                        //alert(modifiedData);
+                        DecisionTab.updateDecisions(modifiedData, function(result, event)
+                        {    
+                            if (event.status)
+                            {  
+                               var newTaskEvent = removeQuotes(result);
+                               var grid = $("#gridDecision").data("kendoGrid");
+                               grid.dataSource.data(newTaskEvent);
+                            }
+                        }, {escape:true});
+                    }  
+                    
+                    // Date editior for Activity and next due date
+                    function dateTimeEditorforActivities(container, options) {
+                        if( options.model.isTask == 'Task' ) {
+                            $('<input data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                                    .appendTo(container)
+                                    .kendoDatePicker({});
+                        } else {
+                            $('<input id="dateTimePicker" data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                                .appendTo(container)
+                                .kendoDateTimePicker({});
+                        }
+                    }
+                    
+                    // Status Dropdown
+                    
+                    function statusDropDownEditor(container, options) {
+                       
+                            $('<input   data-text-field="StatusName" data-value-field="StatusName" data-bind="value:' + options.field + '"/>' )
+                            .appendTo(container)
+                            .kendoDropDownList({
+                                height:220,
+                                autoBind: false,
+                                dataSource: statusValue
+                            });
+                        
+                    }
+                    
+                    // remove quotes from json string 
+                    function removeQuotes(mystring) {
+                            
+                        newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                            return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                        });
+                        
+                        var newJ= $.parseJSON(newString);
+                        return newJ;
+                    }
+                </script>
+                <style>
+                    #gridDecision{
+                        width: 1500px;
+                        overflow-x: scroll;
+                    }
+                
+                </style>    
+                    
+                    
+        </div>
+        <!---------- End of Table View ------------->
+        <!---------- Start of Phase Board ------------->
+        <div id="tabs-phase">
+            <!---------- Start of Filters ------------->
+            <apex:outputPanel id="filterPanelComponent">
+                <div class = "workbench-filter">
+                    <p class = "filter-help" id = "filterHelp">Select the criteria and press Go to see the decisions a person is working on</p>
+                    <div >  
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Timeframe</div>
+                            <select id="timeFrame">
+                              <option value="1 Week">1 Week</option>
+                              <option value="2 Weeks">2 Weeks</option>
+                              <option value="3 Weeks">3 Weeks</option>
+                              <option value="4 Weeks">4 Weeks</option>  
+                            <!-- <option value="1 Month">1 Month</option>  -->
+                              <option value="2 Months">2 Months</option>
+                              <option value="3 Months">3 Months</option>
+                              <option value="4 Months">4 Months</option>
+                              <option value="All">All</option>
+                            </select>
+                        </div>
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Name</div>
+                            <input type="text" class = "qcd-input" id="demo-input-pre-populated-with-tokenlimit" name="acc" required="True" />
+                        </div>   
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Role</div>
+                            <select id="roleOfUser">
+                                <option selected="selected" value="All">All</option>
+                                <option value="Accountable">Accountable</option>
+                                <option value="Responsible">Responsible</option>
+                                <option value="Consulted">Consulted</option>
+                                <option value="Informed">Informed</option>
+                            </select>
+                        </div>   
+                        <div class = "filter-option ft-left"> 
+                            <div class = "filter-text">Phases</div>
+                            <select id="decisionPhases" onchange="disableSelect('decisionStatus','decisionPhases');">
+                                    <option value="All">All</option>
+                                    <option value="Draft">Draft</option>
+                                    <option value="Share">Share</option>
+                                    <option value="Propose">Propose</option>
+                                    <option value="Decide">Decide</option>
+                                    <option value="Execute">Execute</option>
+                                    <option value="Evaluate">Evaluate</option>
+                                    <option value="Close">Close</option>
+                            </select>
+                        </div>    
+                        <div class = "filter-option ft-left">
+                            <div class = "filter-text">Status</div>
+                            <select id="decisionStatus" onchange="disableSelect('decisionPhases','decisionStatus');">
+                                    <option value="All">All</option>
+                                    <option value="Undecided">Undecided</option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Executed">Executed</option>
+                                    <option value="Evaluated">Evaluated</option>
+                                    <option value="Closed">Closed</option>
+                                    <option value="Withdrawn">Withdrawn</option>
+                                    <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class = "filter-option filter-btn ft-left">            
+                            <button type="button" style="width:75px;height:25px;" onclick="getElementalData();" >Go</button>
+                            <button type="button" style="width:75px;height:25px;" onclick="setDefaultData();">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    var userId = 'default';
+                    var chkUserId = 'yes';
+                    $("#demo-input-pre-populated-with-tokenlimit").tokenInput(  $.parseJSON('{!JSENCODE(userDataJSON)}') , {
+                        prePopulate: 
+                           $.parseJSON('{!JSENCODE(defaultUserJson)}') 
+                        ,onAdd: function (item) {
+                           //alert(item.id); 
+                           chkUserId = 'yes';
+                           userId = item.id;
+                           //storeIdAcc(item.id);
+                        },
+                        onDelete: function (item) {
+                            chkUserId = 'no';
+                            //delIdAcc(item.id);
+                        },
+                        tokenLimit: 1,
+                        propertyToSearch: "name",
+                        resultsFormatter: function(item){ 
+                            return "<li>" + "<img src='" + item.url + "' title='" + item.name+ "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" + item.name+ "</div>" 
+                       },
+                    });
+                    
+                    function getElementalData(){
+                        if(chkUserId == 'yes'){
+                            var timeFrame = $('#timeFrame').val();
+                            var roleOfUser = $('#roleOfUser').val();
+                            var phases = $('#decisionPhases').val();
+                            var status = $('#decisionStatus').val();
+                            getMyDecisions(timeFrame,roleOfUser,phases,status,userId);
+                        }else{
+                            alert('please select user');
+                        }
+                    }
+                    
+                    function getDefaultData(){ 
+                        var timeFrame = document.getElementById('timeFrame').options[0].value;
+                        var roleOfUser = document.getElementById('roleOfUser').options[0].value;
+                        document.getElementById('timeFrame').value = document.getElementById('timeFrame').options[0].value;
+                        document.getElementById('roleOfUser').value = document.getElementById('roleOfUser').options[0].value;
+                        if(document.getElementById('decisionPhases').disabled == true){
+                            document.getElementById('decisionPhases').disabled = false;
+                        }
+                        if(document.getElementById('decisionStatus').disabled == true){
+                            document.getElementById('decisionStatus').disabled = false;
+                        }
+                        document.getElementById('decisionPhases').value = document.getElementById('decisionPhases').options[0].value;
+                        var status = document.getElementById('decisionStatus').options[0].value;
+                        document.getElementById('decisionStatus').value = document.getElementById('decisionStatus').options[0].value;
+                        var phases = document.getElementById('decisionPhases').options[0].value;
+                        getMyDecisions(timeFrame,roleOfUser,phases,status,'default');
+                    }
+                    
+                    function setMyData(){
+                        getDefaultData();
+                    }
+                </script>
+            </apex:outputPanel>
+            <apex:form >
+                <apex:actionFunction name="setDefaultData" action="{!dummyMethod}" reRender="filterPanelComponent" oncomplete="setMyData();" />
+            </apex:form>
+            <!---------- End of Filters ------------->
+            <c:WorkbenchDecisionView />
+       </div>
+       <!---------- End of Phase Board ------------->
+   </div>
+</apex:page>

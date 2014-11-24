@@ -1,0 +1,1780 @@
+<apex:page controller="WorkbenchHomePage" docType="html-5.0"
+    id="activityPage" sidebar="true" extensions="ActivityTab">
+    <script>
+        //FT Favicon
+        (function() {
+            var link = document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = '{!$Resource.Favicon}';
+            document.getElementsByTagName('head')[0].appendChild(link);
+             $(document).prop('title', 'Activities');
+        }());
+        
+    </script>
+
+    
+	
+    <apex:includeScript value="{!$Page.CommonScripts}" />
+    <div class="preloader"></div>
+    <div class="bg-fade"></div>
+    <script> 
+       showLoader();
+       var afterLoad = false;
+       function hidefade() {
+            $('.bg-fade').css('display','none');
+            $('body').css('overflow', 'auto');
+        }
+    </script>
+    <c:CommonLibraries userLocaleSidKey="{!userLocaleSidKey}" />
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetroNewLibrary, '/kendoMetroNewLibrary/kendo.all.min.old.js')}"/> 
+    <script>
+      kendo.culture('{!userLocaleSidKey}'); // set kendo locale for  current user.
+      var dateFormat = '{0:'+kendo.culture().calendar.patterns.d+'}';  // Hold dateformat for kendo grids
+      var dateTimeFormat =  '{0:'+kendo.culture().calendar.patterns.g+'}'; // Hold datetime format for kedo grids
+    </script>
+    <!-- stylesheet  -->
+    <style>
+.ui-tabs .ui-tabs-nav li {
+    border: none !important;
+}
+
+.ui-state-active a:link {
+    border: 1px solid #ccc !important;
+    border-bottom: 1px solid #fff !important;
+}
+
+.ui-tabs-nav .ui-state-default,.ui-tabs-nav>.ui-state-default a {
+    border: 0px !important;
+}
+
+.ui-tabs-nav .ui-state-active,.ui-state-active a:hover {
+    border-bottom: 1px solid #fff !important;
+}
+
+.ui-tabs .ui-tabs-nav li {
+    border: 1px solid #ccc !important;
+    border-bottom: 1px solid #fff !important;
+}
+
+.ui-tabs-nav .ui-state-active,.ui-tabs-nav>.ui-state-active a {
+    border-color: #fff !important;
+    background: #fff !important;
+    background-color: #fff !important;
+    color: #333 !important;
+    border-bottom: 1px solid #fff !important;
+
+}
+    .k-content .k-header{
+               background: #eee ;
+                background-color: #eee ;
+                color: #222 !important;
+             }
+             .k-grid-header, .k-grid-header .k-header, .k-grid-header .k-link, .k-grid-toolbar {
+				background-color: #eee !important;
+             }
+</style>
+    <apex:stylesheet value="{!$Page.CommonStyles}" />
+    <apex:stylesheet value="{!$Page.WorkbenchStyles}" />
+    <apex:stylesheet value="{!$Page.cardStyles}" />
+    
+
+    <apex:stylesheet value="{!URLFOR($Resource.jqueryCustomScrollbar, '/jquery-custom-scrollbar-0.5.5/jquery.custom-scrollbar.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jqueryCustomScrollbar, '/jquery-custom-scrollbar-0.5.5/jquery.custom-scrollbar.min.js')}" />
+
+    <apex:includeScript value="{!URLFOR($Resource.TokenInput, '/TokenInput/Tokeninputjavascript1.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.TokenInput, '/TokenInput/TokenInput.css')}" />
+
+    <!--    ------- FT Scripts ----------->
+
+    <c:WalkMeAndSupportButton />
+    
+    <div id="tabs" class="ui-tabs">
+        <!---------- Start of Tabs ------------->
+        <ul class="ui-tabs" id="decisionTab">
+            <li id="activitiesClassic"><a href="#">Classic View</a></li> 
+            <li id="activitiesBoard"><a href="#">Activities Board</a></li>
+            <li id="activitiesList"><a href="#">Activities List</a></li>          
+        </ul>
+        <!---------- End of Tabs ------------->
+        
+        <!-- Classic View Div , Contains the div for button  and  enhancedList -->
+        <div id="activityClassicView" >
+                 <apex:enhancedList type="Activity" height="600"  />
+        </div>  
+        
+        <!-- Activity Card Div, Contains the filter div and  ActivityCardView component -->
+        
+        <div id="activityCardView">
+            <!-- Filter in Card view -->
+            <div class="activity-filter">
+                <div id="taskDropDowns">
+                    <div id="decisionSearch">
+                        <span class="k-textbox k-space-right"> <input type="text"
+                            placeholder="Search..." id="searchTaskText" /> <a href="#"
+                            class="k-icon k-i-search" onclick="searchRecordsWithLoader();">&nbsp;</a>
+                        </span>
+                    </div>
+                    <apex:outputPanel id="taskFilterPanel">
+
+                        <ul id="filtersPanelbar">
+
+                            <!--<li class="k-state-active"></li>-->
+                            <li class="">
+                                <!--<span class="k-link k-state-selected">Filters</span>--> <span
+                                class="">Filters</span>
+                                <div class="workbench-filter">
+                                    <div class="floatLeft filtersMargin">
+                                        <div>Time Frame</div>
+                                        <div id="dateDrop" class="toClear">
+                                            <select id="colDt" name="colDt" title="Date Column"
+                                                onchange="searchRecordsWithLoader()">
+                                                <option value="DUE_DATE" selected="selected">Due
+                                                    Date</option>
+                                                <option value="CREATED_DATE">Created Date</option>
+                                                <option value="LAST_UPDATE">Last Modified Date</option>
+                                            </select> <select id="colDt_q" name="colDt_q"
+                                                onchange="changecolDt(this.options[this.selectedIndex].value)"
+                                                style="margin-left: 0.8em;">
+                                                <option value="All">All</option>
+                                                <option value="custom">Custom</option>
+                                                <option value="Overdue">Overdue</option>
+                                                <option value="yesterday">Yesterday</option>
+                                                <option value="today">Today</option>
+                                                <option value="tomorrow">Tomorrow</option>
+                                                <option value="last7">Last 7 Days</option>
+                                                <option value="last30">Last 30 Days</option>
+                                                <option value="last60">Last 60 Days</option>
+                                                <option value="last90">Last 90 Days</option>
+                                                <option value="last120">Last 120 Days</option>
+                                                <option value="next7" selected="selected">Next 7
+                                                    Days</option>
+                                                <option value="next30">Next 30 Days</option>
+                                                <option value="next60">Next 60 Days</option>
+                                                <option value="next90">Next 90 Days</option>
+                                                <option value="next120">Next 120 Days</option>
+                                                <option value="lastnext7">Last &amp; Next 7 Days</option>
+                                                <option value="lastnext14" selected="selected">Last &amp; Next 14 Days</option>
+                                            </select>
+                                        </div>
+                                        <div class="toClear">
+
+                                            <div class="floatLeft " style="margin-top: 1em;">
+                                                <div>From</div>
+                                                <input id="sd" name="sd" value=""
+                                                    onchange="searchRecordsWithLoaderFromDate();" />
+                                            </div>
+
+                                            <div class="floatLeft filtersMargin">
+                                                <div>To</div>
+                                                <input id="ed" name="ed" value=""
+                                                    onchange="searchRecordsWithLoaderFromDate();" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="floatLeft filtersMargin"
+                                        style="width: 4px; border-left: 1px solid #ccc; min-height: 100px;"></div>
+                                    <div class="floatLeft filtersMargin">
+                                        <div>Name</div>
+                                        <select id="userName" multiple="multiple"
+                                            data-placeholder="Select attendees..." onChange="hasUser();">
+                                            <option value="{!$user.Id}" selected="selected"><apex:outputText value="{!$User.FirstName} {!$User.LastName}" /></option>
+                                            <apex:repeat value="{!userList}" var="user">
+                                                <option value="{!user.Id}"><apex:outputText value="{!user.Name}" /></option>
+                                            </apex:repeat>
+                                        </select>
+                                        <div style="color: red; display: none;" id="userErrDB">
+                                            <b>Please select the user.</b>
+                                        </div>
+                                    </div>
+                                    <div class="floatLeft filtersMargin">
+                                        <div>User Filter</div>
+                                        <select Id="assignedId" onchange="searchRecordsWithLoader();"
+                                            class="toClear">
+                                            <option value="AssignedTo" selected="selected">Assigned
+                                                To</option>
+                                            <option value="AssignedBy">Assigned By</option>
+                                        </select>
+                                    </div>
+                                    <div class="floatLeft filtersMargin"
+                                        style="width: 4px; border-left: 1px solid #ccc; min-height: 100px;"></div>
+                                    <div class="floatLeft filtersMargin">
+                                        <div>
+                                            <div class="floatLeft filtersMargin">
+                                                <button class="k-button" onclick="newTaskPopupComp();">New
+                                                    Task</button>
+                                            </div>
+                                            <div class="floatLeft filtersMargin">
+                                                <button class="k-button"
+                                                    onclick="defaultRecordsOnTaskWithLoader();">Clear</button>
+                                            </div>
+                                        </div>
+                                        <div class="toClear " style="margin-left: 0.5em;">
+                                            <div class=" checkBoxGroupTopMargin ">
+                                                <div>
+                                                    <div class=" floatLeft">
+                                                        <input type="checkbox" id="cardExpandChk"
+                                                            onclick="expandAllCards()" />
+                                                    </div>
+                                                    &nbsp;
+                                                    <div class="floatLeft" style="padding-top: 2px">Cards
+                                                        Expanded</div>
+                                                </div>
+                                                <div class="toClear">
+                                                    <div class=" floatLeft">
+                                                        <input class="dateFieldTopMargin" type="checkbox"
+                                                            id="hideOverdue" onclick="searchRecordsWithLoader()" />
+                                                    </div>
+                                                    &nbsp;
+                                                    <div class="floatLeft" style="padding-top: 2px">Hide
+                                                        Overdue Tasks</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </li>
+
+                        </ul>
+
+
+
+                        <!--<div class="floatLeft">
+                            <span class="fontWeightBold">User Filter</span>
+                            <div class="toClear">
+                            <select  Id="assignedId" onchange="searchRecordsWithLoader();" >
+                                <option value="AssignedTo" selected = "selected">Assigned To</option>
+                                <option value="AssignedBy" >Assigned By</option>
+                            </select>
+                            </div>
+                        </div>
+                        <div class="UserFilterDiv">
+                            <span class="fontWeightBold">Name </span>
+                            <input class="toClear" type="text"  id="demo-input-pre-populated-with-tokenlimit-task" name="taskUser" required="True" onchange="searchRecordsWithLoader();"/>
+                            <div style="color: red;display:none;" id="userErr"><b>Please select the user.</b></div>
+                           <div style="color: black;display:none;" id="maxErr">Max. limit of 5 names reached</div>
+                        </div>
+                       <div class="UserFilterDiv">
+                            <div id="timeFramLable" class="fontWeightBold ">Time Frame</div>
+                                <div class="filterBorder toClear">
+                                    <div class="floatLeft dateFieldLeftMargin">
+                                        <div class="fontWeightBold" style="margin-left:2px;">Date Field</div>
+                                        <select id="colDt" name="colDt" title="Date Column" onchange="searchRecordsWithLoader()">
+                                          <optgroup label="Activity Information"><option value="DUE_DATE" selected="selected">Due Date</option>
+                                            <option value="CREATED_DATE">Created Date</option>
+                                            <option value="LAST_UPDATE">Last Modified Date</option>
+                                            </optgroup>
+                                        </select>
+                                        <div class="toClear dateFieldTopMargin">
+                                            <div class="fontWeightBold" style="margin-left:2px;">From</div>
+                                            <span class="" style="margin-left:2px;"><input id="sd" name="sd"   style="width: 180px"   /></span>
+                                        </div>
+                                    </div>
+                                    <div  id="timeInterval" class="floatLeft dateFieldLeftMargin"><div class="fontWeightBold" style="margin-left:2px;">Range</div>
+                                        <select id="colDt_q" name="colDt_q" onchange="changecolDt(this.options[this.selectedIndex].value)">
+                                            <option value="All" >All</option>
+                                            <option value="custom" >Custom</option>
+                                            <option value="Overdue" >Overdue</option>
+                           
+                                            <optgroup label="Day"><option value="yesterday">Yesterday</option>
+                                                <option value="today">Today</option>
+                                                <option value="tomorrow">Tomorrow</option>
+                                                <option value="last7">Last 7 Days</option>
+                                                <option value="last30">Last 30 Days</option>
+                                                <option value="last60">Last 60 Days</option>
+                                                <option value="last90">Last 90 Days</option>
+                                                <option value="last120">Last 120 Days</option>
+                                                <option value="next7" selected="selected">Next 7 Days</option>
+                                                <option value="next30">Next 30 Days</option>
+                                                <option value="next60">Next 60 Days</option>
+                                                <option value="next90">Next 90 Days</option>
+                                                <option value="next120">Next 120 Days</option>
+                                                <option value="lastnext7">Last &amp; Next 7 Days</option>
+                                            </optgroup> 
+                                        </select>
+                                        <div class="toClear dateFieldTopMargin"> 
+                                            <div class="fontWeightBold " style="margin-left:2px;">To</div>
+                                            <span class="" style="margin-left:2px;"><input id="ed" name="ed" type="text"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="newTaskBtnDiv">
+                                <div class="taskGoClearBtn">
+                                    <button type="button" style="width:75px;height:25px;" onclick="searchRecordsWithLoader();">Go</button>
+                                    <button type="button" style="width:75px;height:25px;" onclick="defaultRecordsOnTaskWithLoader();">Clear</button>
+                                </div>
+                                <div class="createNewTaskBtn">
+                                        <button type="button" style="width:110px;height:25px;" onclick="newTaskPopupComp();">New Task</button>
+                                </div>
+                                <div class="UserFilterDiv checkBoxGroupTopMargin toClear">
+                                    <div >  
+                                        <div class=" floatLeft"><input type="checkbox" id="cardExpandChk" onclick="expandAllCards()" /></div>&nbsp;<div class="floatLeft" style="padding-top:2px">Cards Expanded</div>
+                                   </div>    
+                                    <div class="toClear"> 
+                                        <div class=" floatLeft"> <input class="dateFieldTopMargin" type="checkbox" id="hideOverdue" onclick="searchRecordsWithLoader()" /></div>&nbsp;<div class="floatLeft"  style="padding-top:2px">Hide Overdue Tasks</div>
+                                    </div>
+                                </div>
+                            </div>-->
+                        <script>
+                                var chkTaskUserId = 'yes';
+                                var taskuserId = '{!$User.Id}';
+                                var loginusrId = '{!$User.Id}';
+                               // console.log(loginusrId);
+                                var idArray = [ ];
+                                // push current login user
+                                idArray.push(loginusrId);
+                                // this is used to auto fill the user name.
+                                $(document).ready(function() { 
+                                $("#filtersPanelbar").kendoPanelBar({
+                                    //expandMode: "single"
+                                    select: onSelect,
+                                    expand: onExpand
+                                  
+                                });
+                                $("#colDt").kendoDropDownList({}); 
+                                $("#colDt_q").kendoDropDownList({}); 
+                                $("#sd").kendoDatePicker();
+                                $("#ed").kendoDatePicker();
+                                $("#assignedId").kendoDropDownList({}); 
+                                if($("#userName").data('kendoMultiSelect') == undefined  )
+                                $("#userName").kendoMultiSelect({maxSelectedItems: 5,filter: "contains"});
+                                    $("#demo-input-pre-populated-with-tokenlimit-task").tokenInput($.parseJSON('{!JSENCODE(userDataJSON)}') , {
+                                        prePopulate: 
+                                        $.parseJSON('{!JSENCODE(defaultUserJson)}') 
+                                        ,onAdd: function (item) {
+                                            //alert(item.id); 
+                                             chkTaskUserId = 'yes';
+                                             taskuserId = item.id ;
+                                             idArray.push(taskuserId);
+                                            //console.log('taskuserId'+idArray);
+                                             $('#userErr').css('display','none');
+                                             if(idArray.length == 5){
+                                                 $('#maxErr').css('display','block');
+                                             }else{
+                                                $('#maxErr').css('display','none');
+                                             }
+                                        },
+                                        onDelete: function (item) {
+                                            idArray.splice( idArray.indexOf( item.id ), 1 );
+                                            //console.log('taskuserId'+JSON.stringify(item));
+                                            //console.log('Iddddd'+item.id);
+                                            if(idArray.length == 0){
+                                                chkTaskUserId = 'no';
+                                            }else{
+                                                //searchRecordsFromGo();
+                                            }
+                                             
+                                             if(idArray.length < 5){
+                                                $('#maxErr').css('display','none');
+                                             }
+                                        },
+                                        tokenLimit: 5,
+                                         preventDuplicates: true,
+                                        propertyToSearch: "name",
+                                        resultsFormatter: function(item){ 
+                                            return "<li>" + "<img src='" + item.url + "' title='" + item.name+ "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" + item.name+ "</div>" 
+                                        },
+                                    });
+                                });
+                                function onExpand(e) {
+                                
+                                }
+                                function onSelect(e) {
+                                
+                                }
+                            </script>
+                    </apex:outputPanel>
+                </div>
+            </div>
+            <!--  Filter Card view end -->
+            <c:ActivityCardView id="taskWorkBenchComponent" />
+        </div>
+
+        
+
+        <!-- List view on Activities records-->
+        <div id="activityListView">
+            
+            <div id="gridActivities"></div>
+            <script>
+                var viewModel ;
+                $(document).ready(function () {
+                     kendoActivities($.parseJSON('{!JSENCODE(activitiesJson)}'));
+                });
+                
+                // kendo grid to display all activites records
+                function kendoActivities(gridData){
+                    // new way or style [Using transport]
+                    var dataSource = new kendo.data.DataSource({
+                        batch: true,   
+                        autoSync: true,
+                        sort: { field: "lastActivityDateSort", dir: "desc" },
+                        transport: {
+                            read: function(e) {
+                                dataSource.sync();
+                                e.success(gridData);
+                            },
+                            update: function(e) {  
+                                var stringifiedData = JSON.stringify(e.data.models); 
+                                var updatedData = parsingModifieData(stringifiedData);
+                                e.success();
+                            }
+                         },
+                        
+                         schema: {
+                            parse:function (response) {
+                                $.each(response, function (idx, elem) {
+                                    if (typeof elem.duedateSort === "string") {
+                                         elem.duedateSort= kendo.parseDate(elem.duedateSort);
+                                    }
+                                    if (typeof elem.lastActivityDateSort === "string") {
+                                         elem.lastActivityDateSort= kendo.parseDate(elem.lastActivityDateSort);
+                                    }
+                                });
+                                return response;
+                            },
+                            model: {
+                                id: "id",
+                                fields: {
+                                    id: { type: "string", editable: false },
+                                    subject : { type: "string", editable: true, validation: { required: true} },
+                                    comments : { type: "string", editable: false },
+                                    duedate : { type: "datetime", editable: true },
+                                    status : { type: "string", editable: true },
+                                    isTask: { type: "string", editable: false },
+                                    lastActivityDate:{type: "DateTime",editable: false },
+                                    priority : { type: "string", editable: true },
+                                    createdByName : { type: "string", editable: false },
+                                    url : { type: "string", editable: false },
+                                    deleteImage : { type: "string", editable: false },
+                                    actionClassNameDelete : { type: "string", editable: false},
+                                    delayTaskClass: { type: "string", editable: false},
+                                    ownerId : {type : "string", editable: false},
+                                    title : {type : "string", editable: false},
+                                    icon : {type : "string", editable: false},
+                                    assignedByName : {type : "string", editable: false},
+                                    assignedBy : {type : "string", editable: false},
+                                    relatedToName : {type : "string", editable: false},
+                                    relatedToId : {type : "string", editable: false},
+                                    duedateSort : { type: "date", editable: true },
+                                    lastActivityDateSort:{type: "date",editable: false }
+                                    
+                                }
+                            }
+                        },
+                        pageSize: 10
+                    });
+                    viewModel = new kendo.observable({  ds:dataSource });
+                    var grid = $("#gridActivities").kendoGrid({
+                        
+                        dataSource: dataSource,
+                        sortable: true,
+                        toolbar : ["save","cancel"],
+                        editable: true,
+                        filterable: true,
+                        pageable: true,
+                        resizable: true,
+                        pageable: {
+                          refresh: true,
+                          pageSizes: [5,10,25,40]
+                        },
+                        columns: [
+                            {
+                               field: "icon",
+                               title: "Icon",
+                               width: 40,
+                               filterable: false,
+                               template: '<div style="text-align:left;margin-top:5px;"> <img src=/#:icon# /> </div>',
+                               sortable: false
+                            },
+                            /*{
+                               field: "id",
+                               title: "Action",
+                               width: 60,
+                               filterable: false,
+                               template: "<div> <img src=/#:deleteImage# /> </div>",
+                               sortable: false
+                           },*/
+                           {
+                               field: "subject",
+                               title: "Subject",
+                               editor: editSubject,
+                               width : 140,
+                               template: "<div title=#:title#><a href=#:url# >#=subject#</a></div>",
+                               
+                           },
+                          
+                           {
+                               field: "lastActivityDateSort",
+                               title: "Last Activity Date",
+                               format:dateTimeFormat,
+                               width: 140,
+                           },
+                           {
+                               field: "comments",
+                               title: "Comments",
+                               //filterable: false,
+                               editable: false,
+                               width : 150,
+                               //template: '<div  align="center"><img src=/#:commentsImage# title="#=comments#" /></div>',
+                               template : "<div>#=comments#</div> ",
+                               //width: 85
+                               
+                           },
+                            
+                           {
+                               field: "duedateSort",
+                               title: "Due Date",
+                               format:dateFormat,
+                               editor: dateTimeEditorforActivities,
+                               width: 100
+                           },
+                           {
+                               field: "status",
+                               title: "Status",
+                               editor: statusDropDownEditor ,
+                               template: "<div style='overflow:hidden' id='statusDrop' title=#:title#>#:status#</div>",
+                               width: 100
+                           },
+                           {
+                               field: "priority",
+                               title: "Priority",
+                               editor: priporityDropDownEditor,
+                               template: "<div id='priorityDrop' title=#:title#>#:priority#</div>",
+                               width: 100
+                           },
+                           {
+                               field: "assignedByName",
+                               title: "Assigned By",
+                               width: 110,
+                               template: '<div class = "grid-user-img"></div><div class = "grid-user-img"><a href="/#:assignedBy#" target="_parent" >#:assignedByName#</a></div>'
+                           },
+                           {
+                               field: "createdByName",
+                               title: "Assigned To",
+                               width: 110,
+                               template: '<div class = "grid-user-img"></div><div class = "grid-user-img"><a href="/#:ownerId#" target="_parent" >#:createdByName#</a></div>'
+                           },
+                           {
+                               field: "relatedToName",
+                               title: "Related To",
+                               width: 110,
+                               template: '<div class = "grid-user-img"></div><div class = "grid-user-img"><a href="/#:relatedToId#" target="_parent" >#:relatedToName#</a></div>'
+                           }
+                       ]
+                       
+                    }).data("kendoGrid");
+                }
+                
+                // Date editior for Activites
+                function dateTimeEditorforActivities(container, options) {
+                    if(options.model.recordAccess || options.model.recordAccess == 'true'){
+                        //$('<input data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                        $('<input data-text-field="' + 'duedate' + '" data-value-field="' + 'duedate' + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                                .appendTo(container)
+                                .kendoDatePicker({});
+                    } else {
+                        /*$('<output id="dateTimePicker" data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                        .appendTo(container);
+                        $('<output id="dateTimePicker" data-text-field="' + 'dueDate' + '" data-value-field="' + 'dueDate' + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                            .appendTo(container);*/
+                          $('<div class="'+options.model.delayTaskClass+'">'+options.model.duedate+'</div>')
+                          .appendTo(container);
+                    }
+                }
+                
+                // Status Dropdown
+                
+                function statusDropDownEditor(container, options) {
+                    if(options.model.recordAccess || options.model.recordAccess == 'true'){
+                        $('<input   data-text-field="StatusName" data-value-field="StatusName" data-bind="value:' + options.field + '"/>' )
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            width: 50,
+                            dataSource: statusValue
+                        });
+                    } else {
+                        /*$('<output type="text" data-text-field="status" data-value-field="status" data-bind="value:' + options.field + '"/>')
+                            .appendTo(container);*/
+                          $('<div>'+options.model.status+'</div>')
+                          .appendTo(container);
+                    }
+                }
+                
+                // priority Dropdown
+                function priporityDropDownEditor(container, options) {
+                    if(options.model.recordAccess || options.model.recordAccess == 'true'){
+                        $('<input data-text-field="PriorityName" data-value-field="PriorityName" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            width: 10,
+                            dataSource: priorities
+                        });
+                    } else {
+                        /*$('<output type="text" data-text-field="priority" data-value-field="priority" data-bind="value:' + options.field + '"/>')
+                            .appendTo(container);*/
+                          $('<div>'+options.model.priority+'</div>')
+                          .appendTo(container);
+                    }
+                }
+                
+                // Subject editior to display editing based on user permission of record
+                function editSubject(container, options){
+                    if(options.model.recordAccess || options.model.recordAccess == 'true'){
+                        $('<input type="text" required="required" style="width:120px;" maxlength="255" data-text-field="subject" data-value-field="subject" data-bind="value:' + options.field + '"/>' )
+                         .appendTo(container);
+                    } else {
+                        $('<a href=/'+options.model.id+'>'+options.model.subject+'</a>' )
+                        .appendTo(container);
+                    }
+                }
+                
+                // Updated function to update plan data.
+                function parsingModifieData(modifiedData){
+                    ActivityTab.updateActivities(modifiedData, function(result, event)
+                    {    
+                        if (event.status)
+                        {  
+                           var newTaskEvent = removeQuotes(result);
+                           var grid = $("#gridActivities").data("kendoGrid");
+                           grid.dataSource.data(newTaskEvent);
+                           viewModel.ds.data(
+                                viewModel.ds.options.schema.parse(newTaskEvent || []) //just in case thenew data is null
+                            );
+                        }
+                    }, {escape:true});
+                }
+                
+                // remove quotes from json string 
+                function removeQuotes(mystring) {
+                        
+                    newString = mystring.replace(/&(lt|gt|quot|amp);/g, function (m, p) { 
+                        return (p == "lt") ? "<" :(p == "gt") ? ">" :(p == "amp") ? "&" :"\"";
+                    });
+                    
+                    var newJ= $.parseJSON(newString);
+                    return newJ;
+                }
+                
+                var  prioritiesDecoded = $('<div/>').html('{!HTMLENCODE(taskPriorityPicklist)}').text();
+                var priorities = JSON.parse( '['+prioritiesDecoded+']')
+                
+                var  statusValueDecoded = $('<div/>').html('{!HTMLENCODE(taskStatusPicklist)}').text();
+                var statusValue  = JSON.parse( '['+statusValueDecoded+']')
+            </script>
+           
+        </div>
+        
+
+
+        <apex:form >
+            <apex:actionFunction name="defaultRecordsOnTask"
+                action="{!dummyMethod}" reRender="taskFilterPanel"
+                oncomplete="setTaskFilter();hideLoader();" />
+            <apex:actionFunction name="displayActivityTabEnhanceList"
+                action="{!displayActivityTabEnhanceList}" />
+        </apex:form>
+        <script>
+           
+            
+           
+        
+            // It alternates the view of task .
+            function switchview()
+            {    
+                // alternates the display - displays the List view
+                /*if( document.getElementById('activityCardView').style.display == 'block' )
+                {
+                    
+                    document.getElementById('activityListView').style.display = 'block';
+                    document.getElementById('activityCardView').style.display = 'none'
+                }
+                // alternates the display - displays the Card view
+                else
+                {
+                    
+                    document.getElementById('activityCardView').style.display = 'block';
+                    document.getElementById('activityListView').style.display = 'none';
+                    
+                }  */
+                displayActivityTabEnhanceList();
+                
+            }
+            
+            // call this method on click of go. 
+            function searchRecordsWithLoader(){
+                searchRecordsFromGo();
+            }
+            
+            function searchRecordsWithLoaderFromDate(){
+                if($('#ed').data("kendoDatePicker").value() < $('#sd').data("kendoDatePicker").value()){
+                    alert('To Date should be greater than From Date');
+                    return false;
+                }
+                $("#colDt_q").kendoDropDownList({value: "custom"});
+                searchRecordsFromGo();
+            }
+            
+            $('#searchTaskText').keypress(function(e){ 
+                if (e.keyCode == '13'){
+                  searchRecordsWithLoader();
+                }
+            });
+            
+            function hasUser(){
+                if($("#userName").val() != null){
+                    $('#userErrDB').css('display','none');
+                    searchRecordsWithLoader();
+                } else {
+                    $('#userErrDB').css('display','block');
+                }
+            }
+            
+            // calls this method on click of clear
+            function defaultRecordsOnTaskWithLoader(){
+                  var date = new Date('{!todayDate}');
+
+					var lastWeek1 = getLastWeek(new Date('{!todayDate}'),14);
+                    var lastWeekMonth1 = lastWeek1.getMonth() + 1;
+                    var lastWeekDay1 = lastWeek1.getDate();
+                    var lastWeekYear1 = lastWeek1.getFullYear();
+                    var lastWeekDisplayPadded1 = ("00" + lastWeekMonth1.toString()).slice(-2)+ "/" + ("00" + lastWeekDay1 .toString()).slice(-2)+ "/" + ("0000" + lastWeekYear1 .toString()).slice(-4);
+                    var date1 = kendo.parseDate(lastWeekDisplayPadded1, "MM/dd/yyyy");
+
+
+                        var lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 13);
+                        var  lastWeekMonth = lastWeek.getMonth() + 1;
+                        var lastWeekDay = lastWeek.getDate();
+                        var lastWeekYear = lastWeek.getFullYear();
+                        var lastWeekDisplayPadded = ("00" + lastWeekMonth.toString()).slice(-2)+ "/" + ("00" + lastWeekDay .toString()).slice(-2)+ "/" + ("0000" + lastWeekYear .toString()).slice(-4);
+                        var date2 = kendo.parseDate(lastWeekDisplayPadded, "MM/dd/yyyy"); 
+                        //console.log('date2'+date2);
+                        $("#sd").data("kendoDatePicker").value(kendo.toString(date1, kendo.culture().calendar.patterns.d));
+                        $("#ed").data("kendoDatePicker").value(kendo.toString(date2, kendo.culture().calendar.patterns.d));
+               
+			   $("#colDt_q").kendoDropDownList({value: "lastnext14"});
+                $("#colDt").kendoDropDownList({value: "DUE_DATE"});
+                $("#assignedId").kendoDropDownList({value: "AssignedTo"});
+                var uId = '{!$User.Id}';
+                $("#userName").data("kendoMultiSelect").value(uId);
+                $("#searchTaskText").val('');
+                searchRecordsFromClear();
+            }
+            
+            //  calls this methods oncomplete of clear 
+            function setTaskFilter(){
+                document.getElementById('cardExpandChk').checked=false;
+                defaultRecords();
+            }
+            $(document).ready(function () {
+                hideLoaderAndFade();
+                // hide progress bars
+                $('.thumb').hide();
+            });
+            
+                    
+            /* ***********************Date Filter on KanbanBoard********************************/ 
+                    
+            var sdPreviousval;
+            var edPreviousval;
+            function checkDates() {
+                sd =$("#sd").data("kendoDatePicker").value();
+                ed = $("#ed").data("kendoDatePicker").value();
+                if($('#ed').data("kendoDatePicker").value()<$('#sd').data("kendoDatePicker").value()){
+                     alert('To Date should be greater than From Date');
+                     if(sdPreviousval != undefined){ 
+                         $('#sd').data("kendoDatePicker").value( sdPreviousval);
+                     } 
+                     if(edPreviousval != undefined){ 
+                         $('#ed').data("kendoDatePicker").value( edPreviousval);
+                     } 
+                 }
+                 sdPreviousval = $('#sd').data("kendoDatePicker").value();
+                 edPreviousval = $('#ed').data("kendoDatePicker").value();
+             }
+            
+            
+             // start date & end date date picker model 
+                                         
+             $("#sd").kendoDatePicker({
+                 visible: true,
+                 enabled: true,
+                 value: null,
+                 open : function(){
+                         sdPreviousval =  $("#sd").data("kendoDatePicker").value();
+                     },
+                 change : function() {
+                          checkDates();
+                          $('#colDt_q option:contains("Custom")').prop('selected', true);
+                          searchRecordsFromGo();
+                 }    
+             
+              });
+              
+              $("#ed").kendoDatePicker({
+                 visible: true,
+                 enabled: true,
+                 value: null,
+                 open : function(){
+                          edPreviousval =  $("#ed").data("kendoDatePicker").value();
+                     },
+                 change : function() {
+                          checkDates();
+                          $('#colDt_q option:contains("Custom")').prop('selected', true);
+                          searchRecordsFromGo();
+                 }    
+              });
+               
+              // for default date value call that function after DOM ready ;
+              changecolDt('lastnext14');
+              
+              sdPreviousval = $("#sd").data("kendoDatePicker").value();
+              edPreviousval = $("#ed").data("kendoDatePicker").value();                                    
+              
+              // prevent alphanumeric characters.
+          
+             $('#sd').on("keypress keydown keyup", function(e) {
+                 e.preventDefault();
+             });
+            
+            $('#ed').on("keypress keydown keyup", function(e) {
+                 e.preventDefault();
+            });
+            // calculation of weekly date filter .
+            function getLastWeek(date,count){
+                if(count < 0){
+                    //console.log('inf'+count);
+                    date = date ;
+                    var lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() + count);
+                    return lastWeek;
+                  }else if(count == 13){
+                  //This part excecuted specifice last & next 7 days start date 
+                    var lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() -6);
+                    return lastWeek;
+                  }else if(count == 14){
+                  //This part excecuted specifice last & next 14 days start date 
+                  
+                    var lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() -13);
+                    return lastWeek;
+                  }else{
+                    //console.log('else'+count);
+                    date = date ;
+                    var lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() + count);
+                    return lastWeek;
+                  }
+               }
+                    
+                // this function will fire on change from range selection .
+                function changecolDt(slectedval) {
+                 
+                    //console.log('{!todayDate}'); 
+                    //var jsDate = new Date();
+                    //console.log('jsDate'+slectedval);
+                    var count;
+                   if(slectedval == 'yesterday' ){
+                        enableDatePicker();
+                        count = -1;
+                   }else if(slectedval == 'today'){
+                        enableDatePicker();
+                        count = 0;
+                   }else if(slectedval == 'tomorrow'){
+                        enableDatePicker();
+                        count = 1;
+                   }else if(slectedval == 'last7'){
+                        enableDatePicker();
+                        count = -6;
+                   }else if(slectedval == 'last30'){
+                        enableDatePicker();
+                        count = -29;
+                   }else if(slectedval == 'last60'){
+                        enableDatePicker();
+                        count = -59;    
+                   }else if(slectedval == 'last90'){
+                        enableDatePicker();
+                        count = -89;
+                   }else if(slectedval == 'last120'){
+                        enableDatePicker();
+                        count = -119;
+                   }else if(slectedval == 'next7'){
+                    //console.log('next7');
+                        enableDatePicker();
+                        count = 6;
+                   }else if(slectedval == 'next30'){
+                        enableDatePicker();
+                        count = 29;
+                   }else if(slectedval == 'next60'){
+                        enableDatePicker();
+                        count = 59;
+                   }else if(slectedval == 'next90'){
+                        enableDatePicker();
+                        count = 89;
+                   }else if(slectedval == 'next120'){
+                        enableDatePicker();
+                        count = 119;
+                   }else if(slectedval == 'lastnext7'){
+                        enableDatePicker();
+                        count = 13;
+                   }else if(slectedval == 'lastnext14'){
+                  // console.log('hh');
+                        enableDatePicker();
+                        count = 14;
+                   }else if(slectedval == 'All'){
+                        var datepicker = $("#sd").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                       $("#sd").data("kendoDatePicker").value(null);
+                        
+                        var datepicker = $("#ed").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                       $("#ed").data("kendoDatePicker").value(null);
+                        
+                   }else if(slectedval == 'custom'){
+                        enableDatePicker();
+                        var sdchk = $("#sd").data("kendoDatePicker").value();
+                        var edchk = $("#ed").data("kendoDatePicker").value();
+                        
+                        if (sdchk == null && edchk == null){
+                            changecolDt('next7');
+                        }
+                        
+                   }else if(slectedval == 'Overdue'){
+                        document.getElementById('hideOverdue').checked = false;
+                        var datepicker = $("#sd").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                      $("#sd").data("kendoDatePicker").value(null);
+                        var datepicker = $("#ed").data("kendoDatePicker");
+                        // detach events
+                        datepicker.enable(false);
+                      $("#ed").data("kendoDatePicker").value(null);
+                      //  $('(body):after').css('height','0px');
+                   }
+                    var lastWeek = getLastWeek(new Date('{!todayDate}'),count);
+                    var lastWeekMonth = lastWeek.getMonth() + 1;
+                    var lastWeekDay = lastWeek.getDate();
+                    var lastWeekYear = lastWeek.getFullYear();
+                    var lastWeekDisplayPadded = ("00" + lastWeekMonth.toString()).slice(-2)+ "/" + ("00" + lastWeekDay .toString()).slice(-2)+ "/" + ("0000" + lastWeekYear .toString()).slice(-4);
+                    var date1 = kendo.parseDate(lastWeekDisplayPadded, "MM/dd/yyyy");
+                    //console.log('date1'+date1);
+                    if( count == -1 ){
+                        $("#sd").data("kendoDatePicker").value(date1);
+                        $("#ed").data("kendoDatePicker").value(date1);
+                       
+                    }else if( count == 0){
+                        $("#sd").data("kendoDatePicker").value(date1);
+                        $("#ed").data("kendoDatePicker").value(date1);
+                       
+                    }else if( count == 1){
+                            //alert(1);
+                        $("#sd").data("kendoDatePicker").value(date1);
+                        $("#ed").data("kendoDatePicker").value(date1);
+                        
+                    }
+                    else if(count < 0 ){
+                        $("#sd").data("kendoDatePicker").value(kendo.toString(date1, kendo.culture().calendar.patterns.d));
+                        $("#ed").data("kendoDatePicker").value(kendo.toString(new Date('{!todayDate}'), kendo.culture().calendar.patterns.d));
+                        
+                    }else if(count >  0  && count != 1 && count != 13 && count != 14  ){
+                   // console.log('kkk'+date1);
+                        $("#sd").data("kendoDatePicker").value(new Date('{!todayDate}'));
+                        //$("#ed").data("kendoDatePicker").value(kendo.toString(date1, kendo.culture().calendar.patterns.d));
+                        $("#ed").data("kendoDatePicker").value(date1);
+                         
+                    }else if(count >  0  && count != 1 && count == 13  ){
+                        var lastWeek = getLastWeek(new Date('{!todayDate}'),6);
+                        var  lastWeekMonth = lastWeek.getMonth() + 1;
+                        var lastWeekDay = lastWeek.getDate();
+                        var lastWeekYear = lastWeek.getFullYear();
+                        var lastWeekDisplayPadded = ("00" + lastWeekMonth.toString()).slice(-2)+ "/" + ("00" + lastWeekDay .toString()).slice(-2)+ "/" + ("0000" + lastWeekYear .toString()).slice(-4);
+                        var date2 = kendo.parseDate(lastWeekDisplayPadded, "MM/dd/yyyy"); 
+                        
+                        $("#sd").data("kendoDatePicker").value(kendo.toString(date1, kendo.culture().calendar.patterns.d));
+                        $("#ed").data("kendoDatePicker").value(kendo.toString(date2, kendo.culture().calendar.patterns.d));
+                    }else if(count >  0  && count != 1 && count == 14  ){
+                        var date = new Date('{!todayDate}');
+                        var lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 13);
+                        var  lastWeekMonth = lastWeek.getMonth() + 1;
+                        var lastWeekDay = lastWeek.getDate();
+                        var lastWeekYear = lastWeek.getFullYear();
+                        var lastWeekDisplayPadded = ("00" + lastWeekMonth.toString()).slice(-2)+ "/" + ("00" + lastWeekDay .toString()).slice(-2)+ "/" + ("0000" + lastWeekYear .toString()).slice(-4);
+                        var date2 = kendo.parseDate(lastWeekDisplayPadded, "MM/dd/yyyy"); 
+                        //console.log('date2'+date2);
+                        $("#sd").data("kendoDatePicker").value(kendo.toString(date1, kendo.culture().calendar.patterns.d));
+                        $("#ed").data("kendoDatePicker").value(kendo.toString(date2, kendo.culture().calendar.patterns.d));
+                    }
+                     
+                        searchRecordsWithLoader();
+                    return true;
+                }
+                               
+              //enable or disbale date picker.
+              function enableDatePicker(){
+                  var datepickerSd = $("#sd").data("kendoDatePicker");
+                  datepickerSd.enable(true);
+                  var datepickerEd = $("#ed").data("kendoDatePicker");
+                          // detach events
+                      datepickerEd.enable();
+                      document.getElementById("hideOverdue").disabled = false;
+              } 
+        </script>
+    </div>
+    
+    
+    <!-- Called to invoke controller method from JavaScript -->
+
+        <script>
+            $(document).ready(function() {
+            var fireOnce = true;
+                if(fireOnce){
+                     var tabToActivate = $("#activitiesClassic");
+                     afterLoad = true;
+                        //alert('13');
+                        $("#tabs").kendoTabStrip().data("kendoTabStrip").activateTab(tabToActivate);
+                        fireOnce = false;
+                    }
+                });
+                
+     </script>
+    
+    
+    
+    <!-- additional stylesheet  -->
+    <style>
+.btn-disabled {
+    background: #F5F5F5 !important;
+    border: 1px solid #CCCCCC !important;
+    color: #999999 !important;
+    disabled: disabled !important;
+    cursor: default !important;
+}
+
+#taskDropDowns {
+    display: block;
+}
+
+.UserFilterDiv {
+    min-width: 100px;
+    min-width: 20em;
+    margin-left: 25px;
+    float: left;
+}
+
+.taskGoClearBtn { //
+    width: 180px;
+    margin-left: 25px;
+    float: left;
+    margin-top: 15px;
+}
+
+.newTaskBtnDiv {
+    font-weight: bold;
+    float: left;
+}
+
+.createNewTaskBtn {
+    float: left;
+    /* min-width:250px; */
+    margin-top: 15px;
+    margin-left: 30px;
+}
+
+.createNewTaskBtn input {
+    margin: 3px;
+}
+
+.cardsExpansion {
+    float: left;
+    width: 225px;
+    margin-top: 5px;
+}
+
+.demo-section {
+    width: 200px;
+    min-height: 25px;
+}
+
+.demo-section select {
+    width: 350px;
+}
+
+.demo-section label {
+    display: inline-block;
+    margin: 15px 0 5px 0;
+}
+
+.k-multiselect-wrap .k-input {
+    background-color: transparent;
+    min-height: 1.8em;
+    line-height: 1.31em;
+    padding: .18em 0;
+    text-indent: .33em;
+    border: 0;
+    margin: 1px 0 0;
+    float: left;
+}
+
+.k-loading,.k-state-hover .k-loading {
+    background-image: url('Silver/loading.gif');
+    background-position: 50% 50%;
+}
+
+<!--
+qcd -->.qcd-input {
+    width: 800px;
+}
+
+.qcd-textarea {
+    width: 796px;
+    height: 75px;
+}
+
+.qcd-rtf {
+    width: 700px;
+    height: 300px;
+}
+
+.qcd-head {
+    border-bottom: 1px solid #EAEAEA;
+    border-top: 1px solid #FFFFFF;
+    height: auto;
+    overflow: hidden;
+    padding: 10px 10px 10px 12px;
+}
+
+.qcd-head-label {
+    margin: 0 9px 0 17px;
+    color: #4A4A56;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.qcd-head-img {
+    margin-right: 20px;
+}
+
+.qcd-modal-close {
+    margin: 0 !important;
+}
+
+#qcdInfo {
+    display: none;
+}
+
+.qcd-disable {
+    margin-top: 10px;
+    padding: 20px 0;
+    width: 1000px;
+    position: absolute;
+    z-index: 20000;
+    background: #fff;
+    opacity: 0.3;
+    filter: alpha(opacity = 30) !important;
+    height: 300px;
+    display: none;
+}
+
+ul.token-input-list {
+    width: 16em !important;
+}
+
+ul.token-input-list li {
+    width: 14em;
+}
+
+.c-padding {
+    padding: 10px;
+}
+
+#activityListView .k-pager-wrap .k-dropdown {
+    width: 4.4em !important;
+}
+
+#activityListView .k-dropdown .k-input {
+    background: #e9e9e9;
+}
+
+#activityListView .k-edit-cell>.k-widget {
+    width: 100px !important;
+}
+
+.k-picker-wrap {
+    /* width: 150px !important; */
+    
+}
+
+.workbench-filter .k-picker-wrap .k-select {
+    width: 1.7em;
+    line-height: 1.8em;
+}
+
+.workbench-filter .k-picker-wrap .k-input {
+    line-height: 1.2em;
+}
+
+.UserFilterDiv .k-picker-wrap {
+    width: 110px !important;
+}
+
+.k-edit-cell .k-picker-wrap {
+    width: 90px !important;
+}
+
+.ui-tabs .ui-widget-content .ui-tabs {
+    border-bottom: 1px solid #d4d4d4 !important;
+}
+
+select optgroup[label] {
+    font-style: normal;
+}
+
+#taskDropDowns .k-picker-wrap .k-input {
+    /* border: 1px solid #999 !important;*/
+    
+}
+
+.workbench-filter .k-picker-wrap {
+    padding: 0 2.5em 0 0;
+}
+
+.workbench-filter {
+    width: 1110px;
+}
+
+.k-state-hover .k-i-calendar {
+    background-position: -32px -176px !important;
+}
+
+.k-state-disabled .k-icon {
+    cursor: default !important;
+}
+
+#activityCardView {
+    min-width: 1260px;
+}
+
+.ui-tabs .ui-tabs-nav { //
+    min-width: 1260px;
+}
+
+.k-popup.k-list-container,.k-popup {
+    border-color: rgb(204, 204, 204) !important;
+}
+
+.k-animation-container .k-dropdown .k-input {
+    background: #fff;
+}
+
+.activity-filter {
+    width: 1080px !important;
+}
+
+.viewport,#todo .container {
+    height: 45em !important;
+}
+
+:-webkit-any(body):after {
+    height: 1px !important;
+}
+
+.dateOnlyInput input {
+    width: 6em !important;
+    margin-left: 1.1em;
+}
+
+.k-header {
+    background: #fff;
+}
+
+.k-widget {
+    background: #fff; //
+    width: 56.6em;
+}
+.k-tabstrip-items .k-state-active{
+                /*  border:1px solid #ccc !important; */
+                    border-bottom-color: #fff !important;
+                }
+
+.k-state-hover:hover {
+    border-color: #DADADA !important;
+}
+
+.modal-window-newTaskPopup .cell-left {
+    vertical-align: top !important;
+}
+
+#decisionSearch {
+    margin: 0.0em 0.4em 0.4em 8.3em;
+}
+
+#filtersPanelbar {
+    margin-bottom: -3px;
+    width: 7.8em;
+}
+
+div#colDt_q-list,ul#colDt_q_listbox { //
+    height: auto !important;
+}
+
+ul#colDt_q_listbox {
+    overflow: auto !important;
+}
+
+#filtersPanelbar .workbench-filter {
+    width: 1080px;
+}
+
+.ui-tabs-nav .ui-state-default {
+    margin-right: -1px !important;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+    font-weight: normal;
+    padding: .8em 1em .3em 1em;
+}
+
+#dueDate {
+    z-index: 11000;
+    position: fixed !important;
+}
+
+.k-state-selected,.k-list>.k-state-selected,.k-list>.k-state-focused,.k-panelbar .k-state-selected,.k-button:active,.k-ghost-splitbar-vertical,.k-ghost-splitbar-horizontal,.k-draghandle.k-state-selected:hover
+    {
+    background-color: #999;
+    border-color: #999;
+}
+
+.datePicker {
+    z-index: 1100012 !important;
+    position: fixed !important;
+}
+
+.k-pager-numbers .k-link {
+    /* color:#fff !important;*/
+    padding: 0 8px;
+}
+
+.k-pager-numbers .k-link:hover {
+    padding: 0px 8px;
+    border-style: solid;
+    border-width: 0px;
+    line-height: 22px;
+    background: #999;
+}
+
+.k-pager-numbers .k-link {
+    vertical-align: middle;
+}
+
+.k-filter-menu .k-button {
+    font-weight: normal;
+}
+
+#tabs {
+    display: block;
+}
+</style>
+
+    <!--  styles used to revert back kendo UI table styles for tabs -->
+    <style type="text/css">
+#decisionDate .k-header,#executionDate .k-header,#evaluationDate .k-header
+    {
+    margin-top: 3px;
+}
+
+.k-dropdown .k-input {
+    background: #fff;
+}
+
+.k-header {
+    /*   margin-top: 10px; 
+    border-color: #fff;*/
+}
+
+#tabs .k-content {
+    font-weight: normal !important;
+    color: #525252 !important;
+    /*  background: #fff !important; 
+                background-color: #fff !important;*/
+}
+
+.k-tabstrip .k-content {
+    /* margin: 0em -.1em -.1em -.1em !important; */
+    padding: 2em 1em !important;
+    /* border-color: #d4d4d4 !important; */
+    border-color: #ccc !important;
+  /*  min-height: 260px; */
+      margin-left: -2px;
+}
+
+.k-header {
+    background: #fff ;
+    background-color: #fff ;
+}
+
+.k-tabstrip-items .k-item {
+    margin-left: -2px;
+    margin-right: -2px;
+}
+
+.k-tabstrip .k-tabstrip-items {
+    padding: 0.3em 0 0 0 !important;
+    /* border-color: #d4d4d4 !important; */
+    /* border-color: #a6afbe !important; */
+    /* border-color: #263248 !important; */
+    border-color: #DFDFDF !important;
+}
+
+.k-tabstrip .k-link {
+    /* border-color: #d4d4d4 !important; */
+    /* border-color: #a6afbe !important; */
+    /* border-color: #263248 !important; */
+    border-color: #DFDFDF !important;
+    font-weight: normal !important;
+}
+
+.k-tabstrip .k-state-active {
+   /* background: #fff !important;
+    background-color: #fff !important;
+    border-color: #ccc;*/
+}
+
+#tabs .k-state-hover {
+    /*background: #f6f6f6 !important;
+    background-color: #f6f6f6 !important;
+    text-decoration: none !important;
+    border-color: #DFDFDF !important;
+    color: #333;*/
+}
+
+#tabs .k-state-default {
+    /* border-color: #DFDFDF !important; */
+    
+}
+
+#tabs .k-tabstrip-items .k-link:link {
+    /* color: #C2C2C2 !important; */
+    color: #333;
+    background-color: #f6f6f6 !important;
+    height: 10px;
+    padding: 1.0em 1.5em 1.3em 1.5em !important;
+}
+
+#tabs .k-link:hover {
+    /* color: #fff !important; */
+    /* color: #515967 !important; */
+    /* color: #263248 !important; */
+    /* color: #919191 !important; */
+    color: #333;
+    /* background: #66B3FF !important;
+                background-color: #66B3FF !important; */
+    /* background: #b6bdca !important;
+                background-color: #b6bdca !important; */
+    background: #f0f0f0 !important;
+    background-color: #f0f0f0 !important;
+    text-decoration: none !important;
+    /* border-color: #d4d4d4 !important; */
+    border-color: #DFDFDF !important;
+}
+#tabs .k-state-active .k-link:link{
+	/*background: #fff ;
+	background-color: #fff ;*/
+ }
+#tabs .k-link:active {
+    /* border-color: #d4d4d4 !important; */
+    /* border-color: #a6afbe !important; */
+    border-color: #DFDFDF !important;
+}
+
+#tabs .k-state-active>.k-link {
+    /* color: #fff !important; */
+    /* color: #515967 !important; */
+    /* color: #8D8D8D !important;*/
+    color: #333;
+}
+
+#tabs .k-state-active .k-link:hover {
+    /* background:#3399ff !important;
+                background-color:#3399ff !important; */
+    background: #fff !important;
+    background-color: #fff !important;
+}
+
+.k-pager-wrap .k-dropdown {
+    width: 4.4em !important;
+}
+
+
+
+#tabs .k-content .k-link:link {
+    /*  color: #222 !important; 
+                font-weight: bold !important;
+                background-color: #eee !important;
+                display: block;
+                min-height: 15px ;
+                line-height: 13px ;
+                margin: -0.5em -0.6em -0.4em -0.6em !important; 
+                padding: .5em .6em .4em .6em !important;
+                height: auto ;*/
+   
+}
+
+#tabs .k-content .k-link:hover,.k-grid-header .k-header .k-link:hover {
+    text-decoration: none !important;
+    background: #ccc !important;
+    background-color: #ccc !important;
+    color: #222 !important;
+}
+
+#tabs .k-content .k-pager-wrap>.k-link {
+    /*margin: 0 1px ;
+                padding: 0 3px !important;
+                height: 22px ;
+                line-height: 22px ;
+                border-radius: 13px;
+                cursor: pointer;*/
+    
+}
+
+.k-pager-numbers .k-link:link {
+    /*margin: 0 1px 0 0 !important;
+                vertical-align: top !important;
+                color: #dfdfdf !important;*/
+    
+}
+
+.k-pager-numbers .k-link {
+    /*color:#fff !important;*/
+    
+}
+
+.k-grid-filter {
+    padding: .3em .2em .4em !important;
+}
+
+.k-list-container li {
+    margin-left: 0px !important;
+}
+
+#gridTaskEvent .ui-widget {
+    /*font-family: Arial,Helvetica,sans-serif !important;*/
+    color: #222 !important;
+}
+
+#topicMultiSelectTd .k-floatwrap {
+    background: #fff;
+}
+
+#topicMultiSelectTd .k-header {
+    margin-top: -5px;
+}
+
+.modal-window-activitywarning {
+    /*position : fixed !important;*/
+    
+}
+
+#timingAndHistoryDiv .k-widget .k-state-focused {
+    box-shadow: none;
+}
+
+.ui-tabs-nav .ui-state-default {
+    margin-right: -1px !important;
+}
+
+.ui-tabs .ui-tabs-nav li {
+    top: 2px !important;
+    border-bottom: 1px solid #ccc !important;
+}
+
+.ui-tabs .ui-tabs-nav .ui-state-active li {
+    margin-right: -1px !important;
+    border-bottom-color: #fff !important;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+    border-bottom-width: 1px !important;
+    border-width: 0px;
+}
+
+.greyColor {
+    color: grey;
+}
+
+.blackColor {
+    color: black;
+}
+
+.k-popup .k-list-container,.k-popup {
+    border-color: rgb(204, 204, 204) !important;
+}
+
+.k-dropdown-wrap .k-state-hover:hover {
+    background-color: #a99f9a !important;
+    border-color: #a99f9a !important;
+}
+
+#tabstask .ui-tabs-nav {
+    padding: 0px 0px 1px 0px !important;
+}
+
+.expandCollapseDetails {
+    background:
+        url("{!URLFOR($Resource.Images, 'common/image-expandCollapse-black-sprite-8x16.png')}")
+        0 -8px no-repeat;
+    height: 8px;
+    width: 8px;
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+.complexity-label-div {
+    float: left;
+    margin-left: 47px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.skill-level-div {
+    float: left;
+    margin-right: 23px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.estimated-hours {
+    float: left;
+    margin-left: 18px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.actual-hours {
+    float: left;
+    margin-right: 18px;
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.newtaskpopup-Name {
+    float: left;
+    margin-left: 72px;
+    margin-top: 13px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #4A4A56;
+}
+
+.tasktabs-block {
+    height: 27em !important;
+}
+
+.section-head-matrix {
+    color: #2e2e2e;
+    background-color: #b8b8b8;
+    margin-bottom: 33px;
+    width: 100%;
+    height: 1px;
+    overflow: hidden;
+}
+
+.section-matrix {
+    /*margin-left: 5px;*/
+    
+}
+
+.icon-grid {
+    font-size: 1.4em;
+    margin: 3px 0px;
+}
+
+.k-state-selected,.k-state-selected:link,.k-list>.k-state-selected,.k-list>.k-state-focused,.k-list>.k-state-highlight,.k-panel>.k-state-selected,.k-button:active,.k-ghost-splitbar-vertical,.k-ghost-splitbar-horizontal
+    {
+    background-color: #999 !important;
+    border-color: #999 !important;
+}
+
+.k-filter-menu .k-button {
+    font-weight: normal !important;
+}
+
+.requestfullscreen,.requestfullscreen:hover {
+    /*top: -55px;
+                    right: -2px;
+                    float: right;
+                    position: absolute;*/
+    text-decoration: none;
+    float: right;
+    margin: 10px 5px 5px 5px;
+}
+
+.exitfullscreen,.exitfullscreen:hover {
+    /*display: inline;
+                     float: right; 
+                    right: 5px;
+                    top: 6px;
+                    position: absolute;*/
+    text-decoration: none;
+    float: right;
+    margin: 10px 5px 5px 5px;
+}
+
+.requestfullscreen span,.exitfullscreen span {
+    background: #ccc;
+    padding: 5px;
+    margin: 5px 0px 5px 5px;
+}
+
+#fullscreen {
+    position: relative;
+    background-color: white;
+}
+
+.decisionTopBorder {
+    border-top-color: #333333;
+}
+    div.k-window-content{
+        padding: 0px !important;
+        border: 0px !important;
+    }
+    .k-window-titlebar {
+         min-height: 23px;
+         line-height: 1.6em;
+         font-size: 1.1em;
+         background: url("{!URLFOR($Resource.Images, 'common/image-modalHead-1x38.jpg')}") repeat-x !important;
+     }
+     .k-window-title {
+        font-size: 1.3em;
+        top: 7px;
+        font-weight: bold;
+        cursor: move;
+        margin-left: 0.5em;
+    }
+    div#tabs-3{
+        width: 1230px;  
+    }
+</style>
+
+
+    <script>
+        function newTaskPopupComp(){
+            showLoader();
+            newTaskPopupComponent();
+        }
+        
+    </script>
+
+</apex:page>

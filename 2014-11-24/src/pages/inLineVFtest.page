@@ -1,0 +1,6 @@
+<apex:page showHeader="false" sidebar="false" standardController="Plan__c">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  This is your new IN-LINE Page
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

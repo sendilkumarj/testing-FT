@@ -1,0 +1,221 @@
+<apex:page contentType="text/css" showHeader="false" cache="false" sidebar="false">
+
+/* ========== Override jQueryUI
+   ================================ */
+  
+ .ui-tabs {
+     top: 0 !important;
+ }
+ /* .ui-widget {
+     font-family: Arial,Helvetica,sans-serif !important;
+ }  */
+ .ui-tabs .ui-tabs-nav li a {
+     /* border-width: 1px !important; */
+     font-weight: normal !important;
+     /* font-size: 11px !important;
+     padding: 5px 7px !important; */
+     font-size: 1em !important;
+    padding: .7em 1em .8em 1em !important;
+	 height: 1.2em !important;
+	 color: #333 !important;
+	 border-bottom: 1px solid #ccc;
+ }
+ .ui-tabs-nav .ui-state-default a{
+     height: 20px !important;
+     margin-bottom: 0 !important;
+     /* top: 1px !important; */
+ }
+ .ui-tabs-nav{
+     border-width: 1px !important;
+ }
+/* .ui-widget{
+     font-size: 12px !important;
+ }
+ .ui-tabs .ui-tabs-panel{
+     padding: 20px 10px !important;
+ } */
+ 
+  	/* === styles added for all the Jquery tabs across FT ===== Added by sendil 08/04/2014 */ 
+  .ui-state-active a:link {background:#f2f2f2 !important; background-color: #f2f2f2 !important; border-bottom: 1px solid #fff !important;}
+  .ui-tabs-nav > .ui-state-default a{background-color: #f6f6f6 !important; background: #f6f6f6 !important;top: 1px !important;}
+  .ui-tabs-nav > .ui-state-active a{border-color:#fff !important; background:#fff !important; background-color: #fff !important; color:#333 !important; }
+  
+  .ui-tabs .ui-tabs-nav li{border: 1px solid #ccc !important;/* border-bottom:0px !important;*/  }
+  .ui-tabs-nav .ui-state-default{ margin: 0px -1px 0px 0px !important; }
+  
+  .ui-tabs-nav > .ui-state-hover a{background-color: #f0f0f0 !important; background: #f0f0f0 !important;}
+  .ui-state-active a:hover{background:#fff !important; background-color: #fff !important; border-bottom: 1px solid #fff !important;}
+  
+	/* === Ends styles added for all the Jquery tabs across FT ===== Added by sendil 08/04/2014 */ 
+     
+/* ========== Override Kendo Slider
+   ================================ */     
+   
+ .k-slider-track{
+     width: 165px !important;
+ } 
+ .k-draghandle{
+     border: none !important;
+ }
+ 
+ 
+/* ========== Override Kendo Grid
+   ================================ */
+   
+.k-block, .k-grouping-header, .k-tooltip, .k-pager-wrap{
+    background: #eee; 
+   /* font-weight: bold !important;*/
+    color: #222 !important;
+}  
+/*
+#decisionHighlistList .k-grid-content{
+	font-weight: normal !important;	
+}*/
+
+.k-grid-header a{
+    font-weight: bold !important;
+    color: #222 !important;
+}
+.k-grid td{
+    border-bottom: 1px solid #dadada !important;    
+    line-height: 1.2em !important;
+} 
+ .k-state-selected, .k-state-selected:link, .k-list > .k-state-selected, .k-list > .k-state-focused, .k-list > .k-state-highlight, .k-panel > .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal {
+    /*background-color: #999 !important;
+    border-color: #999 !important;*/
+}
+
+.k-link:hover{
+    background-color: #999 !important;
+    border-color: #999 !important;
+} 
+.k-pager-wrap > a.k-state-disabled:hover{
+    border-color: #222 !important;
+}
+.k-button:hover{
+    background: #ccc !important;
+    border-color: #aaa !important;
+}
+td.k-state-focused, th.k-state-focused{
+    background: none !important;
+    box-shadow: 0 0 6px #ccc inset !important;
+}
+.k-picker-wrap.k-state-hover{
+    background: #ccc !important;
+    border-color: #ccc !important;
+}
+.k-popup .k-list .k-item:hover{
+    background: #ccc !important;
+    border-color: #ccc !important;
+}
+#planItemView1 .k-tooltip{
+    //margin: -0px 0 0 67px !important;
+}
+#planItemView1 .k-tooltip-validation .k-callout-n{
+     background: none;
+}
+.k-grid tbody .k-button {
+    min-width: 25px !important;
+    margin: 0 !important;
+    padding: 2px 3px 2px 8px !important;
+}
+.k-slider-horizontal .k-label{
+    display: none !important;
+}
+.k-pager-numbers li, .k-pager-input{
+    margin-left: 0 !important;
+}
+.k-block, .k-widget, .k-inline-block, .k-textbox > input, .k-input[type="text"], .k-input[type="number"], .k-button, .k-draghandle{
+    font-size: 12px !important;
+}
+.k-pager-numbers .k-link {
+    /*padding: 0 5px !important;*/
+}
+.k-grid-toolbar{
+    min-height: 26px;
+}
+
+ /* ========== Add highlight for kendo save cancel buttons
+   ================================ */  
+   
+  .k-savecancel-highlight { 
+  
+   background: #ccc !important; 
+   border-color: #aaa !important; 
+   
+   }  
+
+/* ========== Override Kendo Autocomplete
+   ================================ */
+.k-autocomplete{
+    width: 580px !important;
+}
+
+/* ========== Override Kendo RTF
+   ================================ */
+ .k-editor-button .k-state-hover{
+    background-color: #ccc !important;
+    border-color: #ccc !important;
+}
+input.k-textbox:hover, textarea.k-textbox:hover{
+    background-color: #ccc !important;
+}
+
+
+/* ========== Standard Button
+   ================================ */
+body button{
+   font-family: Arial !important;
+   font-size: 0.9em !important;
+   font-weight: bold !important; 
+   color: #333 !important;
+}  
+.btn-disabled{
+    background: #F5F5F5 !important;
+    border: 1px solid #CCCCCC !important;
+    color: #999999 !important; 
+    disabled: disabled !important;
+    cursor:default !important;
+}
+
+/* ========== Token Input
+   ================================ */
+li.token-input-token{
+    background: #DCE7EA !important;
+    float: left;
+}
+li.token-input-selected-token{
+	color : #000 !important;
+}
+ul.token-input-list{
+    font-family:Arial,Helvetica,sans-serif !important;
+    font-size: 12px !important;
+    color: #222 !important;
+    width: 805px !important;
+}
+li.token-input-token span{
+    margin-left: 3px !important;
+}
+div.token-input-dropdown ul li.token-input-selected-dropdown-item {
+    background-color: #DCE7EA !important;
+}
+
+/*.k-state-focused, .k-grouping-row .k-state-focused{*/
+.k-grouping-row .k-state-focused{
+    border-color: #DADADA ;
+}
+.token-input-list input[type="text"]:focus{
+    box-shadow: none !important;
+}
+
+/* ========== SF DatePicker
+   ================================ */
+#datePicker{
+     z-index:11000;
+     position:fixed !important;
+ }
+   
+.li.token-input-selected-token {
+	color : black;
+}
+</apex:page>

@@ -1,0 +1,126 @@
+<apex:page showHeader="false" sidebar="false" standardcontroller="Decision__c" extensions="SF1_AddEditPeople" docType="html-5.0"  standardStyleSheets="false">
+    <html>
+    <script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+           <div id="fullsite" style="font-family: Arial,Helvetica,sans-serif;">
+<!--              Available for salesforce1 application only-->
+					Available for Fingertip Mobile use only (Salesforce1)
+           </div>
+           <div id="sf1">
+           <script>
+                if( (typeof sforce != 'undefined') && (sforce != null) ) {
+                  document.getElementById('fullsite').style.display = 'none';
+               }
+               else {
+                  document.getElementById('sf1').style.display = 'none';
+               }
+            </script>
+            <title></title>         
+
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+            <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />         
+            <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>
+            
+            <style>
+                .ui-loader .ui-icon-loading {
+                    background-color: rgba(0, 0, 0, 0) !important;
+                    }
+                    .center-wrapper{
+                        text-align: center;
+                    }
+                    .center-wrapper * {
+                        margin: 0 auto;
+                    }
+            </style>
+             <script>
+             Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel",
+                onData:function(e) {
+                    Sfdc.canvas.publisher.publish({name:"publisher.setValidForSubmit", payload:"true"});
+            }});
+                Sfdc.canvas.publisher.subscribe({ name: "publisher.post",
+                    onData: function(e) {
+                    addPeopleJS();
+                    
+                }}); 
+                    var idString;
+                    var checkBoxElements;
+                   function addPeopleJS(){
+                            idString = '';    
+                            checkBoxElements = $(".pplCheckbox:checked");
+                                //Find all selected check boxes and add User Id to comma seperated string 
+                            checkBoxElements.each(function(e){
+                                idString += $(this).attr('data-id') + ',';
+                                
+                            });
+                                
+                            
+                            if(idString){ //if idString has a value do this
+                             SF1_AddEditPeople.addCollaborator(idString,'{!decisionId}',function(result,event){
+                             	callback()
+                             })
+                              /*  addCollaborator1(idString,'{!decisionId}')
+                                {
+                                  callback()
+                                }
+                                */ 
+                            }
+                       }
+                  
+                    function callback()
+                     {
+                                      checkBoxElements.each(function(e){
+                                        $('#'+$(this).attr('data-id')).remove();
+                                     });
+                                    $('.error').fadeIn(400).delay(2000).fadeOut(400).promise().done(function() {
+                                         Sfdc.canvas.publisher.publish({ name: "publisher.close",
+                                            payload:{ refresh:"true" }});
+                                        });
+                     }
+             </script>
+<!--             <apex:form style="display:none">-->
+<!--              <apex:actionFunction name="addCollaborator1" action="{!addCollaborator1}" oncomplete="callback">-->
+<!--                <apex:param name="userIdString"  assignTo="{!userIdString}" value=""/>-->
+<!--                <apex:param name="decisionId" assignTo="{!decisionId}" value=""/>-->
+<!--               </apex:actionFunction>-->
+<!--             </apex:form>-->
+             <h5><div class=" errorforcloseDecision center-wrapper" style='display:none'>This Decision is in Closed Phase </div>   </h5>
+            <h5><div class=" errorforconInfrm center-wrapper" style='display:none'>Access is Denied for You</div>   </h5>
+            <div data-role="page" id="main">
+                     <h5><div class=" error center-wrapper" style='display:none'>People Added</div>   </h5>
+                     
+              <div data-role="content"> 
+                    <ul data-role="listview" data-split-icon="gear" data-filter="true" data-theme="c" id="ulId">
+                         <apex:repeat value="{!newCollaboratorList}" var="eachUsr" id="theRepeat">
+                            <li id="{!eachUsr.Id}">
+                                    <fieldset data-role="controlgroup" >                                                        
+                                        <input type="checkbox" data-id="{!eachUsr.Id}" name="checkbox-2b" id="checkbox-2b" data-theme="c" class="pplCheckbox"/>                    
+                                        <label for="checkbox-2b" style="border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;">
+                                                 <apex:outputText value="{!eachUsr.Name}"/>
+                                        </label>
+                                    </fieldset> 
+                            </li>
+                       </apex:repeat>
+                  </ul>
+              </div>
+            </div>  
+              
+        <script type="text/javascript">
+                 chkConsultanInformed = {!chkConsultanInformed};
+                 chkDecisionStatus = {!chkDecisionStatus};
+                 
+                 if(chkDecisionStatus){
+                     $("#main").hide();
+                     $('.errorforconInfrm').hide();
+                     $('.errorforcloseDecision').fadeIn(400);
+                 }
+                // alert(chkConsultanInformed);
+                        if(chkConsultanInformed){
+                       // alert('hhh');
+                            //$('#SaveLink').data('disabled',true);
+                              $("#main").hide();
+                            $('.errorforconInfrm').fadeIn(400);
+                        }
+        </script>
+        </div>
+    </html>
+</apex:page>

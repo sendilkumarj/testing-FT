@@ -1,0 +1,826 @@
+<apex:page contentType="text/css" showHeader="false" cache="false" sidebar="false">
+  
+ body{
+    font-family:Arial,Helvetica,sans-serif !important;
+    font-size: 12px !important;
+    color: #222 !important;
+ }
+ h1, h2, h3, h4, h5, h6{
+    font-family:Arial,Helvetica,sans-serif !important;
+ }
+ .ft-left{
+     float: left;
+ }
+ .ft-right{ 
+     float: right;
+ }
+ .center{
+     margin: 0 auto;
+ }
+ .wrapper{
+     padding: 8px 0 10px 0;
+     height: auto;
+     overflow: hidden;
+ }
+ a{
+     outline: none;
+ }
+ /* ---------- added on 11-07-2014 ------------ sendil */
+ .toClear{
+    clear:both;
+ }
+ .fontBold{
+    font-weight: bold !important;
+ }
+ .textLeft{
+    text-align: left !important;
+ }
+ /* ---------- Ends added on 11-07-2014 ------------ sendil */
+ /* ========== Inputs
+   ================================ */ 
+ input[type="text"]{
+    margin:2px;
+    padding-top:7px;    
+    padding-bottom:7px;
+    padding-left: 5px !important;
+    border: 1px solid #ccc;
+ }
+ input[type="text"]:focus{
+     box-shadow: 0 0 2px #ebc40f;
+     border-color: #d5b166;
+ }
+ textarea{
+    padding:7px 5px;
+    border: 1px solid #ccc;
+ }  
+ textarea:focus{
+     box-shadow: 0 0 2px #ebc40f;
+     border-color: #d5b166;
+ }
+ 
+ .k-textbox{
+    height : 30px;  
+ }
+ 
+ /* ========== Header
+   ================================ */
+   
+ .page-head{
+     padding-bottom: 10px;
+     height: auto;
+     overflow: hidden; 
+ } 
+ .object-icon{
+     width: 32px;
+     height: 32px;
+ }
+ .headers{
+     margin-left: 5px;     
+ }
+ .headers h2{
+     margin: 0;
+     padding: 0;
+     font-style: inherit;
+     font-weight: normal;
+     font-size: 22px; 
+     line-height: 19px;    
+ }
+ .page-subhead{
+     color: #4A4A56;
+     font-weight: bold;
+     font-size: 11px;
+     line-height: 11px;
+ }
+ 
+ /* ========== Page Block
+   ================================ */
+   
+ .sf-page-block{
+     padding: 10px 0;
+     background-color: #F8F8F8;
+     border-bottom: 1px solid #EAEAEA;
+     border-left: 1px solid #EAEAEA;     
+     border-right: 1px solid #EAEAEA;
+     border-top-width: 3px;
+     border-top-style: solid;
+     border-radius: 4px;
+     height: auto;
+     overflow: hidden;  
+ }
+ .border-pink{
+     border-top-color: #993399;
+ }
+ .border-btm-pink{
+     border-bottom-color: #993399;
+ }
+ .border-blue{
+     border-top-color: #00305E;
+ }
+ .border-blue-light{
+     border-top-color: #ff6600;
+ }
+ .border-btm-blue{
+     border-bottom-color: #00305E;
+ }
+ .border-btm-bluelight{
+     border-bottom-color: #1797C0;
+ }
+ .page-block-head{     
+     padding: 0 0 10px 10px;
+     height: auto;
+     overflow: hidden;
+     position: relative;
+     border-bottom: 1px solid #EAEAEA;
+     text-align: center;
+ }
+ .page-block-head h3{
+     font-size: 15px;
+     position: absolute;
+ } 
+ .page-block-body{
+     border-top: 1px solid #fff;
+     border-bottom: 1px solid #EAEAEA;
+     height: auto;
+     overflow: hidden;
+ }
+ .section-head{
+     padding: 4px 15px;
+     height: auto;
+     overflow: hidden;
+ }
+ .section-head h3{
+     font-size: 13px;
+ }
+ .section-head-pink{
+     background-color: #ddbff3;
+ }
+ .section-head-blue{
+     background-color: #D7E0E8;
+ }
+ .page-block-tbl{
+     margin: 10px 0;
+     width: 100%;
+ }
+ .page-block-tbl td{
+     padding-top: 2px;
+     padding-bottom: 2px;
+ }
+ .cell-left{
+     padding-right: 15px;
+     width: 145px;
+     min-width: 145px;
+     text-align: right;
+     vertical-align: top;
+     color: #4A4A56;
+     font-weight: bold;
+     font-size: 11px;
+ } 
+ .left-width{
+     width: 70px !important;
+ }
+ .cell-right{
+     padding-left: 2px;
+ }
+ .cell-right p{
+    margin: 0 !important;
+    padding: 0 !important;
+ }  
+ .page-block-bottom{     
+     padding-top: 10px;
+     height: auto;
+     overflow: hidden;
+     border-top: 1px solid #fff;
+     text-align: center;
+ }
+ .required-input{
+     border-left: 3px solid #CC0000;
+ }
+  .required-input textarea{
+     padding-bottom: 0px !important;
+ }
+ /* ========== Tabs Page Block
+   ================================ */
+   
+ .tabs-block{
+     padding: 10px;
+     background-color: #F8F8F8;
+     border-bottom: 1px solid #EAEAEA;
+     border-left: 1px solid #EAEAEA;     
+     border-right: 1px solid #EAEAEA;
+     border-top-width: 3px;
+     border-top-style: solid;
+     border-radius: 4px;
+     height: auto;
+     overflow: hidden;       
+ }
+ .tabs-block-head{
+     margin-bottom: 10px;
+     height: 24px;
+     text-align: center;
+ }
+ .tabs-block-left{
+     height: 24px;
+     position: absolute;
+     max-width: 210px;
+     display: table-cell;
+     vertical-align: middle;
+ }
+ .tabs-block-left img{
+     margin-right: 4px;
+ }
+ .tabs-block-left h3{
+     font-size: 15px;
+     color: #000;
+     line-height: 24px;
+ }
+ .tabs-block-right{
+     height: 24px;
+ }
+ .tabs-block-right a{
+     margin-left: 5px;
+     width: 42px;
+     height: 24px;
+     display: block;
+ }
+ .tabs-block-right a:hover{
+     background-position: 0 -24px !important;
+ }
+ .tabs-gen-block{
+     padding: 10px 0 0 0;
+     border-top-width: 2px;
+     border-top-style: solid; 
+     height: auto;
+     overflow: hidden;
+ }
+ .tabs-gen-head{
+     padding: 0 0 10px 0;
+     height: auto;
+     overflow: hidden;
+ }
+ .tabs-gen-block h3, .tabs-gen-head h3{
+     font-size: 13px;
+     color: #222;
+ }
+ .gen-block-tbl{
+     width: 100%;
+     margin-top: 10px;
+ }
+ .gen-block-cell{
+     padding-top: 0px;
+     padding-bottom: 0px;
+     padding-left: 3px;
+     border-bottom: 0px solid #ddd;  
+ }
+  .gen-block-cell-tasktab{
+     padding-top: 5px;
+     padding-bottom: 5px;
+     padding-left: 3px;
+  }
+ .gen-block-cell p{
+     margin: 0 !important;
+     padding: 0 !important;
+ }
+ .gen-bottom-btns{
+     padding: 10px 0;
+     height: auto;
+     overflow: hidden;
+     text-align: center;
+     border-bottom-width: 2px;
+     border-bottom-style: solid;
+     border-top: 1px solid #fff;
+ }
+ .expand-collapse-black{
+     margin: 4px 5px 0 0;
+     width: 8px;
+     height: 8px;
+     display: block;
+     background: url("{!URLFOR($Resource.Images, 'common/image-expandCollapse-black-sprite-8x16.png')}") 0 0 no-repeat;
+ }
+  
+  /* ========== Popup Window
+   ================================ */
+   
+ .bg-fade{
+    
+     display: none;
+     width: 100%;
+     height: 100%;
+     position: fixed;
+     z-index: 10000;
+     background: #303030;
+     opacity: 0.5;
+     filter:alpha(opacity=50) !important;
+     top: 0;
+     left: 0;
+ }
+ /* .modal-window, .modal-window-approve, .modal-window-upload, .modal-window-relation, .modal-window-approval,  .modal-window-activitywarning, .modal-window-massEditing, .modal-window-vetorejection, .modal-window-vetorejectiononhome{*/
+.modal-window-approve, .modal-window-upload,  .modal-window-activitywarning,.modal-window-vetorejection, .modal-window-vetorejectiononhome{
+    //width: 68em;
+   // height: auto;
+    overflow: hidden;
+    position: fixed;
+    z-index: 10001;
+    /* left: 50%; */
+    margin: auto;
+    /* top: 80px; */
+   // border-radius: 5px;  
+    background: #fff;   
+    box-shadow: 0 5px 20px #333333;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=130, Color='#cccccc')"; 
+    display: none;
+ }
+ .modal-window,.modal-window-relation,.modal-window-approval{
+    /*width:600px;
+    width:auto;*/
+    display: none;
+ }
+ .modal-window-MassEditing, .modal-window-phasewarning,.modal-window-massDelete, .modal-window-noPermission, .modal-window-vetorejectiononhome, .modal-window-addTopic{
+  //   width: 500px !important;
+  //  height: auto;
+    overflow: hidden;
+    position: fixed;
+    z-index: 10001;
+    /* left: 30%; */
+    margin: auto;
+    /* top: 80px; */
+   // border-radius: 5px;  
+    background: #fff;   
+    box-shadow: 0 5px 20px #333333;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=130, Color='#cccccc')"; 
+    display: none;
+ }
+ .modal-AddItem-CRMObj{
+    min-width: 78em !important;
+    height: auto;
+    overflow: hidden;
+    position: fixed;
+    z-index: 10001;
+    /* left: 30%; */
+    margin: auto;
+    /* top: 80px; */
+    border-radius: 5px;   
+    background: #fff;   
+    box-shadow: 0 5px 20px #333333;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=130, Color='#cccccc')"; 
+    display: none;
+}
+ /*.modal-head, .modal-head-upload, .modal-approval-head, .modal-relation-head, .modal-approval-head, .modal-activitywarning-head,.modal-massdeletewarning-head, .modal-vetorejection-head, .modal-addTopic-head{*/
+   .modal-head-upload, .modal-approval-head, .modal-relation-head, .modal-approval-head,.modal-massdeletewarning-head, .modal-vetorejection-head, .modal-addTopic-head{
+   //  height: 38px;
+    // background: url("{!URLFOR($Resource.Images, 'common/image-modalHead-1x38.jpg')}") repeat-x;
+   //  cursor: move;
+ }
+ .modal-close{
+    /* margin: 7px 7px 0 0;
+        width: 17px;
+     height: 17px;
+     float: right;
+     background: url("{!URLFOR($Resource.Images, 'common/image-close-sprite-17x34.png')}") 0 0 no-repeat;
+     display: block;*/
+     display: none;
+ }
+ .modal-close:hover{
+     background-position: 0 -17px;
+ }
+ .modal-content, .modal-upload-content, .modal-approval-content, .modal-relation-content, .modal-approval-content, .modal-activitywarning-content,.modal-massdeletewarning-content, .modal-vetorejection-content{
+     padding: 10px;
+     max-height: 400px;
+     overflow-y: auto;
+ }
+ .modal-btm, .modal-upload-btm, .modal-approval-btm, .modal-relation-btm, .modal-approval-btm, .modal-activitywarning-btm,.modal-massdeletewarning-btm, .modal-vetorejection-btm{
+     padding: 10px;
+     height: auto;
+     overflow: hidden;
+     border-top: 1px solid #e1e7e9;
+     background: #ecf0f1;
+     text-algin
+ }
+ 
+ .modal-activitywarning-btm{ 
+    text-align: center; 
+  
+  }
+ 
+ /* ========== Popover
+   ================================ */  
+ .popover-gen-hold{
+     position: absolute;
+ }
+ .popover-gen{
+     margin: -21px 0 0 -280px;
+     padding: 10px;
+     width: 236px;
+     height: auto;
+     min-height: 50px;
+     overflow-y: hidden;
+     position: absolute;
+     z-index: 9000;
+     border-radius: 5px; 
+     border: 1px solid #ccc; 
+     background: #fff;   
+     box-shadow: 0 0 3px #aaa;
+     display: none;
+ }
+ .popover-gen-arrow{
+     margin: -13px 0 0 -28px;
+     width: 31px;
+     height: 35px;
+     position: absolute;
+     z-index: 9001;
+     background: url("{!URLFOR($Resource.Images, 'common/image-genArrow-31x35.png')}") no-repeat;
+     display: none;
+ }
+ .popover-icon{
+     margin-right: 10px; 
+     width: 24px;
+     height: 24px;
+ }
+ .popover-gen-content{
+     width: 202px;
+     height: auto;
+     overflow: hidden;
+     text-align: left;
+ }
+ .popover-width{
+     margin-left: -330px !important;
+     width: 285px !important;
+ }
+ .popover-body-width{
+     width: 250px !important;
+ }
+ 
+  /* ========== Popover SF style
+   ================================ */ 
+    
+ .popover-sf{     
+     padding: 10px;
+     width: 600px;
+     height: auto;
+     min-height: 50px;
+     position: absolute;
+     z-index: 9000;
+     border-radius: 5px; 
+     border-left: 1px solid #ccc; 
+     border-right: 1px solid #ccc;
+     border-bottom: 1px solid #ccc;
+     border-top-width: 3px;
+     border-top-style: solid;
+     background: #fff;   
+     box-shadow: 0 0 3px #aaa;
+     display: none;
+ }
+ 
+ #titleCallout{
+    margin-top:0px;
+ }
+ 
+ .pop-custom{
+     width: 400px !important;
+     margin-top: -20px;
+ }
+ .popover-title{
+     padding-bottom: 10px;
+     border-bottom-width: 1px;
+     border-bottom-style: solid;
+     font-weight: bold;
+     font-size: 14px; 
+     color: #222;
+ } 
+ .popover-sf-arrow{
+     width: 16px;
+     height: 29px;
+     position: absolute;     
+     margin: 14px 0 0 -23px;
+     background: url("{!URLFOR($Resource.Images, 'common/image-sfArrow-16x29.png')}") no-repeat;
+ }
+ .popover-label{
+     min-width: 100px !important;
+     width: 100px !important;
+ }
+ 
+ /* ========== Popover SF style1
+   ================================ */ 
+    
+ .popover-social{     
+     padding: 10px;
+     width: 400px;
+     height: auto;
+     min-height: 50px;
+     position: absolute;
+     z-index: 9000;
+     border-radius: 5px; 
+     border: 1px solid #ccc; 
+     background: #fff;   
+     box-shadow: 0 0 3px #aaa;
+     display: none;
+ } 
+ .popover-social-content{
+     margin: 5px 0 10px 0;
+     height: auto;
+     overflow: hidden;
+     text-transform: capitalize;
+ } 
+ .popover-social-top{
+     padding: 0 0 5px 0;
+     font-weight: bold;
+     border-bottom: 1px dotted #222;
+ }
+ .popover-social-btm{
+     padding: 5px 0 0 0;
+     font-weight: bold;
+ }
+ .popover-social-arrow{
+     width: 16px;
+     height: 29px;
+     position: absolute;     
+     margin: 3px 0 0 -23px;
+     background: url("{!URLFOR($Resource.Images, 'common/image-sfArrow-16x29.png')}") no-repeat;
+ }
+ 
+ #decHidden{
+     display: none;
+ }
+ 
+ /* ========== Confirmation Box
+   ================================ */ 
+ .confirm-box, .approval-box{
+     width: 580px;
+     height: auto;
+     overflow: hidden;
+     position: fixed;
+     z-index: 10001;
+     top: 150px;
+     left: 50%;
+     margin-left: -292px;
+     background: #fff;
+     border: 2px solid #b5b5b5;
+     box-shadow: 0 0 10px #aaa;
+     display: none;
+ }  
+ .confirm-head, .approval-head{
+     padding: 5px 10px;
+     height: auto;
+     overflow: hidden;
+     background: #e3e3e3;
+ }
+ .confirm-head h3, .approval-head h3{
+     padding-left: 5px;
+     font-size: 15px;
+     color: #000;
+     line-height: 24px;
+ }
+ .confirm-close, .approval-close{
+     margin-top: 4px;
+     width: 16px;
+     height: 16px;
+     background: url("{!URLFOR($Resource.Images, 'common/image-confirmClose-sprite-16x32.png')}") 0 0 no-repeat;
+     display: block;
+ }
+ .confirm-close:hover, .approval-close:hover{
+     background-position: 0 -16px;
+ }
+ .confirm-body, .approval-body{
+     padding: 30px 0;
+     text-align: center;
+     height: auto;
+     overflow: hidden;
+     border-bottom: 2px solid #e6e6e6;
+     font-size: 14px;
+     color: #000;
+ }
+ .confirm-btm, .approval-btm{
+     padding: 10px 0;
+     text-align: center;
+     height: auto;
+     overflow: hidden;
+ }
+ 
+ /* ========== Clone Modal
+   ================================ */ 
+   
+ .clone-modal-tbl{
+     margin: 0 auto;
+     width: 500px;     
+ }  
+ .clone-modal-tcell{
+     width: 50%;
+     vertical-align: top;
+ }
+ .clone-modal-head{
+     text-align: left;
+     font-size: 16px;
+     color: #222;
+     font-weight: bold;
+ }
+ .clone-modal-field{
+     height: auto;
+     overflow: hidden;
+     padding: 5px 0;
+ }
+ .relate-to-input{
+     display: none;
+     padding-left: 23px;
+ }
+ 
+ /* ========== Relations Modal
+   ================================ */ 
+/* .modal-window-relation{
+     width: 1100px !important;
+     margin-left: -550px !important;   
+ }*/
+/* .modal-window-phasewarning,.modal-window-massEditing*/
+.modal-window-massEditing{display:none;}
+  
+
+ .relation-help {
+    margin: 0;
+    padding: 0;
+ }
+ .approval-help, .activitywarning-help, .vetorejection-help,.massdeletewarning-help {
+    margin: 0;
+    padding: 0;
+    text-align : center;
+ }
+.relation-search{
+    margin: 10px 0;    
+}
+.relation-tbl{
+    border-collapse: collapse;
+}
+.rel-th{
+    padding: 7px 0 7px 5px;
+    background: #eee;
+    border: 1px solid #ccc;
+    font-weight: bold;
+}
+.rel-td{
+    padding: 5px 0 5px 5px;
+    background: #F9F9F9;
+    border-bottom: 1px solid #DDDDDD;
+    vertical-align: top;
+}
+.rel-left{
+    border-left: 1px solid #DDDDDD;
+}
+.rel-right{
+    padding-right: 5px;
+    border-right: 1px solid #DDDDDD;
+}
+.rel-td1{
+    width: 90px;
+}
+.rel-td2{
+    width: 90px;
+}
+.rel-td3{
+    width: 155px;
+}
+.rel-center{
+    text-align: center;
+}
+.rel-note-text{
+    width: 330px;
+    height: 14px;
+    resize: none;
+}
+ 
+ /* ========== Kendo Grid Icons ================================ */ 
+ .grid-action{
+     float: left;
+     margin-right: 5px;
+ }
+ .grid-user-img{
+     float: left;
+     margin-right: 10px;
+ }
+ .grid-action img, .grid-action-center img{
+     cursor: pointer;
+ }
+ /* ==== added padding to align delete button in people tab of Plan view === */
+ .grid-action-single img{
+     cursor: pointer;
+     padding: .5em .6em .2em .3em !important; 
+ }
+ .grid-action-center{
+     text-align: center;
+ }
+ .grid-action-disabled{
+     cursor: default !important;
+ }
+ .grid-username{
+     height: auto;
+     overflow: hidden;
+ }
+ 
+ /* ========== Task Delay
+   ================================ */ 
+ .delayTask{
+      color: #ff0000;
+ } 
+ .emptyDuedate{
+    width : 95px;
+    height : 14px;
+ }
+ .completedAllTask{
+     color: #009933;
+ }
+ .emptyDuedateTask{
+    height : 14px;
+ }
+ /* ========== Activities Tab
+   ================================ */
+ .hide-subject{
+    display: none;
+ }  
+ 
+  /* ========== Preloader
+   ================================ */
+ .preloader{
+     display: none;
+     top: 50%;
+     left: 50%;
+     margin-top: -18px;
+     margin-left: -18px;
+     position: fixed;
+     z-index: 9999;
+     width: 36px;
+     height: 36px;
+     background: url("{!URLFOR($Resource.Images, 'common/image-preloader-36x36.gif')}") no-repeat;
+ }  
+ 
+ /* ========== Tabs
+   ================================ */
+  #tabs{
+      display: none;
+  } 
+  
+   
+  /* ========== Search style for people tab
+   ================================ */ 
+   .people-search{
+        margin-right:20px;
+   }
+   
+   /* ========== Title text bold for approvals popup
+   ================================ */
+   .title-bold{
+        font-weight:bold;
+   } 
+
+    /* ==================== used for Decision Edit popup ================== */ 
+   .decisionEditDesc{
+        height:100px;
+   }
+   .gapRrow{
+    height: 5px;
+   }
+   .gapTopRow{
+    height: 10px;
+   }
+   .centerLine{
+    border-top:1px solid #ddd;
+    margin-top:3px;
+   }
+   .redLineContainer{
+        position: relative;
+        height: 100%;
+        display:block;
+    }
+    .redLineDiv{
+        background-color: #c00;
+        position: absolute;
+        left: -7px;
+        width: 3px;
+        top: 2px;
+        bottom: 3px;
+    }
+    .redLineDivName{
+        background-color: #c00;
+        position: absolute;
+        left: -7px;
+        width: 3px;
+        top: 2px;
+        bottom: 1px;
+    }
+    /* ==================== used for Decision Edit popup, Ends ================== */ 
+    
+    
+/*.k-state-hover, .k-state-hover:hover, .k-splitbar-horizontal-hover:hover, .k-splitbar-vertical-hover:hover, .k-list > .k-state-hover, .k-state-focused, .k-marquee {*/
+.k-splitbar-horizontal-hover:hover, .k-splitbar-vertical-hover:hover, .k-state-focused, .k-marquee {
+  background-color: #fff;
+  border-color: #a99f9a;
+  color: #2e2e2e;
+}
+ .k-window-titlebar{
+  background-color:#ecf0f1;
+} 
+.k-window-title {
+    font-size: 12px !important;
+    color:#222;
+    top: 7px;
+    font-weight: bold;
+    cursor: move;
+    margin-left: 0.5em;
+    font-family: Arial,Helvetica,sans-serif;
+}   
+</apex:page>

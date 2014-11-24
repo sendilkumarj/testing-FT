@@ -1,0 +1,1205 @@
+<apex:page showheader="false" controller="HomePageMobile"  sidebar="false" standardStylesheets="false" docType="html-5.0">
+<style type="text/css">
+body{
+ 
+}
+.km-ios, .km-ios .km-content{background-color:#fff!important;}
+.decision-home {
+ 
+  border: 10px solid #DDDDDD;
+  margin: 0;
+  min-height: 120px;
+    padding: 30px 0 15px;
+
+}
+.km-scroll-header {position: relative!important;}
+
+.approvals-home,.tasks-home{border-bottom: 10px solid #DDDDDD; border-left: 10px solid #DDDDDD;border-right: 10px solid #DDDDDD;margin:0;}
+.km-navbar {
+ background: #7d7e7d!important; /* Old browsers */
+background: -moz-linear-gradient(top,  #7d7e7d 0%, #0e0e0e 100%)!important; /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7d7e7d), color-stop(100%,#0e0e0e))!important; /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #7d7e7d 0%,#0e0e0e 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #7d7e7d 0%,#0e0e0e 100%)!important; /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #7d7e7d 0%,#0e0e0e 100%)!important; /* IE10+ */
+background: linear-gradient(to bottom,  #7d7e7d 0%,#0e0e0e 100%)!important; /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 )!important; /* IE6-9 */
+
+}
+.km-navbar span {
+  color: #fff !important;
+}
+</style>
+
+
+
+
+<html>
+<head>
+    <title>Fingertip</title>  
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />  
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/jquery.min.js')}"/>   
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/kendo.mobile.min.js')}"/>   
+  
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.mobile.common.min.css')}"/>   
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.mobile.all.min.css')}"/>   
+     
+    
+    <apex:stylesheet value="{!$Page.MobileStyles}"/>        
+     
+</head>
+<body>
+<iframe style="disply:none" id="logoutframe"  ></iframe>
+<!-- Main View --> 
+<div id="mainView" data-role="view" data-title="Fingertip" >
+    <ul class="colour">
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+    </ul>
+    <div class="decision-home fingertop_box">
+    <center>      
+    <p id="homeDecisions" class="fingertop_text"></p>  
+    </center>
+    </div>
+    
+    <div  class="approvals-home fingertop_box">
+    <center >
+  <p id="homeApprovals" class="fingertop_text"></p>
+    </center>
+    </div>
+    <div  class="tasks-home fingertop_box">
+    <center > 
+	 <p id="homeTasks" class="fingertop_text"></p>
+	</center>
+    </div>
+</div>
+
+
+<div data-role="view" id="drawer-approvals" data-init="approvalsListViewTemplatesInit" data-title="Approvals">
+ <header data-role="header">
+        <div data-role="navbar">
+            <a class="fingertipHome nav-button" data-align="left" data-role=""><span class="back"></span></a>
+            <span data-role="view-title">Approvals</span>
+        </div>
+    </header>
+    <ul class="colour">
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+    </ul>
+    <div style="background-color:rgb(49,49,49);">
+    <select  style="background: transparent; border: 0px; color: white;"  id="Due Date" onchange="updateApproval()">
+        <option style="color: black !important;" value="overdue">Over Due</option>
+        <option value="24hours" >24 hours</option>
+        <option value="48hours">48 hours</option>
+        <option value="7days">7 days</option>
+        <option value="All" selected="selected">All</option>
+    </select> 
+    </div>
+    <ul id="approvals-listview"  ></ul>   
+
+     <script type="text/x-kendo-template" id="approvalsListViewTemplate">
+        <div style="padding:5px; font-weight:normal;">
+        #if(typeOfApproval == 'Stance'){#
+                <div  class="incontentbg mainaprrej" data-id=${decisionId} data-pid=${id} style="padding:10px; padding-left: 0px; cursor:pointer;">
+                <div class="typetext" style="display:none;">Support / Oppose</div>
+                <div style="width:80px; text-align:center;">
+                    #if(priority == "High"){#
+                        <h3 class="item-title priority-high">${priority}</h3>
+                    #}else if(priority == "Normal"){#
+                        <h3 class="item-title priority-normal">${priority}</h3>
+                    #}
+                    else{#
+                        <h3 class="item-title priority-low">${priority}</h3>
+                    #}#
+                </div>
+                    <span class="km-off-apr" style="float: right; margin-top:-20px;"></span>
+                    <p class="item-info" style="font-weight:bold;">${subject}</p>
+                </div>
+            #}else{#
+                <div  class="incontentbg mainaprrej" data-id=${decisionId} data-pid=${id} style="padding:10px; padding-left: 0px; cursor:pointer;">
+                <div  class="typetext" style="display:none;">Approve / Reject</div>
+                <div style="width:80px; text-align:center;">
+                    #if(priority == "High"){#
+                        <h3 class="item-title priority-high">${priority}</h3>
+                    #}else if(priority == "Normal"){#
+                        <h3 class="item-title priority-normal">${priority}</h3>
+                    #}
+                    else{#
+                        <h3 class="item-title priority-low">${priority}</h3>
+                    #}#
+                </div>
+                    <span class="km-off" style="float: right; margin-top:-20px;"></span>
+                    <p class="item-info" style="font-weight:bold;">${subject}</p>
+                </div>
+            #}#
+            <div class="incontentbg">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td width="50%" style="border-top:1px solid lightgrey;border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DUE DATE</p>
+                            <p class="content-color">${duedate}</p>
+                        </td>
+                        <td width="50%" style=" border-top:1px solid lightgrey;border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DEADLINE</p>
+                            #if( deadline == ''|| deadline == null){# 
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;"> </p>
+                            #}else if( deadline < 0 ){# # deadline = deadline * -1; # 
+                               <p style="color:red; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                            #}
+                            else{#
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                            #}#
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" style="border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">MY ROLE</p>
+                            <p style="margin-top: 5px; margin-bottom: 10px;">
+                            # for (var i = 0; i < role.length; i++) { #
+                                <span style="background-color:rgb(71,71,71); font-size: 13px; color:white; padding: 2px; padding-left: 4px; padding-right: 4px;">${role[i]}</span>
+                            # } #
+                            </p>
+                        </td>
+                        <td style="border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">REQUESTED BY</p>
+                            <p class="content-color">${nameOfRequeste}</p>
+                        </td>
+                    </tr> 
+                </table>
+            </div>
+            <div  class="incontentbg" style="padding:10px;">
+                #if(typeOfApproval == 'Stance'){#
+                    <div class="apr-submit aprrej" data-id=${decisionId} data-pid=${id} style='cursor:pointer'><span class="right-wrong"></span>Support / Oppose</div>
+                #}else if(typeOfApproval == 'Role') {#
+                    <div class="apr-submit aprrej" data-id=${decisionId} data-pid=${id} style='cursor:pointer'><span class="go-no"></span>Accept / Reject</div>
+                #}else{#
+                    <div class="apr-submit aprrej" data-id=${decisionId} data-pid=${id} style='cursor:pointer'><span class="go-no"></span>Approve / Reject</div>
+                #}#
+
+                
+            </div>
+        </div>
+    </script> 
+
+    <script>
+        var groupedData =  [];
+        function approvalsListViewTemplatesInit() { 
+            var dueDate = document.getElementById('Due Date').value;
+            HomePageMobile.listApprovals(dueDate, function(result, event){     
+                groupedData =  removeQuotes(event.result); 
+                //console.log('groupedData'+JSON.stringify(groupedData));
+                var dataSource = new kendo.data.DataSource({
+                  data: groupedData
+                });
+                
+                console.log(JSON.stringify(dataSource.data()));
+                console.log(JSON.stringify(groupedData));
+                $("#approvals-listview").kendoMobileListView({ 
+                dataSource: kendo.data.DataSource.create({data: groupedData,
+                schema: {
+                    model: {
+                        id: "id",
+                          fields: { 
+                               duedate:{type: "datetime" }
+                          }
+                    }
+                },                 
+                group: "letter", sort: [{ field: "duedate", dir: "asc" }]}),
+                template: $("#approvalsListViewTemplate").html(),
+                headerTemplate: "",  
+                
+            });            
+         }); 
+        }
+    </script>
+</div>        
+                <!-- For Decision List View -->
+                
+    <div data-role="view" id="drawer-decisions" data-init="decisionListViewTemplatesInit" data-title="Decisions">
+        <header data-role="header">
+           <div data-role="navbar">
+               <a class="fingertipHome nav-button" data-align="left" data-role=""><span class="back"></span></a>
+               <span data-role="view-title">Decisions</span>
+           </div>
+       </header>
+       <ul class="colour">
+           <li class="orange"><span></span></li>
+           <li class="orange"><span></span></li>
+           <li class="orange"><span></span></li>
+           <li class="orange"><span></span></li>
+       </ul>
+       <div style="background-color:rgb(49,49,49);">
+       <select  style="background: transparent; border: 0px; color: white;"  id="Due Date" onchange="updateApproval()">
+           <option style="color: black !important;" value="overdue">Over Due</option>
+           <option value="24hours" >24 hours</option>
+           <option value="48hours">48 hours</option>
+           <option value="7days">7 days</option>
+           <option value="All" selected="selected">All</option>
+       </select> 
+       </div>
+       <ul id="decision-listview"></ul>   
+    
+        <script type="text/x-kendo-template" id="decisionListViewTemplate">
+     <div style="padding:5px; font-weight:normal;">
+        
+                <div  class="incontentbg decisionDetails" data-id=${decisionId} data-pid=${id} style="padding:10px; padding-left: 0px; cursor:pointer;">
+                    <div style="width:80px; text-align:center;">
+                        #if(priority == "High"){#
+                            <h3 class="item-title priority-high">${priority}</h3>
+                        #} #
+                           
+                        
+                    </div>
+                    <span class="km-off-apr" style="float: right; margin-top:-20px;"></span>
+                    <p class="item-info" style="font-weight:bold;">${decisionTitle}</p>
+                </div>
+            
+            <div class="incontentbg">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td width="50%" style="border-top:1px solid lightgrey;border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">Status</p>
+                            <p class="content-color">${status}</p>
+                        </td>
+                         <td width="50%" style=" border-top:1px solid lightgrey;border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DUE DATE</p>
+                            #if( duedate == ''|| duedate == null){# 
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">N/A </p>
+                            #}else{#
+                               <p class="content-color">${duedate}</p>
+                            #}#
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                     <td width="50%" style="border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">MY Stance</p>
+                            <p class="content-color">${myStance}</p>
+                     </td>
+                      <td style="border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">Phase</p>
+                            <p class="content-color">${phase}</p>
+                     </td>
+                    </tr> 
+                </table>
+            </div>
+            
+     </div>
+   </script>
+     <script>
+         var decisionData =  [];
+           function decisionListViewTemplatesInit() { 
+               var dueDate = document.getElementById('Due Date').value;
+               HomePageMobile.listDecisions(dueDate, function(result, event){     
+                   decisionData =  removeQuotes(event.result); 
+                //console.log('decisionDatadecisionData'+JSON.stringify(decisionData));
+                   $("#decision-listview").kendoMobileListView({ 
+                   dataSource: kendo.data.DataSource.create({data: decisionData,
+                   schema: {
+                       model: {
+                           id: "Id",
+                             fields: { 
+                                  duedate:{type: "datetime" }
+                             }
+                       }
+                   },                 
+                   sort: [{ field: "duedate", dir: "asc" }]}),
+                  template: $("#decisionListViewTemplate").html(),
+                   headerTemplate: ""  
+               });            
+            }); 
+           }
+     
+         </script>
+    
+    </div>  
+                
+                <!-- End of For Decision List View -->
+                
+                
+                
+            <!--                start of TEMPLATE decision details view -->
+            
+             <script type="text/x-kendo-template" id="decisionDetailsViewTemplate">
+             <div style="padding:5px; font-weight:normal;margin-top: 40px;">
+        
+                <div  class="incontentbg decisionClassic" data-id=${decisionId} data-pid=${id} style="padding:10px; padding-left: 0px; cursor:pointer;">
+                    <div style="width:80px; text-align:center;">
+                        #if(priority == "High"){#
+                            <h3 class="item-title priority-high">${priority}</h3>
+                        #} #
+                           
+                        
+                    </div>
+                  <span class="km-off-apr" style="float: right; margin-top:-20px;"></span> 
+                    <p class="item-info" style="font-weight:bold;">${decisionTitle}</p>
+                </div>
+            
+            <div class="incontentbg">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td width="50%" style="border-top:1px solid lightgrey;border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">Status</p>
+                            <p class="content-color">${status}</p>
+                        </td>
+                         <td width="50%" style=" border-top:1px solid lightgrey;border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DUE DATE</p>
+                            #if( duedate == ''|| duedate == null){# 
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">N/A </p>
+                            #}else{#
+                               <p class="content-color">${duedate}</p>
+                            #}#
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                     <td width="50%" style="border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">MY Stance</p>
+                            <p class="content-color">${myStance}</p>
+                     </td>
+                      <td style="border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">Phase</p>
+                            <p class="content-color">${phase}</p>
+                     </td>
+                   </tr>
+					 <tr>
+                        <td width="50%" style="border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">MY ROLE</p>
+                            <p style="margin-top: 5px; margin-bottom: 10px;">
+                            # for (var i = 0; i < role.length; i++) { #
+                                <span style="background-color:rgb(71,71,71); font-size: 13px; color:white; padding: 2px; padding-left: 4px; padding-right: 4px;">${role[i]}</span>
+                            # } #
+                            </p>
+                        </td>
+                        <td style="border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">Accountable</p>
+                            <p class="content-color">${ownerName}</p>
+                        </td>
+                    </tr>
+					<tr>
+						<td width="50%" style=" border-bottom:1px solid lightgrey; vertical-align: top;" colspan="2"> 
+                            <p class="subhead">Description</p>
+							 #if( problemStatement == ''|| problemStatement == null){#
+								<p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;"> </p>
+							#}else{#
+                               <p class="content-color">${problemStatement}</p>
+                            #}#
+                        </td>
+					</tr>
+					<tr>
+						<td width="50%" style=" border-bottom:1px solid lightgrey; vertical-align: top;" colspan="2">
+                            <p class="subhead">Decision</p>
+							#if( decisionTaken == ''|| decisionTaken == null){#
+								<p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;"> </p>
+							#}else{#
+                               <p class="content-color">${decisionTaken}</p>
+                            #}#
+                        </td>
+					</tr>  
+                </table>
+            </div>
+            
+     </div>
+   </script>
+                        
+            <!--        end of  TEMPLATE decision details view -->
+            
+                
+
+    <script type="text/x-kendo-template" id="approvalsdetailsListViewTemplate">
+        <div style="padding:5px; font-weight:normal;">
+            <div  class="incontentbg" style="padding:10px; padding-left:0px;">
+                <div style="width:80px; text-align:center;">
+                    #if(priority == "High"){#
+                        <h3 class="item-title priority-high">${priority}</h3>
+                    #}else if(priority == "Normal"){#
+                        <h3 class="item-title priority-normal">${priority}</h3>
+                    #}
+                    else{#
+                        <h3 class="item-title priority-low">${priority}</h3>
+                    #}#
+                </div>
+                <p class="item-info" style="font-weight:bold;">${subject}</p>
+            </div>
+            
+            <div class="detailsDiv detailsbtn">Details<span class="upArrow detailsSpan"></span></div>
+            
+            <div class="accordian" style="display:none;">
+                <div class="incontentbg">
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td width="50%" style="border-top:1px solid lightgrey;border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                                <p class="subhead">DUE DATE</p>
+                                <p  class="content-color">${duedate}</p>
+                            </td>
+                            <td width="50%" style=" border-top:1px solid lightgrey;border-bottom:1px solid lightgrey; vertical-align: top;">
+                                <p class="subhead">DEADLINE</p>
+                                #if( deadline == null ||  deadline == '' ){# 
+                                   <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;"> </p>
+                                #}else if( deadline < 0 ){# # deadline = deadline * -1; #
+                                   <p style="color:red; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                                #}
+                                else{#
+                                   <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                                #}#
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="50%" style="border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                                <p class="subhead">MY ROLE</p>
+                                <p style="margin-top: 5px; margin-bottom: 10px;">
+                                # for (var i = 0; i < role.length; i++) { #
+                                    <span style="background-color:rgb(71,71,71); font-size: 13px; color:white;  padding: 2px; padding-left: 4px; padding-right: 4px;">${role[i]}</span>
+                                # } #
+                                </p>
+                            </td>
+                            <td width="50%" style="border-bottom:1px solid lightgrey; vertical-align: top;">
+                                <p class="subhead">REQUESTED BY</p>
+                                <p class="content-color">${requestedBy}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div  class="incontentbg" style="padding:1px; padding-left:0px;">
+                    <p class="subhead">DESCRIPTION</p>
+                    <p class="content-color">#=problemStatement#</p>
+                </div>
+                <div style="border-top:1px solid lightgrey"></div>
+                
+                <div  class="incontentbg" style="padding:1px; padding-left:0px;">
+                    <p class="subhead">DECISION</p>
+                    <p class="content-color">#=decisionStatement#</p> 
+                    
+                </div>
+                <div style="border-top:1px solid lightgrey"></div>
+            </div>
+            <div class="incontentbg" style="padding:1px; padding-left:0px;">
+                <p class="subhead">COMMENTS</p> 
+                <p><textarea id="approveComment" onchange=" ( approveComment = this.value)" rows="5" style="border:1px solid black; color:rgb(123,121,122); float:none; background-color:rgb(245,243,244); width:100%;">${approvalComment}</textarea></p>
+                #if(btnclicktxt == "Support"){#
+                <div style="padding:10px; padding-top:0px; height:30px;"><div onclick="approvedReject('${decisionId}','${processId}','Approve')" class="greenbtn"><span class="right"></span>Support</div><div onclick="approvedReject('${decisionId}','${processId}','Reject')" class="redbtn"><span  class="wrong"></span>Oppose</div></div>
+                #}else{#
+                <div style="padding:10px; padding-top:0px; height:30px;"><div onclick="approvedReject('${decisionId}','${processId}','Approve')" class="greenbtn"><span class="go"></span>Approve</div><div onclick="approvedReject('${decisionId}','${processId}','Reject')" class="redbtn"><span  class="no"></span>Reject</div></div>
+                #}#
+            </div>
+        </div>
+        
+    </script>
+ 
+			<!--  --------------------------------------- Declare for decision details---------------------------- -->
+ 
+ <div data-role="view" id="drawer-decisiondetails"  data-title="Details">
+    <ul class="colour">
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+    </ul>
+    <header data-role="header">
+        <div data-role="navbar">
+            <a class="decisionhome nav-button" data-align="left" data-role=""><span class="back"></span></a>
+            <span data-role="view-title">Decision</span>
+        </div>
+    </header>
+    <ul id="decisiondetails-listview"></ul>    
+</div>
+ 
+ <!--  --------------------------------------- End Declare for decision details---------------------------- -->
+ 
+<div data-role="view" id="drawer-approvalsdetails" data-init="approvalsdetailsListViewTemplatesInit" data-title="Stance">
+    <ul class="colour">
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+    </ul>
+    <header data-role="header">
+        <div data-role="navbar">
+            <a class="approvalshome nav-button" data-align="left" data-role=""><span class="back"></span></a>
+            <span data-role="view-title">Stance</span>
+        </div>
+    </header>
+    <ul id="approvalsdetails-listview"></ul>    
+</div>
+
+<div data-role="view" id="drawer-approvalsdetailsappr" data-init="approvalsdetailsListViewTemplatesInit" data-title="Approvals">
+    <ul class="colour">
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+    </ul>
+    <header data-role="header">
+        <div data-role="navbar">
+            <a class="approvalshome nav-button" data-align="left" data-role=""><span class="back"></span></a>
+            <span data-role="view-title">Approval</span>
+        </div>
+    </header>
+    <ul id="approvalsdetails-listviewappr"></ul>    
+</div>
+ 
+ <div data-role="view" id="drawer-tasks" data-init="tasksListViewTemplatesInit" data-title="Tasks">
+  <header data-role="header">
+        <div data-role="navbar">
+            <a class="fingertipHome nav-button" data-align="left" data-role=""><span class="back"></span></a>
+            <span data-role="view-title">Approvals</span>
+        </div>
+    </header>
+     <ul class="colour">
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+    </ul>
+     <ul id="tasks-listview"></ul>  
+
+        <script type="text/x-kendo-template" id="tasksListViewTemplate">
+        <div style="padding:5px; font-weight:normal;">
+            <div class="incontentbg retasks"   style="padding:10px; cursor:pointer; border-top:10px solid rgb(15,116,184); padding-left: 0px;" data-taskid=${taskId} data-related=${relatedTo}>
+            <div style="width:80px; text-align:center;">
+                #if(priority == "High"){#
+                    <h3 class="item-title priority-high">${priority}</h3>
+                #}else if(priority == "Normal"){#
+                    <h3 class="item-title priority-normal">${priority}</h3>
+                #}
+                else{#
+                    <h3 class="item-title priority-low">${priority}</h3>
+                #}#
+            </div>
+                <span class="km-off" style="float: right; margin-top:-20px;"></span>
+                <p class="item-info" style="font-weight:bold;">${subject}</p> 
+            </div>
+            <div class="incontentbg">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td width="50%" style="border-top:1px solid lightgrey;border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DUE DATE</p>
+                            <p class="content-color">${duedate}</p>
+                        </td>
+                        <td width="50%" style=" border-top:1px solid lightgrey;border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DEADLINE</p>
+                            #if( deadline == null || deadline == ''  ){# 
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;"> </p>
+                            #}else if( deadline < 0 ){# # deadline = deadline * -1; #
+                               <p style="color:red; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                            #}
+                            else{#
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                            #}#
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" style="border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">STATUS</p> 
+                            <p class="pentasks" style="margin-top: 0px; margin-bottom: 10px;" data-taskid=${taskId}><span id="status-view" style="cursor:pointer;" class="content-color">${status}</span><span class="pen "></span></p>
+                        </td>
+                        <td width="50%" style="border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">CREATED BY</p>
+                            <p class="content-color">${createdbyname}</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+        </div>
+    </script>
+
+       
+
+    <script>
+         
+        var approveComment =''; 
+        var groupedData =  [];
+        function tasksListViewTemplatesInit() { 
+            HomePageMobile.listTasks('All', function(result, event){     
+                groupedData =  removeQuotes(event.result);
+                $("#tasks-listview").kendoMobileListView({
+                dataSource: kendo.data.DataSource.create({data: groupedData,
+                schema: {
+                    model: {
+                        id: "id",
+                          fields: { 
+                               duedate:{type: "datetime" }
+                          }
+                    }
+                }, 
+                group: "letter" , sort: [{ field: "duedate", dir: "asc" }]}),
+                template: $("#tasksListViewTemplate").html(),
+                headerTemplate: ""
+            });            
+         }); 
+        }
+    </script>
+ </div>
+ 
+ <div data-role="view" id="status">
+    <ul id="flat-listview" data-role="listview" data-type="group">
+        <li>
+            <ul>
+                <li>Not Started</li>
+                <li>In Progress</li>
+                <li>Completed</li>
+                <li>Waiting for someone else</li>
+                <li>Deferred</li>
+                <li>Rejected</li>
+                <li>N/A</li>
+            </ul>
+        </li>
+        
+    </ul>
+</div>  
+ 
+ <div data-role="view" id="drawer-tasksdetails" data-init="tasksdetailsListViewTemplatesInit" data-title="Tasks">
+    <header data-role="header">
+        <div data-role="navbar">
+            <a class="taskshome nav-button" data-align="left" data-role=""><span class="back"></span></a>
+            <span data-role="view-title">Tasks</span>
+            <a data-align="right" id="tasksedit" data-role="button">Edit</a>
+        </div>
+    </header>
+        <ul class="colour">
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+        <li class="orange"><span></span></li>
+    </ul>
+    <ul id="tasksdetails-listview"></ul>    
+
+    <script type="text/x-kendo-template" id="tasksdetailsListViewTemplate">
+        <div style="padding:5px; font-weight:normal;">
+            <div  class="incontentbg" style="padding:10px; padding-left: 0px;">
+                <div style="width:80px; text-align:center;">
+                    #if(priority == "High"){#
+                        <h3 class="item-title priority-high">${priority}</h3>
+                    #}else if(priority == "Normal"){#
+                        <h3 class="item-title priority-normal">${priority}</h3>
+                    #}
+                    else{#
+                        <h3 class="item-title priority-low">${priority}</h3>
+                    #}#
+                </div>
+                <p class="item-info" style="font-weight:bold;">${subject}</p>
+            </div>
+            
+            <div class="incontentbg">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td width="50%" style="border-top:1px solid lightgrey;border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DUE DATE</p>
+                            <p class="content-color">${duedate}</p>
+                        </td>
+                        <td width="50%" style=" border-top:1px solid lightgrey;border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">DEADLINE</p>
+                            #if( deadline == null || deadline == ''){# 
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;"> </p>
+                            #}else if( deadline < 0 ){# # deadline = deadline * -1; #
+                               <p style="color:red; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                            #}
+                            else{#
+                               <p style="color:green; margin-top: 0px; margin-bottom: 10px; font-size: 13px;">${deadline} days</p>
+                            #}#
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" style="border-right:1px solid lightgrey; border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">STATUS</p>
+                            <p class="pentasks" style="margin-top: 0px; margin-bottom: 10px;" data-taskid=${taskId}><span id="status-viewin" style="cursor:pointer;" class="content-color">${status}</span> <span class="pen"></span></p>
+                        </td>
+                        <td width="50%" style="border-bottom:1px solid lightgrey; vertical-align: top;">
+                            <p class="subhead">CREATED BY</p>
+                            <p class="content-color">${createdbyname}</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="incontentbg" style="padding:1px; padding-left: 0px;">
+                <p class="subhead">RELATED TO</p>
+                <p class="content-color">${relatedTo}</p>
+            </div>
+            <div style="border-top:1px solid lightgrey"></div>
+            
+            <div class="incontentbg" style="padding:1px; padding-left: 0px;">
+                <p class="subhead">COMMENTS</p>
+                
+                <p class="content-color"><textarea rows="5" id="taskscomments" readonly="true" class="commentbox">${comments}</textarea></p>
+                
+                <div id="commentbuttons" style="padding:10px; display:none; height:30px; padding-top:5px; padding-bottom:5px;"><div id="okbtn" data-taskid=${taskId} class="darkgreybtn">OK</div><div id="cancelbtn" class="lightgreybtn">Cancel</div></div>
+                
+            </div>
+            
+        </div>
+        
+    </script>
+
+    <script>
+        var groupedData2 = [
+            {priority:"High", subject:"MARKETING: Do we need a new Responsive website?", duedate:"17.10.2013 18:00", deadline:"5 Days", status:"In Progress", reqby:"Walter Canchalo"},
+            
+        ];
+
+        function tasksdetailsListViewTemplatesInit() {
+          
+        }
+    </script>
+</div>   
+  
+ <div data-role="drawer" id="my-drawer" style="width: 270px">
+    <ul data-role="listview" data-type="group">
+        <li>
+            <ul>
+                
+                <li data-icon="inbox" onclick="callHome()"><a href="#mainView" data-transition="none">Home</a></li>
+                <li data-icon="sent"><a href="#drawer-approvals" data-transition="none">Approvals </a></li>
+                <li data-icon="star"><a href="#drawer-tasks" data-transition="none">Tasks</a></li>
+                <li data-icon="spam" onclick="logout()"><a data-transition="none">Logout</a></li>
+            </ul>
+        </li>
+     
+    </ul>
+</div>
+
+<!-- Layout -->
+<div data-role="layout" data-id="mainLayout">
+<div data-role="header">
+<div data-role="navbar">
+<!--                      <a data-role="button" data-rel="drawer" href="#my-drawer" data-icon="drawer-button" data-align="left"></a> -->
+<span data-role="view-title"></span>
+</div>
+</div>
+</div>
+<script>
+    var btnclicktxt;
+    var homeJson =    JSON.parse($('<div/>').html('{! JSENCODE(homeJson)}').text()) ; 
+    $('#homeApprovals').html( homeJson.numberOfApprovals +'<div class="fingertop_s_text">'+ 'Approvals | Stances' + '</div>');
+    $('#homeTasks').html( homeJson.numberOfTasks + '<div class="fingertop_s_text">'+ 'Tasks'+ '</div>' );
+     $('#homeDecisions').html('Decisions');
+
+
+   window.app = new kendo.mobile.Application(document.body, { layout: "mainLayout" });
+   //var app = new kendo.mobile.Application(document.body);
+    // remove quate from json string 
+        function removeQuotes(mystring) {
+                
+            newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+            });
+            
+            //var newJ= $.parseJSON(newString);
+            var  newJ = eval ("(" + newString+ ")");
+            return newJ;
+        }
+
+
+                
+       $(function(){       
+       
+            var originalcomment = $("#taskscomments").val();
+            var groupedData34  = [];
+            
+            var penpageid;
+            
+            var clickedliid;
+            var pentaskid;
+                        
+            $(document).on("click", "#status ul li ul li ", function(){
+                
+                if(penpageid == 'drawer-tasks')
+                {
+                    var sstatus = $(this).text();
+                    $("li[data-uid*='"+clickedliid+"']").find("#status-view").html(sstatus);
+                    HomePageMobile.updateTask(penpageid,pentaskid,sstatus,'',function(){ window.location='#drawer-tasks';   });
+                    
+                    
+                   
+                }
+                else{
+                    var sstatus = $(this).text();
+                    $("#status-viewin").html(sstatus);
+                    HomePageMobile.updateTask('drawer-tasks',pentaskid,sstatus,'',function(){  window.location='#drawer-tasksdetails'; });
+                }
+            });
+            
+            $(document).on("click", ".aprrej", function(){
+                var btntext = $(this).text();
+                if(btntext == "Support / Oppose")
+                {
+                    btnclicktxt = "Support";
+                    //$('#drawer-approvalsdetails').attr("data-title","Stance");
+                    //$('#drawer-approvalsdetails div[data-role="navbar"] span[data-role="view-title"]').text("Stance");
+                    //$("#approvalsdetails-listview").data("kendoMobileListView").refresh(); 
+                }
+                else
+                {
+                    btnclicktxt = "Approve";
+                    //$('#drawer-approvalsdetails').attr("data-title","Approval");
+                    //$('#drawer-approvalsdetails div[data-role="navbar"] span[data-role="view-title"]').text("Approval");                     
+                    //$("#approvalsdetails-listview").data("kendoMobileListView").refresh();                    
+                }           
+ 
+
+                if(btntext == "Support / Oppose")
+                {
+                    HomePageMobile.decisionViewMobileData( $(this).attr('data-id'), $(this).attr('data-pid'), function(result, event){ 
+                    groupedData34 =  removeQuotes(event.result);
+                          $("#approvalsdetails-listview").kendoMobileListView({
+                             dataSource: kendo.data.DataSource.create({data: groupedData34,
+                             schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                           duedate:{type: "datetime" }
+                                      }
+                                }
+                             },
+                             group: "letter" }),
+                            template: $("#approvalsdetailsListViewTemplate").html(),
+                            headerTemplate: ""
+                         }); 
+                         window.location='#drawer-approvalsdetails';
+                     });   
+                }
+                else
+                {
+                    HomePageMobile.decisionViewMobileData( $(this).attr('data-id'), $(this).attr('data-pid'), function(result, event){ 
+                    groupedData =  removeQuotes(event.result);
+                          $("#approvalsdetails-listviewappr").kendoMobileListView({
+                            dataSource: kendo.data.DataSource.create({data: groupedData,
+                            schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                           duedate:{type: "datetime" }
+                                      }
+                                }
+                             },                            
+                             group: "letter" }),
+                            template: $("#approvalsdetailsListViewTemplate").html(),
+                            headerTemplate: ""
+                         }); 
+                        window.location='#drawer-approvalsdetailsappr';
+                     });                
+                    
+                }
+                
+            
+            });
+            
+            
+            /******************************************************************** for decision details********************************/
+            
+            
+            $(document).on("click", ".decisionDetails", function(){
+            
+                
+                 HomePageMobile.detailsDecisions( $(this).attr('data-id'), function(result, event){ 
+                    decisonData =  removeQuotes(event.result);
+                   // console.log('decisonData'+JSON.stringify(decisonData));
+                         $("#decisiondetails-listview").kendoMobileListView({
+                            dataSource: kendo.data.DataSource.create({data: decisonData,
+                            schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                           duedate:{type: "datetime" }
+                                      }
+                                }
+                             },
+                            
+                             group: "letter" }),
+                            template: $("#decisionDetailsViewTemplate").html(),
+                            headerTemplate: ""
+                         }); 
+                          window.location='#drawer-decisiondetails';
+                     });
+                
+             });
+            /******************************************************************** End for decision details********************************/
+            
+            
+            /************************************************** For Decision Classic View************************************************/
+            
+            $(document).on("click", ".decisionClassic", function(){
+            
+            		//alert('hhh1');
+            		window.location='/'+$(this).attr('data-id');
+            
+            });
+            
+            /******************************************************************** End for Decision Classic View********************************/
+            
+             
+            $(document).on("click", ".mainaprrej", function(){
+            
+                //$(this).hide();
+                var text = $(".typetext", $( this )).text();
+                
+                if (text == "Support / Oppose")
+                {
+                    btnclicktxt = "Support";
+                    //$('#drawer-approvalsdetails').attr("data-title","Stance");
+                    //$('#drawer-approvalsdetails div[data-role="navbar"] span[data-role="view-title"]').text("Stance");                     
+                    //$("#approvalsdetails-listview").data("kendoMobileListView").refresh();
+                }
+                else
+                {
+                    btnclicktxt = "Approve";
+                    //$('#drawer-approvalsdetails').attr("data-title","Approval");
+                    //$('#drawer-approvalsdetails div[data-role="navbar"] span[data-role="view-title"]').text("Approval");                     
+                    //$("#approvalsdetails-listview").data("kendoMobileListView").refresh();
+                }
+
+
+                if(text == "Support / Oppose")
+                {
+                    
+                    HomePageMobile.decisionViewMobileData( $(this).attr('data-id'), $(this).attr('data-pid'), function(result, event){ 
+                    groupedData =  removeQuotes(event.result);
+                          $("#approvalsdetails-listview").kendoMobileListView({
+                            dataSource: kendo.data.DataSource.create({data: groupedData,
+                            schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                           duedate:{type: "datetime" }
+                                      }
+                                }
+                             },
+                            
+                             group: "letter" }),
+                            template: $("#approvalsdetailsListViewTemplate").html(),
+                            headerTemplate: ""
+                         }); 
+                          window.location='#drawer-approvalsdetails';
+                     });   
+                     
+                }
+                else
+                {
+                    HomePageMobile.decisionViewMobileData( $(this).attr('data-id'), $(this).attr('data-pid'), function(result, event){ 
+                    groupedData =  removeQuotes(event.result);
+                          $("#approvalsdetails-listviewappr").kendoMobileListView({
+                            dataSource: kendo.data.DataSource.create({data: groupedData,
+                            schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                           duedate:{type: "datetime" }
+                                      }
+                                }
+                             },
+                            
+                             group: "letter" }),
+                            template: $("#approvalsdetailsListViewTemplate").html(),
+                            headerTemplate: ""
+                         }); 
+                          window.location='#drawer-approvalsdetailsappr';
+                     });    
+                }
+            
+            });
+            
+            $(document).on("click", ".retasks", function(){
+                HomePageMobile.viewTask($(this).attr('data-taskid'),$(this).attr('data-related'),function(result, event){
+                    groupedData = removeQuotes(event.result);
+                    $("#tasksdetails-listview").kendoMobileListView({
+                        dataSource: kendo.data.DataSource.create({data: groupedData,
+                        schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                           duedate:{type: "datetime" }
+                                      }
+                                }
+                             },
+                        group: "letter", sort: [{ field: "deadline", dir: "asc" }]}),
+                        template: $("#tasksdetailsListViewTemplate").html(),
+                        headerTemplate: ""
+                    });
+                    window.location='#drawer-tasksdetails';
+                });
+            
+            });
+            
+            $(document).on("click", ".approvalshome", function(){
+                //$(this).hide();
+                window.location='#drawer-approvals';
+            
+            });
+            
+            $(document).on("click", ".decisionhome", function(){
+                //$(this).hide();
+                window.location='#drawer-decisions';
+            
+            });
+            
+            
+            
+             $(document).on("click", ".fingertipHome", function(){
+                //$(this).hide();
+                
+                  window.top.location.href ="/apex/fingertipmobileview#/";
+            
+            });
+             
+            $(document).on("click", ".taskshome", function(){
+                //$(this).hide();
+                window.location='#drawer-tasks';
+            
+            });
+        
+            $(document).on("click", ".approvals-home", function(){
+                //$(this).hide();
+                window.location='#drawer-approvals'; 
+            
+            });
+            
+             $(document).on("click", ".decision-home", function(){
+                //$(this).hide();
+             //   alert('hh');
+                window.location='#drawer-decisions'; 
+            
+            });
+            
+            $(document).on("click", ".tasks-home", function(){
+                //$(this).hide();
+                window.location='#drawer-tasks';
+            
+            });
+            
+            $(document).on("click", "#okbtn", function(){
+            originalcomment = $("#taskscomments").val();
+             
+            HomePageMobile.updateTask('',$(this).attr('data-taskid'),'',originalcomment,function(event,result){   
+                 $("#taskscomments").removeClass("commentedit").addClass("commentbox");
+                 $("#taskscomments").attr("readonly",true);
+                 $("#commentbuttons").hide(); 
+                  
+             });
+            
+            });
+            
+            $(document).on("click", "#cancelbtn", function(){
+            $("#taskscomments").val(originalcomment);
+            $("#taskscomments").removeClass("commentedit").addClass("commentbox");
+            $("#taskscomments").attr("readonly",true);
+            $("#commentbuttons").hide();
+            });
+            
+            $(document).on("click", "#tasksedit", function(){
+            $("#taskscomments").removeClass("commentbox").addClass("commentedit");
+            $("#taskscomments").attr("readonly",false);
+            $("#commentbuttons").show();
+            });
+            
+           $(document).on("click", ".pentasks", function(){
+                clickedliid= $(this).closest('li').attr('data-uid');
+                penpageid = $(this).closest('ul').closest('div').parent().parent().parent().attr('id');
+                pentaskid = $(this).attr('data-taskid')
+                window.location='#status';
+            
+            });
+           
+           
+            $(document).on("click", ".detailsDiv", function(){
+            
+                var self = $(this);
+                
+                var isVisible = self.siblings(".accordian").is(":visible");
+                
+                if(isVisible){
+                    $(this).siblings(".accordian").slideUp("slow", function(){
+                    $(".detailsSpan").removeClass("downArrow").addClass("upArrow");
+                         
+                        
+                    });
+                    
+                }else{
+                    $(this).siblings(".accordian").slideDown("slow", function(){
+                        //change arrow here- up arrow
+                        $(".detailsSpan").removeClass("upArrow").addClass("downArrow");
+                        
+                    });
+                }
+                
+            
+            });
+        });
+          
+        function  approvedReject(decisionId,ProcessId,action){   
+             
+            HomePageMobile.approvedReject(decisionId,ProcessId,action ,approveComment, function(result, event){ 
+                     groupedData =  removeQuotes(event.result);
+                      $("#approvals-listview").kendoMobileListView({ 
+                        dataSource: kendo.data.DataSource.create({data: groupedData,
+                        
+                        schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                           duedate:{type: "datetime" }
+                                      }
+                                }
+                             },
+                        group: "letter", sort: [{ field: "deadline", dir: "asc" }]}),
+                        template: $("#approvalsListViewTemplate").html(),
+                        headerTemplate: ""
+                     }); 
+                      var listView = $("#approvals-listview").data("kendoMobileListView");
+                      listView.destroy();
+                      window.location='#drawer-approvals';
+                 }); 
+        }
+        
+        function updateApproval()
+        {       
+                    var groupedData =  [];
+                    var dueDate = document.getElementById('Due Date').value;
+                    HomePageMobile.listApprovals(dueDate, function(result, event){     
+                        groupedData =  removeQuotes(event.result);
+                        $("#approvals-listview").kendoMobileListView({
+                        dataSource: kendo.data.DataSource.create({data: groupedData,
+                        schema: {
+                                model: {
+                                    id: "id",
+                                      fields: { 
+                                          duedate:{type: "datetime" }
+                                      }
+                                }
+                             },
+                        
+                        group: "letter", sort: [{ field: "deadline", dir: "asc" }]}),
+                        template: $("#approvalsListViewTemplate").html(),
+                        headerTemplate: "" 
+                    });              
+                 });  
+                
+        }  
+        function callHome() 
+        {      $('#homeApprovals').html( '');
+               $('#homeTasks').html( ''); 
+               HomePageMobile.homePageData('All',function(result, event){
+               var homeJson = removeQuotes(event.result);  
+               $('#homeApprovals').html( homeJson.numberOfApprovals +' Approvals');
+               $('#homeTasks').html( homeJson.numberOfTasks + ' Tasks');
+            
+            });
+        }
+        function logout() 
+        {        
+           document.getElementById('logoutframe').src = "/secur/logout.jsp"; 
+          
+           setTimeout(function(){ window.location.href="http://fingertip1.cloudforce.com" ;  },3000);
+           
+        }
+</script>    
+
+</body> 
+</html>
+
+</apex:page>

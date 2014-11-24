@@ -1,0 +1,254 @@
+<apex:page contentType="text/css" showHeader="false" cache="false" sidebar="false">
+ 
+ /* ========== Charts
+   ================================ */
+   
+.home-tbl{
+    width: 100%;
+} 
+.chart-cell{
+    width: 33%;
+    min-width: 310px;
+}  
+.chart-cell a{
+    text-decoration: none;
+}
+.tabs-block-left h3{
+    margin: 0 !important;
+}
+#Decision, #DecisionProgress, #DecisionUserCreatedBy{
+   margin: 0 auto;
+   width: 300px;
+   height: 250px;
+}
+
+.overLay{
+	width:194px;
+   	height:auto;
+   	background-color:#333;
+   	border:2px solid; 
+   	border-color:#999;
+   	border-radius: 5px;
+   	margin: 0px -2px;
+   	z-index:10001;
+   	position: absolute;
+}
+.approvalIcon{
+	 background: url("{!URLFOR($Resource.Images, 'common/image-decisionApproval-51x28.png')}") 0 0 repeat-x;
+	 width:51px;
+	 height:28px;
+	 margin: 3px auto;
+	 text-align:center;
+	 cursor : pointer;
+}
+.stanceIcon{
+	 background: url("{!URLFOR($Resource.Images, 'common/image-personalStance-51x28.png')}") 0 0 repeat-x;
+	 width:51px;
+	 height:28px;
+	 margin: 3px auto;
+	 text-align:center;
+	 cursor : pointer;
+}
+.roleIcon{
+	 background: url("{!URLFOR($Resource.Images, '/home/image-roleAccepatnce-51x28.png')}") 0 0 repeat-x;
+	 width:51px;
+	 height:28px;
+	 margin: 3px auto;
+	 text-align:center;
+	 cursor: pointer;
+	 position: absolute;
+	 margin-left: 130px;
+	 margin-top: -6px;
+	 cursor : pointer;
+}
+ /* ========== Tables
+   ================================ */
+body a, body td{
+    color: #222;
+}   
+.home-cell-left{
+    width: 50%;
+    vertical-align: top;
+    padding-right: 5px;
+}
+.home-cell-right{
+    width: 50%;
+    vertical-align: top;
+    padding-left: 5px;
+}
+.home-table-wrap{
+    margin-top: 20px;
+    height: auto;
+    overlow: hidden;
+}
+.home-app-rej{
+    cursor: pointer;
+}   
+.modal-textarea{
+    width: 590px;
+    height: 80px;
+}
+#decision-footer-approve{
+    text-align: center;
+}
+#approve-header{
+    color: #222222; 
+    font-weight: bold;
+    padding: 10px 0 0 10px;;
+    display:none;
+}
+.fade-white{
+    background: #fff !important;
+    opacity: 0.1 !important;
+    filter: alpha(opacity=10) !important;
+}
+.home-btn{
+    margin: 1px;
+    padding: 2px 3px;
+    height: 24px;
+    border-radius: 3px;
+    border: 1px solid #B5B5B5;
+    border-bottom-color: #7F7F7F;
+    color: #333;
+    font-weight: bold;
+    font-size: 11px;
+    background: url("{!URLFOR($Resource.Images, 'home/image-btnBackground-1x60.png')}") 0 0 repeat-x;
+}
+.home-btn:hover{
+    background-position: 0 -30px;
+}
+.home-hidden-field{
+    display: none;
+}
+#processInstanceId, #decisionId, #typeOfApproval, #decisionHidden{
+    display: none;
+}
+.urgent-right{
+    height: 34px;
+    width:381px;
+}
+#chooseTime{
+font-size:11px; 
+}
+.urgent-sel{
+    margin: 0px 20px 0 0;
+}
+.urgent-search{
+    margin-right: 20px;
+}
+.search-urgent{
+    width: 32px;
+    height: 32px;
+    margin-right:5px;
+    background: url("{!URLFOR($Resource.Images, 'common/image-searchButton-sprite-32x64.png')}") 0 0 no-repeat;
+}
+.search-urgent:hover{
+    background-position: 0 -32px;
+}
+.search-input{
+    height: 16px;
+}
+.cursor-default 
+{
+cursor: default;
+}
+.home-font{  
+font-size:11px;
+}
+/* ========== Tab
+   ================================ */
+.ui-tabs-nav{
+    background: #f8f8f8 !important;
+}
+
+/* ========== Popup Styling for IE
+   ================================ */
+.modal-window-approve{
+    border: 2px solid #fff;
+}
+
+#vetorejection-footer{
+    height: auto;
+    overflow: hidden;
+    text-align: center;
+}
+#vetorejection-header{  
+    padding: 10px 0 0 10px;
+    font-weight: bold;
+    color: #222;   
+}
+#searchUrgentTable{
+font-size:11px;
+width:124px;
+margin-right:2px;
+}
+
+//======= custom scroll bar ==========//
+
+.decisionTopBorder{
+    border-top-color: #333333;
+}
+.decisionBottomBorder{
+    border-bottom-color: #333333;
+}
+.moodClass0{
+     width: 12px;
+     height: 12px; 
+     background: url("{!URLFOR($Resource.Images, 'common/icon-planMoodSprite-12x72.png')}") 0px -60px no-repeat; 
+ }
+  .moodClass1{
+     width: 12px;
+     height: 12px;
+     background: url("{!URLFOR($Resource.Images, 'common/icon-planMoodSprite-12x72.png')}") 0px 0px no-repeat; 
+ }
+ .moodClass2{
+     width: 12px;
+     height: 12px;
+     background: url("{!URLFOR($Resource.Images, 'common/icon-planMoodSprite-12x72.png')}") 0px -12px no-repeat; 
+ }
+ .moodClass3{
+     width: 12px;
+     height: 12px;
+     background: url("{!URLFOR($Resource.Images, 'common/icon-planMoodSprite-12x72.png')}") 0px -24px no-repeat; 
+ }
+ .moodClass4{
+     width: 12px;
+     height: 12px;
+     background: url("{!URLFOR($Resource.Images, 'common/icon-planMoodSprite-12x72.png')}") 0px -36px no-repeat; 
+ }
+ .moodClass5{
+     width: 12px;
+     height: 12px;
+     background: url("{!URLFOR($Resource.Images, 'common/icon-planMoodSprite-12x72.png')}") 0px -48px no-repeat; 
+ }
+.k-state-selected, .k-list>.k-state-selected, .k-list>.k-state-focused, .k-panelbar .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover{
+    background-color: #999;
+	border-color: #999;
+    }
+ .k-state-selected, .k-state-selected:link, .k-list > .k-state-selected, .k-list > .k-state-focused, .k-list > .k-state-highlight, .k-panel > .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal {
+    	background-color: #999 !important;
+		border-color: #999 !important;
+}
+div.k-window-content{
+	padding: 0px !important;
+	border: 0px !important;
+}
+ .k-window-titlebar {
+	 min-height: 24px !important;    
+	 line-height: 1.6em;
+	 font-size: 1.1em;
+     border: 0px !important;
+	 background: url("{!URLFOR($Resource.Images, 'common/image-modalHead-1x38.jpg')}") repeat-x !important;
+ }
+  .k-window-title {
+     font-size: 1em;
+     top: 7px;
+     font-weight: bold;
+     cursor: move;
+     margin-left: 0.5em;
+ }    
+ .k-state-focused{
+ 	border-color:#ccc !important;
+ 	background-color:#fff;
+ } 
+</apex:page>

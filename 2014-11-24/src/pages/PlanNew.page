@@ -1,0 +1,137 @@
+<apex:page standardController="Plan__c" id="mainPage" extensions="PlanNew">
+<html>
+    <head>
+        <meta http-equiv="Content-Script-Type" content="text/javascript" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+       
+        <!--------- FT Stylesheets ----------->
+        <apex:stylesheet value="{!$Page.CommonStyles}" />
+        <apex:stylesheet value="{!$Page.PlanStyles}" />
+        <apex:stylesheet value="{!$Page.OverrideStyles}" />
+        
+        <!-- Javascript file -->
+        <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/> 
+        
+        <!--------- FT Scripts ----------->
+        <apex:includeScript value="{!$Page.CommonScripts}" />
+
+        <script>
+            $(document).ready(function(){
+                changeFooterText();
+            });
+            
+            function count(txt){
+                if(txt.value.length > 255)
+                    return false;
+                return true;
+            }
+             
+            function validateForm(){
+                var descLength = document.getElementById('mainPage:form:planDesc').value;
+                if(descLength.length > 255){
+                    alert('Plan description cannot be more than 255 chars');
+                    return false;
+                }
+                return true;
+            } 
+        </script>
+        <c:WalkMeAndSupportButton />
+    </head>
+    <body>
+    <apex:form id="form">
+        <!------------ Content -------------->
+        <div class = "wrapper">
+                <!------------ Page Header -------------->
+            <div class = "page-head">
+                <div class = "object-icon ft-left">
+                    <img src = "{!URLFOR($Resource.Images, 'plan/Fingertip_plan_icon_32x32.png')}" />
+                </div>
+                <div class = "headers ft-left">
+                    <span class = "page-subhead ft-left">Plan</span><br />
+                    <h2>New Plan</h2>
+                </div>
+            </div>
+                <!------------ End Page Header -------------->
+                <!------------ Page Block -------------->
+            <div class = "sf-page-block border-pink">
+               <!------------ Page Block Head -------------->
+                <div class = "page-block-head">
+                   <div class = "ft-left"><h3>Plan Edit</h3></div>
+                   <apex:commandButton action="{!save}" onclick="return validateForm()" value="Save" styleClass="k-button"/>
+                   <apex:commandButton action="{!customCancel}" value="Cancel" immediate="true" styleClass="k-button"/>
+                </div>
+                <!------------ Page Block Body -------------->
+                <div class = "page-block-body">
+                    <!------------ General Section (Removed the assigned to & private field)-------------->
+                    <div class = "section-head section-head-pink">
+                        <h3>General</h3>
+                    </div>
+                    <table cellspacing = "0" cellpadding = "0" class = "page-block-tbl">
+                        <tr>
+                            <td class = "cell-left"> <apex:outputLabel value="Subject" /> </td>
+                            <td class = "cell-right required-input"> 
+                                <apex:inputField styleClass="plan-input-text" value="{!planNew.Name}" required="true" /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left"> <apex:outputLabel value="Description" /> </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField styleClass="plan-input-textarea" id="planDesc"  onkeypress="return count(this)" value="{!planNew.Description__c}"/><br/>
+                                <strong>Max 255 chars.</strong> 
+                            </td>
+                        </tr>  
+                    </table>                
+                    <!------------ General Section -------------->
+                    <!------------ Other Information Section -------------->
+                    <div class = "section-head section-head-pink">
+                        <h3>Other Information</h3>
+                    </div>
+                    <table cellspacing = "0" cellpadding = "0" class = "page-block-tbl">
+                    	<tr>
+                            <td class = "cell-left"> <apex:outputLabel value="All Day Event" /> </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!planNew.All_Day_Event__c}"/> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left"> <apex:outputLabel value="Start" /> </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!planNew.Start_Time__c}"/> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left"> <apex:outputLabel value="End" /> </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!planNew.End_Time__c}"/> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left"> <apex:outputLabel value="Location" /> </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField styleClass="plan-input-text" value="{!planNew.Location__c}"/> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "cell-left"> <apex:outputLabel value="Show Time As" /> </td>
+                            <td class = "cell-right"> 
+                                <apex:inputField value="{!planNew.Show_Time_As__c}"/> 
+                            </td>
+                        </tr>                        
+                    </table>
+                    <!------------ End Other Information Section -------------->
+                </div>
+                <!------------ End Page Block Body -------------->
+                <!------------ Page Block Bottom -------------->                
+                <div class = "page-block-bottom">                    
+                   <apex:commandButton action="{!save}" onclick="return validateForm()" value="Save" styleClass="k-button"/>
+                   <apex:commandButton action="{!customCancel}" value="Cancel" immediate="true" styleClass="k-button"/>            
+                </div>
+                <!------------ End Page Block Bottom -------------->
+            </div> 
+                <!------------ End Page Block -------------->   
+        </div>
+            <!------------ End Content -------------->
+    </apex:form>
+    </body>
+</html>        
+</apex:page>

@@ -1,0 +1,159 @@
+ WARN [2014-11-24 15:05:40,607] (ComponentFactory.java:getComponentBean:1145) - Unable to get component for id 'ExternalDataSource': Unable to get bean for id 'ExternalDataSource'
+ WARN [2014-11-24 15:05:40,652] (ComponentFactory.java:getComponentBean:1145) - Unable to get component for id 'SamlSsoConfig': Unable to get bean for id 'SamlSsoConfig'
+ WARN [2014-11-24 15:05:42,974] (ComponentFactory.java:getComponentBean:1145) - Unable to get component for id 'ExternalDataSource': Unable to get bean for id 'ExternalDataSource'
+ WARN [2014-11-24 15:05:43,043] (ComponentFactory.java:getComponentBean:1145) - Unable to get component for id 'SamlSsoConfig': Unable to get bean for id 'SamlSsoConfig'
+ERROR [2014-11-24 15:05:53,218] (PackageManifestFactory.java:getPackageManifest:114) - Unable to create package manifest
+java.lang.ClassCastException: com.salesforce.ide.api.metadata.types.Metadata$JaxbAccessorF_fullName cannot be cast to com.sun.xml.internal.bind.v2.runtime.reflect.Accessor
+	at com.sun.xml.internal.bind.v2.runtime.reflect.opt.OptimizedAccessorFactory.instanciate(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.reflect.opt.OptimizedAccessorFactory.get(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.reflect.Accessor$FieldReflection.optimize(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.property.SingleElementLeafProperty.<init>(Unknown Source)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.property.PropertyFactory.create(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.ClassBeanInfoImpl.<init>(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl.getOrCreate(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.ClassBeanInfoImpl.<init>(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl.getOrCreate(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.ClassBeanInfoImpl.<init>(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl.getOrCreate(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl.<init>(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl.<init>(Unknown Source)
+	at com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl$JAXBContextBuilder.build(Unknown Source)
+	at com.sun.xml.internal.bind.v2.ContextFactory.createContext(Unknown Source)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at javax.xml.bind.ContextFinder.newInstance(Unknown Source)
+	at javax.xml.bind.ContextFinder.newInstance(Unknown Source)
+	at javax.xml.bind.ContextFinder.find(Unknown Source)
+	at javax.xml.bind.JAXBContext.newInstance(Unknown Source)
+	at javax.xml.bind.JAXBContext.newInstance(Unknown Source)
+	at com.salesforce.ide.core.factories.PackageManifestFactory.parsePackageManifest(PackageManifestFactory.java:957)
+	at com.salesforce.ide.core.factories.PackageManifestFactory.getPackageManifest(PackageManifestFactory.java:112)
+	at com.salesforce.ide.core.factories.PackageManifestFactory.getPackageManifest(PackageManifestFactory.java:142)
+	at com.salesforce.ide.core.factories.PackageManifestFactory.getPackageManifestForComponentTypes(PackageManifestFactory.java:889)
+	at com.salesforce.ide.core.services.PackageRetrieveService.retrieveSelective(PackageRetrieveService.java:741)
+	at com.salesforce.ide.core.project.ProjectController.fetchComponents(ProjectController.java:586)
+	at com.salesforce.ide.ui.wizards.project.ProjectCreateOperation.fetchComponents(ProjectCreateOperation.java:180)
+	at com.salesforce.ide.ui.wizards.project.ProjectCreateOperation.fetchComponents(ProjectCreateOperation.java:171)
+	at com.salesforce.ide.ui.wizards.project.ProjectCreateOperation.execute(ProjectCreateOperation.java:105)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation$1.run(WorkspaceModifyOperation.java:106)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:1800)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:118)
+	at org.eclipse.jface.operation.ModalContext.runInCurrentThread(ModalContext.java:464)
+	at org.eclipse.jface.operation.ModalContext.run(ModalContext.java:372)
+	at org.eclipse.jface.dialogs.ProgressMonitorDialog.run(ProgressMonitorDialog.java:507)
+	at com.salesforce.ide.ui.wizards.project.ProjectCreateOperation.create(ProjectCreateOperation.java:64)
+	at com.salesforce.ide.ui.wizards.project.ProjectCreateWizard.createProject(ProjectCreateWizard.java:122)
+	at com.salesforce.ide.ui.wizards.project.ProjectCreateWizard.performFinish(ProjectCreateWizard.java:96)
+	at org.eclipse.jface.wizard.WizardDialog.finishPressed(WizardDialog.java:752)
+	at org.eclipse.jface.wizard.WizardDialog.buttonPressed(WizardDialog.java:373)
+	at org.eclipse.jface.dialogs.Dialog$2.widgetSelected(Dialog.java:624)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:228)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1003)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3910)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3503)
+	at org.eclipse.jface.window.Window.runEventLoop(Window.java:825)
+	at org.eclipse.jface.window.Window.open(Window.java:801)
+	at org.eclipse.ui.internal.handlers.WizardHandler$New.executeHandler(WizardHandler.java:253)
+	at org.eclipse.ui.internal.handlers.WizardHandler.execute(WizardHandler.java:273)
+	at org.eclipse.ui.internal.handlers.HandlerProxy.execute(HandlerProxy.java:294)
+	at org.eclipse.core.commands.Command.executeWithChecks(Command.java:476)
+	at org.eclipse.core.commands.ParameterizedCommand.executeWithChecks(ParameterizedCommand.java:508)
+	at org.eclipse.ui.internal.handlers.HandlerService.executeCommand(HandlerService.java:169)
+	at org.eclipse.ui.internal.handlers.SlaveHandlerService.executeCommand(SlaveHandlerService.java:241)
+	at org.eclipse.ui.internal.actions.CommandAction.runWithEvent(CommandAction.java:157)
+	at org.eclipse.ui.internal.actions.CommandAction.run(CommandAction.java:171)
+	at org.eclipse.ui.actions.NewWizardDropDownAction.run(NewWizardDropDownAction.java:174)
+	at org.eclipse.jface.action.Action.runWithEvent(Action.java:498)
+	at org.eclipse.jface.action.ActionContributionItem.handleWidgetSelection(ActionContributionItem.java:584)
+	at org.eclipse.jface.action.ActionContributionItem.access$2(ActionContributionItem.java:501)
+	at org.eclipse.jface.action.ActionContributionItem$6.handleEvent(ActionContributionItem.java:452)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1003)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3910)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3503)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2405)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2369)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2221)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:500)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:493)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:113)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:194)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:368)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:559)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:514)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
+ WARN [2014-11-24 15:06:01,567] (IntroEditorInput.java:loadDocument:130) - org.xml.sax.SAXParseException; lineNumber: 149; columnNumber: 32; The entity name must immediately follow the '&' in the entity reference.
+ WARN [2014-11-24 15:06:07,822] (ConnectionFactory.java:clearCache:212) - Clearing the following cached connections
+ WARN [2014-11-24 15:06:07,872] (DescribeObjectRegistry.java:clearCache:654) - No cached describes
+ WARN [2014-11-24 15:06:07,906] (MetadataFactory.java:clearCache:123) - Clearing the following cached metadata stubs
+ WARN [2014-11-24 15:11:57,146] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S91_for_Windows_oauth/ConnectivityDevConfigs/S91_for_Windows_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,212] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S91_for_Windows_oauth/modules/sf_chttr_apps__S91_for_Windows_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,270] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Salesforce1_for_Windows', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,321] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Dataloader_Bulk_oauth/ConnectivityDevConfigs/Dataloader_Bulk_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,372] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Dataloader_Bulk_oauth/modules/sf_com_apps__Dataloader_Bulk_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,423] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Dataloader_Bulk', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,514] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Dataloader_P5r_oauth/ConnectivityDevConfigs/Dataloader_P5r_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,566] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Dataloader_P5r_oauth/modules/sf_com_apps__Dataloader_P5r_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,621] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Dataloader_Partner', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,683] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Forcecom_IDE_oauth/ConnectivityDevConfigs/Forcecom_IDE_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,734] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Forcecom_IDE_oauth/modules/sf_com_apps__Forcecom_IDE_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,786] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Forcecom_IDE', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,837] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Forcecom_Migration_Tool_oauth/ConnectivityDevConfigs/Forcecom_Migration_Tool_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,889] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Forcecom_Migration_Tool_oauth/modules/sf_com_apps__Forcecom_Migration_Tool_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:57,940] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Forcecom_Migration_Tool', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,061] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_M4e_Dashboards_oauth/ConnectivityDevConfigs/S8e_M4e_Dashboards_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,138] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_M4e_Dashboards_oauth/modules/sf_com_apps__S8e_M4e_Dashboards_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,190] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Salesforce_Mobile_Dashboards', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,241] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_T3h_oauth/ConnectivityDevConfigs/S8e_T3h_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,293] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_T3h_oauth/modules/sf_com_apps__S8e_T3h_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,345] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Salesforce_Touch', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,399] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_for_Outlook_oauth/ConnectivityDevConfigs/S8e_for_Outlook_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,452] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_for_Outlook_oauth/modules/sf_com_apps__S8e_for_Outlook_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,506] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Salesforce_for_Outlook', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,561] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Workbench_oauth_c4s/Canvases/Workbench_oauth_c4sCanvas.Canvas', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,616] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Workbench_oauth_c4s/modules/sf_com_apps__Workbench_oauth_c4s', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,669] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Workbench_oauth/ConnectivityDevConfigs/Workbench_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,723] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/Workbench_oauth/modules/sf_com_apps__Workbench_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,775] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Workbench', tagging as component of type 'Unknown'
+ERROR [2014-11-24 15:11:58,827] (ProjectPackageList.java:generateComponents:473) - Filepath-zip mapping is null or empty for package 'Salesforce Connected Apps' [0A3O00000000TZgKAM] - skipping component generation
+ WARN [2014-11-24 15:11:58,907] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_Desktop_oauth/ConnectivityDevConfigs/C5r_Desktop_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:58,965] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_Desktop_oauth/modules/sf_chttr_apps__C5r_Desktop_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,024] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Chatter_Desktop', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,089] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_Android_oauth_android/AndroidPushApplicationSetup/C5r_for_Android_oauth_androidAndroidPushApplicationSetup.AndroidPushApplicationSetup', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,149] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_Android_oauth_android/modules/sf_chttr_apps__C5r_for_Android_oauth_android', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,214] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_Android_oauth/ConnectivityDevConfigs/C5r_for_Android_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,276] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_Android_oauth/modules/sf_chttr_apps__C5r_for_Android_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,332] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Chatter_for_Android', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,385] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_BlackBerry_oauth/ConnectivityDevConfigs/C5r_for_BlackBerry_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,440] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_BlackBerry_oauth/modules/sf_chttr_apps__C5r_for_BlackBerry_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,494] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Chatter_for_BlackBerry', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,552] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_iOS_oauth_apple/ApplePushApplicationSetup/C5r_for_iOS_oauth_appleApplePushApplicationSetup.ApplePushApplicationSetup', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,618] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_iOS_oauth_apple/modules/sf_chttr_apps__C5r_for_iOS_oauth_apple', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,678] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_iOS_oauth/ConnectivityDevConfigs/C5r_for_iOS_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,742] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/C5r_for_iOS_oauth/modules/sf_chttr_apps__C5r_for_iOS_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,800] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Chatter_for_iOS', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,855] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_C8x_oauth/ConnectivityDevConfigs/S8e_C8x_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,910] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S8e_C8x_oauth/modules/sf_chttr_apps__S8e_C8x_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:11:59,964] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/Salesforce_Chatterbox', tagging as component of type 'Unknown'
+ERROR [2014-11-24 15:12:00,020] (ProjectPackageList.java:generateComponents:473) - Filepath-zip mapping is null or empty for package 'Salesforce1 and Chatter Apps' [0A3900000001OMPCA2] - skipping component generation
+ WARN [2014-11-24 15:12:00,074] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S9A_oauth/ConnectivityDevConfigs/S9A_oauth_devConfig.ConnectivityDevConfig', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:12:00,128] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'modules/S9A_oauth/modules/sf_chttr_apps__S9A_oauth', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:12:00,183] (ComponentFactory.java:getComponentByFilePath:613) - No id found for filepath 'applicationManifests/SalesforceA', tagging as component of type 'Unknown'
+ WARN [2014-11-24 15:12:01,072] (ProjectPackageList.java:saveResources:1153) - Component list in project package 'Salesforce Connected Apps' is empty.  No resources to save.
+ WARN [2014-11-24 15:12:02,658] (ProjectPackageList.java:saveResources:1153) - Component list in project package 'Salesforce1 and Chatter Apps' is empty.  No resources to save.

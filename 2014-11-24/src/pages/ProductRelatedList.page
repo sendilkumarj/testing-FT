@@ -1,0 +1,3 @@
+<apex:page standardController="Product2" sidebar="false" showHeader="false">
+    <c:CustomRelatedList objType="Product2" recId="{!Product2.Id}" recName="{!Product2.Name}" />
+</apex:page>

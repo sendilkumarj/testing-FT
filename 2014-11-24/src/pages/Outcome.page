@@ -1,0 +1,85 @@
+<apex:page controller="Outcome">
+<html>
+    <head> 
+        <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/>  
+        <!-- Kendo Library -->
+        <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/>         
+        <!--<apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo-theme.css')}"/>    -->
+        
+        <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/kendo.all.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/>
+        
+        <!--------- FT Stylesheets ----------->
+            
+        <apex:stylesheet value="{!$Page.HomeStyles}" />
+        
+        <!--------- FT Scripts ----------->
+        
+        <apex:includeScript value="{!$Page.CommonScripts}" />
+    </head>
+    <body>
+         <div id="outcomeScatter" class="k-content">
+            <div class="chart-wrapper">
+                <div id="chart"></div>
+            </div>
+            <script>
+            
+                $(document).ready(function(){
+                    createChart();
+                    changeFooterText();
+                });
+                function createChart() {
+                
+                    $("#chart").kendoChart({
+                        theme: $(document).data("kendoSkin") || "blueOpal",
+                        title: {
+                            text: "Outcome Ratio"
+                        },
+                        legend: {
+                            visible: false
+                        },
+                        dataSource: {
+                            data: $.parseJSON('{!JSENCODE(outcomeJSON)}')
+                        },
+                        seriesDefaults: {
+                            type: "scatter"
+                        },
+                        series: [{
+                            xField: "xAxis",
+                            yField: "yAxis"
+                        }],
+                        xAxis: {
+                            min: 0,
+                            max: 5,
+                            labels: {
+                                format: "{0}"
+                            },
+                            title: {
+                                text: "Effort"
+                            }
+                        },
+                        yAxis: {
+                            min: 0,
+                            max: 5,
+                            labels: {
+                                format: "{0}"
+                            },
+                            title: {
+                                text: "Result"
+                            }
+                        },
+                        tooltip: {
+                            visible: true,
+                            template: "#: dataItem.decision#"
+                        }
+                    });
+                }
+            </script>
+        </div>
+    </body>
+</html>
+ 
+</apex:page>

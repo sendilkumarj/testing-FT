@@ -1,0 +1,81 @@
+<apex:page showHeader="false" sidebar="false" standardcontroller="Decision__c" extensions="SF1_AddEditPeople" docType="html-5.0"  standardStyleSheets="false">
+I am here 
+<!--	<html>-->
+<!--		<head>-->
+<!--		    <title></title>		    -->
+		    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/jquery.min.js')}"/> 
+<!--			<meta name="viewport" content="width=device-width, initial-scale=1"/>-->
+<!--    		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+<!--    		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />    		-->
+<!--			<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>-->
+<!--			-->
+<!--			<style>-->
+<!--				.ui-loader .ui-icon-loading {-->
+<!--					background-color: rgba(0, 0, 0, 0) !important;-->
+<!--					}-->
+<!--			</style>-->
+<!--			 <script>-->
+<!--			       -->
+<!--			        var idString;-->
+<!--			        var checkBoxElements;-->
+<!--			 -->
+<!--			        function addPeopleJS(){-->
+<!--			        	-->
+<!--			            idString = '';    -->
+<!--			            checkBoxElements = $(".pplCheckbox:checked");-->
+<!--			 -->
+<!--			            //Find all selected check boxes and add Account Id to comma seperated string -->
+<!--			            checkBoxElements.each(function(e){-->
+<!--			                idString += $(this).attr('data-id') + ',';-->
+<!--			            });-->
+<!--			 			//alert('here'+idString);-->
+<!--			 			-->
+<!--			            if(idString){ //if idString has a value do this-->
+<!--			               //Call Remote  Action function above-->
+<!--			                Visualforce.remoting.Manager.invokeAction(-->
+<!--					        '{!$RemoteAction.SF1_AddEditPeople.addCollaborator}',-->
+<!--					        idString,'{!decisionId}',-->
+<!--					        function(result, event){-->
+<!--					          //  alert(event.status ? 'Success' : event.message);-->
+<!--					         // sforce.one.navigateToSObject('{!decisionId}','Decision__c');-->
+<!--					          //window.location = "{!URLFOR($Action.Decision__c.View, Decision__c.Id)}";-->
+<!--					          history.back(1);-->
+<!--					          -->
+<!--					        });-->
+<!--			            }-->
+<!--			        }-->
+<!--			        function goBack(){-->
+<!--			        	 window.history.back(-1)  -->
+<!--			        }-->
+<!-- -->
+<!--   			 </script>-->
+<!--    	</head>-->
+<!--		<body>-->
+<!--			<div data-role="page">-->
+<!--				<div data-role="header">-->
+<!--					  <a href="#" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" onclick="goBack();" data-mini="true">Go Back</a>-->
+<!--					  <h5>       </h5>-->
+<!--					  <a href="#" data-icon="forward" data-theme="b" data-mini="true" onclick="addPeopleJS();">Save &amp; Return</a>-->
+<!--					</div>-->
+<!--			  <div data-role="content">    -->
+<!--	                <ul data-role="listview" data-split-icon="gear" data-filter="true" data-theme="c">-->
+<!--						 <apex:repeat value="{!newCollaboratorList}" var="eachUsr" id="theRepeat">-->
+<!--							<li>-->
+<!--									<fieldset data-role="controlgroup" >                                                        -->
+<!--										<input type="checkbox" data-id="{!eachUsr.Id}" name="checkbox-2b" id="checkbox-2b" data-theme="c" class="pplCheckbox"/>                    -->
+<!--										<label for="checkbox-2b" style="border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;">-->
+<!--											-->
+<!--												<apex:outputText value="{!eachUsr.Name}"/>-->
+<!--											-->
+<!--										</label>-->
+<!--									</fieldset> -->
+<!--							</li>-->
+<!--	                   </apex:repeat>-->
+<!--	              </ul>-->
+<!--			  </div>-->
+<!--			</div>  -->
+<!--			  -->
+<!--		-->
+<!--		</body>-->
+<!--	</html>-->
+</apex:page>

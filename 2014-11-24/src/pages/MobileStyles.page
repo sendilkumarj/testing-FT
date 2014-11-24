@@ -1,0 +1,668 @@
+<apex:page contentType="text/css" showHeader="false" cache="false" sidebar="false"> body {
+ background-image: none, -webkit-linear-gradient(top, rgba(221,221,221,.12) 0, rgba(221,221,221,.08) 50%, rgba(221,221,221,.05) 51%, rgba(221,221,221,.0) 100%);
+ background-image: none, -moz-linear-gradient(top, rgba(221,221,221,.12) 0, rgba(221,221,221,.08) 50%, rgba(221,221,221,.05) 51%, rgba(221,221,221,.0) 100%);
+ background-image: none, -o-linear-gradient(top, rgba(221,221,221,.12) 0, rgba(221,221,221,.08) 50%, rgba(221,221,221,.05) 51%, rgba(221,221,221,.0) 100%);
+ background-image: none, linear-gradient(to bottom, rgba(221,221,221,.12) 0, rgba(221,221,221,.08) 50%, rgba(221,221,221,.05) 51%, rgba(221,221,221,.0) 100%);
+ background-position: 50% 50%;
+ background-color: #dddddd !important;
+}
+.floatLeft {
+	float: left;
+}
+.floatRight{ floar:right;}
+.indicatorLable {
+	padding: 6px 0px 0px 5px;
+}
+.fontBold {
+	font-weight: bold;
+}
+F .notGiven {
+	width: 15px;
+	height: 15px;
+	margin: 6px 0px 3px 5px;
+	/* background: url("{!URLFOR($Resource.Images,'kanbanImages/indicators-60x15.png')}") 0px 0px no-repeat; */
+	color : #dedbd7;
+}
+.notGiven_margin {
+	margin: 7px 4px 0 5px;
+}
+.good {
+	width: 15px;
+	height: 15px;
+	margin: 6px 0px 3px 5px;
+	/* background: url("{!URLFOR($Resource.Images,'kanbanImages/indicators-60x15.png')}") 0px -15px no-repeat; */
+	color : #009940;
+}
+#notGiven, #good, #minorChallenges, #critical, #completed, #completedProb {
+	cursor: pointer;
+	width: 100%;
+	min-height: 25px;
+	background: #f6f6f6;
+}
+.minorChallenges {
+	width: 15px;
+	height: 15px;
+	margin: 6px 0px 3px 5px;
+	/* background: url("{!URLFOR($Resource.Images,'kanbanImages/indicators-60x15.png')}") 0px -30px no-repeat; */
+	color : #ffca30;
+}
+.critical {
+	width: 15px;
+	height: 15px;
+	margin: 6px 0px 3px 5px;
+	/* background: url("{!URLFOR($Resource.Images,'kanbanImages/indicators-60x15.png')}") 0px -45px no-repeat; */
+	color : #ff0000;
+}
+.completed {
+	width: 15px;
+	height: 15px;
+	margin: 6px 0px 3px 5px;
+	/* background: url("{!URLFOR($Resource.Images,'kanbanImages/indicators-60x15.png')}") 0px -60px no-repeat; */
+	color : #0099ff;
+}
+.completedProb {
+	width: 15px;
+	height: 15px;
+	margin: 6px 0px 3px 5px;
+	/* background: url("{!URLFOR($Resource.Images,'kanbanImages/indicators-60x15.png')}") 0px -75px no-repeat; */
+	color : #993399;
+}
+.upArrow {
+	background: url("{!URLFOR($Resource.Images, 'mobile/uparrow.png')}") no-repeat;
+	display: inline-block;
+	background-size: 12px 7px;
+	width: 12px;
+	height: 7px;
+	float: right;
+	margin-right: 10px;
+	margin-top: 2px;
+}
+.downArrow {
+	background: url("{!URLFOR($Resource.Images, 'mobile/downarrow.png')}") no-repeat;
+	display: inline-block;
+	background-size: 12px 7px;
+	width: 12px;
+	height: 7px;
+	float: right;
+	margin-right: 10px;
+	margin-top: 2px;
+}
+.km-ios #my-drawer .km-content, .km-android #my-drawer .km-content, .km-blackberry #my-drawer .km-content, .km-ios #my-drawer .km-list > li, .km-android #my-drawer .km-list > li, .km-blackberry #my-drawer .km-list > li, .km-ios #my-drawer .km-listview-link > .km-icon, .km-android #my-drawer .km-listview-link > .km-icon, .km-blackberry #my-drawer .km-listview-link > .km-icon, .km-ios #my-drawer .km-list li > .km-icon, .km-android #my-drawer .km-list li > .km-icon, .km-blackberry #my-drawer .km-list li > .km-icon {
+	background-color: #414141;
+	color: #fff;
+}
+.km-ios #my-drawer .km-group-title, .km-blackberry #my-drawer .km-group-title {
+	background-color: #6e6e6e;
+	color: #fff;
+}
+.km-drawer-button:before, .km-drawer-button:after {
+	content: "\2263";
+}
+.km-inbox:before, .km-inbox:after {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/home.png')}");
+	width: 16px;
+	height: 14px;
+	display: block;
+}
+.km-sent:before, .km-sent:after {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/approvals.png')}");
+	width: 19px;
+	height: 14px;
+	display: block;
+}
+.km-spam:before, .km-spam:after {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/decisions.png')}");
+	width: 18px;
+	height: 16px;
+	display: block;
+}
+.km-star:before, .km-star:after {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/tasks.png')}");
+	;
+	width: 18px;
+	height: 18px;
+	display: block;
+}
+.km-pen:before, .km-pen:after {
+	content: "\e0d5";
+}
+.km-off {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/morearrow.png')}");
+	;
+	height: 25px;
+	width: 15px;
+	cursor: pointer;
+}
+.km-off-apr {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/morearrow.png')}");
+	;
+	height: 25px;
+	width: 15px;
+	cursor: pointer;
+}
+.pen {
+	float: right !important;
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/pen.png')}");
+	width: 15px;
+	height: 15px;
+	cursor: pointer;
+	background-size: 15px 15px;
+}
+.back {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/backarrow.png')}");
+	width: 15px;
+	height: 25px;
+	cursor: pointer;
+	display: block;
+}
+.right-wrong {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/rightwrong.png')}");
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	width: 23px;
+	height: 12px;
+	background-size: 23px 12px;
+	left: -3px;
+}
+.right-wrongFordecision {
+	background-image: url("{!URLFOR($Resource.Images, 'home/image-decisionApproval-51x28.png')}");
+	position: relative;
+	top: -12px;
+	display: inline-block;
+	width: 46px;
+	height: 25px;
+ //background-size: 23px 12px;
+	left: -3px;
+}
+.go-noFordecision {
+	background-image: url("{!URLFOR($Resource.Images,  'home/image-decisionApproval-51x28.png')}");
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	width: 46px;
+	height: 25px;
+ //background-size: 23px 12px;
+	left: -3px;
+}
+.go-no {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/gono.png')}");
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	width: 23px;
+	height: 12px;
+ //background-size: 23px 12px;
+	left: -3px;
+}
+.go {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/go.png')}");
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	left: -3px;
+	background-size: 12px 12px;
+}
+.no {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/no.png')}");
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	left: -3px;
+	background-size: 12px 12px;
+}
+.right {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/right.png')}");
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	left: -3px;
+	background-size: 12px 12px;
+}
+.wrong {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/wrong.png')}");
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	left: -3px;
+	background-size: 12px 12px;
+}
+.decisions {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/approvalsbig.png')}");
+	width: 65px;
+	height: 45px;
+	display: block;
+}
+.approvals {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/approvalsbig.png')}");
+	width: 65px;
+	height: 45px;
+	display: block;
+}
+.tasks {
+	background-image: url("{!URLFOR($Resource.Images, 'mobile/tasksbig.png')}");
+	width: 50px;
+	height: 45px;
+	display: block;
+}
+.apr-submit {
+	padding: 4px;
+	background-color: rgb(49,49,49);
+	border-radius: 5px;
+	color: white;
+	text-align: center;
+	font-size: 13px;
+}
+.apr-submit:hover {
+	filter: alpha(opacity=80);
+	-moz-opacity: 0.8;
+	opacity: 0.8;
+}
+.detailsbtn {
+	background-color: #fff;
+	padding: 3px;
+	color: #000;
+	margin-bottom: 1px;
+	padding-left: 15px;
+	font-size: 10px;
+	font-weight: bold;
+}
+.stancetext {
+	border: 1px solid black !important;
+	color: rgb(123,121,122) !important;
+	float: none !important;
+}
+.priority-high {
+	background-color: rgb(255,50,13);
+	color: white;
+	border-radius: 5px;
+	padding: 3px;
+	font-size: 12px;
+	display: block;
+	font-weight: normal;
+}
+.priority-normal {
+	background-color: rgb(254,162,1);
+	color: white;
+	border-radius: 5px;
+	padding: 3px;
+	font-size: 12px;
+	display: block;
+	font-weight: normal;
+}
+.priority-low {
+	background-color: rgb(104,177,44);
+	color: white;
+	border-radius: 5px;
+	padding: 3px;
+	font-size: 12px;
+	display: block;
+	font-weight: normal;
+}
+.content-color {
+	color: rgb(115,115,115);
+	margin-top: 0px;
+	margin-bottom: 10px;
+	font-size: 13px;
+}
+.incontentbg .mainaprrej .content-color{
+	margin-left: 5px;
+}
+.item-info {
+	margin-top: 10px;
+	margin-bottom: 0px;
+	font-weight: normal;
+	font-size: 13px;
+}
+.incontentbg {
+	background-color: #fff;
+	padding:10px; 
+	cursor:pointer;
+}
+.km-group-title {
+	display: block;
+}
+.colour {
+	width: 100%;
+	height: 3px;
+	margin: 0px;
+	padding: 0px;
+	margin: -1px 0 0;
+}
+.colour li {
+	width: 25%;
+	float: left;
+	display: block;
+	height: 5px;
+	position: relative;
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+.colour li.Co_1 {
+	background-color: #6f6f6f;
+}
+.colour li.Co_2 {
+	background-color: #0e74ba;
+}
+.colour li.Co_3 {
+	background-color: #fece0b;
+}
+.colour li.Co_4 {
+	background-color: #db1f2d;
+}
+.greenbtn {
+	background-color: #4ba34c;
+	float: left;
+	border-radius: 5px;
+	padding: 4px;
+	text-align: center;
+	color: white;
+	width: 45%;
+	font-size: 13px;
+}
+.greenbtn:hover {
+	filter: alpha(opacity=80);
+	-moz-opacity: 0.8;
+	opacity: 0.8;
+}
+.redbtn {
+	width: 45%;
+	background-color: rgb(208,53,51);
+	float: right;
+	border-radius: 5px;
+	padding: 4px;
+	text-align: center;
+	color: white;
+	font-size: 13px;
+}
+.redbtn:hover {
+	filter: alpha(opacity=80);
+	-moz-opacity: 0.8;
+	opacity: 0.8;
+}
+.subhead {
+	font-size: 9px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 5px;
+}
+.darkgreybtn {
+	width: 45%;
+	background-color: rgb(47,47,47);
+	float: left;
+	border-radius: 5px;
+	padding: 4px;
+	text-align: center;
+	color: white;
+	cursor: pointer;
+	font-size: 13px;
+}
+.darkgreybtn:hover {
+	filter: alpha(opacity=80);
+	-moz-opacity: 0.8;
+	opacity: 0.8;
+}
+.lightgreybtn {
+	width: 45%;
+	background-color: rgb(136,136,136);
+	float: right;
+	border-radius: 5px;
+	padding: 4px;
+	text-align: center;
+	color: white;
+	cursor: pointer;
+	font-size: 13px;
+}
+.lightgreybtn:hover {
+	filter: alpha(opacity=80);
+	-moz-opacity: 0.8;
+	opacity: 0.8;
+}
+ul li, ol li {
+	margin-left: 0px !important;
+}
+.commentedit {
+	border: 1px solid black !important;
+	color: rgb(123,121,122) !important;
+	float: none !important;
+	background-color: rgb(245,243,244) !important;
+	width: 100% !important;
+}
+.commentbox {
+	border: 1px solid white !important;
+	color: rgb(123,121,122) !important;
+	float: none !important;
+	background-color: white !important;
+	width: 100% !important;
+}
+.fingertop_box {
+	margin: 10px 10px 0;
+	cursor: pointer;
+	background: #fff;
+	padding: 15px;
+	min-height: 100px;
+}
+.marginlr15 {
+	margin: 0 15px;
+}
+.approval_textarea textarea {
+	background-color: #f5f3f4;
+	border: 1px solid #000;
+	color: #7b797a;
+}
+.greenbtn, .redbtn {
+	border-radius: 10px !important;
+	height: 35px;
+	line-height: 25px;
+}
+.fingertop_text {
+	color: #000;
+	font-size: 36px;
+	font-weight: normal;
+	line-height: 40px;
+	margin: 0 !important;
+	padding: 25px 0 !important;
+}
+.fingertop_s_text {
+	font-size: 18px;
+	color: #000;
+	font-weight: normal;
+}
+
+.orange {
+	background-color: #ff6600;
+}
+
+.myroll_black {
+	background-color: #474747;
+	color: #fff;
+	display: inline-block;
+	font-size: 13px;
+	/* margin: 0 0 0 5px; */
+	line-height: 20px;
+	text-align: center;
+	width: 30px;
+	height: 20px;
+}
+.myroll_grey {
+	background-color: #d9d9d9;
+	font-size: 13px;
+	color: #fff;
+	padding: 2px 4px;
+	margin: 0 0 0 5px;
+}
+.myroll_padding {
+	margin: 0 0 0 10px;
+}
+.indicatorList_left {
+	margin: 0 !important;
+	padding: 0 !important;
+	width: inherit !important;
+}
+.cls {
+	clear: both;
+}
+
+body{ width:100%;}
+.top_dropdownlist{ background-color:#313131; color:#fff;}
+.top_dropdownlist select{background-color: transparent;border: 0px; color:#fff;}
+.km-header {
+    border-bottom: 3px solid #ff6600;
+}
+
+.km-ios .km-group-title {display: none;}
+
+.km-ios, .km-ios .km-content {
+	background: none repeat scroll 0 0 #bfbfbf !important;
+}
+.km-ios7, .km-ios7.km-pane .km-content {
+	background: none repeat scroll 0 0 #bfbfbf !important;
+	color: #000;
+}
+.km-android, .km-android .km-header, .km-android .km-footer, .km-android .km-content, .km-android .km-pane, .km-android .km-scroll-header .km-group-title, .km-android input[type="password"], .km-android input[type="search"], .km-android input[type="number"], .km-android input[type="tel"], .km-android input[type="url"], .km-android input[type="email"], .km-android input[type="text"]:not(.k-input), .km-root .km-android textarea {
+	background: none repeat scroll 0 0 #bfbfbf !important;
+	outline-color: #000;
+}
+.km-root .km-ios7.km-pane, .km-root .km-ios7 .km-view, .km-root .km-ios7 .km-slider, .km-root .km-ios7 .km-switch, .km-root .km-ios7 .km-group-title, .km-root .km-ios7 .km-filter-reset, .km-root .km-ios7 .km-shim .k-animation-container {
+	background: none repeat scroll 0 0 #bfbfbf !important;
+	outline-color: #000;
+}
+.km-ios .km-group-title {
+	background: none repeat scroll 0 0 #fff !important;
+}
+#decisiondetails-listview .km-list {
+	padding: 5px 10px;
+}
+.km-flat .km-badge, .km-flat .km-rowinsert, .km-flat .km-rowdelete, .km-flat .km-state-active, .km-flat .km-switch-label-on, .km-flat .km-switch-label-off, .km-flat .km-tabstrip .km-button, .km-flat .km-popup .k-item, .km-flat .km-actionsheet > li > a, .km-flat .km-tabstrip .km-state-active, .km-flat .k-slider .k-draghandle, .km-flat .k-slider .k-draghandle:hover, .km-flat .km-scroller-pull .km-icon, .km-flat .km-popup.km-pane .km-navbar, .km-flat .km-popup.km-pane .km-toolbar, .km-flat .km-popup.km-pane .km-tabstrip, .km-flat .km-popup .k-state-hover, .km-flat .km-popup .k-state-focused, .km-flat .km-popup .k-state-selected, .km-flat .km-actionsheet > li > a:active, .km-flat .km-actionsheet > li > a:hover, .km-flat li.km-state-active .km-listview-link, .km-flat li.km-state-active .km-listview-label, .km-flat .km-state-active .km-listview-link:after {
+	background: none repeat scroll 0 0 #bfbfbf !important;
+}
+.specific-view .km-shim, .specific-view .km-popup, .specific-view .k-slider, .specific-view .km-badge, .specific-view .km-switch-on, .specific-view .km-current-page, .specific-view input:focus, .specific-view select:focus, .specific-view textarea:focus, .specific-view input:checked, .specific-view .km-touch-scrollbar, .specific-view .km-widget .k-state-focused, .specific-view .km-widget .km-state-active {
+	color: green;
+}
+.subhead {
+	color: #313131
+}
+.item-info {
+	color: #313131
+}
+body {
+	background-color: #fff!important;
+}
+.decision-home {
+	border: 10px solid #bfbfbf;
+	margin: 0;
+	min-height: 120px;
+	padding: 30px 0 15px;
+}
+.km-android .km-list > li {
+	padding: 0!important;
+}
+.km-list > li, .km-root .km-listview-link, .km-root .km-listview-label {
+	padding: 0!important;
+}
+.km-scroll-header {
+	position: relative!important;
+}
+.approvals-home, .tasks-home {
+	border-bottom: 10px solid #bfbfbf;
+	border-left: 10px solid #bfbfbf;
+	border-right: 10px solid #bfbfbf;
+	margin: 0;
+}
+.km-navbar {
+	background: #7d7e7d!important; /* Old browsers */
+	background: -moz-linear-gradient(top, #7d7e7d 0%, #0e0e0e 100%)!important; /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #7d7e7d), color-stop(100%, #0e0e0e))!important; /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #7d7e7d 0%, #0e0e0e 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #7d7e7d 0%, #0e0e0e 100%)!important; /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #7d7e7d 0%, #0e0e0e 100%)!important; /* IE10+ */
+	background: linear-gradient(to bottom, #7d7e7d 0%, #0e0e0e 100%)!important; /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e', GradientType=0 )!important; /* IE6-9 */
+}
+.km-navbar span {
+	color: #fff !important;
+}
+.indicatorComm {
+	width: 15px;
+	height: 15px;
+	margin: 7px 8px 0px 13px;
+	cursor: pointer;
+}
+div.dropdown {
+	color: #555;
+	margin: 3px -22px 0 0;
+	width: 55px;
+	position: relative;
+	height: 17px;
+	text-align: left;
+}
+div.submenu {
+	background: #fff;
+	position: absolute;
+	top: -5px;
+	left: -10px;
+	z-index: 100;
+	width: 180px;
+	display: none;
+	margin-left: 10px;
+	padding: 40px 0 5px;
+	border-radius: 6px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+.dropdown li a {
+	color: #555555;
+	display: block;
+	font-family: arial;
+	font-weight: bold;
+	padding: 6px 15px;
+	cursor: pointer;
+	text-decoration: none;
+}
+.dropdown li a:hover {
+	background: #155FB0;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+a.indicatorList {
+	font-size: 11px;
+	line-height: 16px;
+	color: #555;
+	position: absolute;
+	z-index: 110;
+	display: block;
+	padding: 11px 0 0 13px;
+	height: 28px;
+	width: 121px;
+	margin: -11px 0 0 -10px;
+	text-decoration: none;
+	background: url(icons/arrow.png) 116px 17px no-repeat;
+	cursor: pointer;
+}
+.root {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+	font-size: 11px;
+	padding: 11px 0 0 0px;
+	border-top: 1px solid #dedede;
+}
+
+.km-ios .km-list > li {
+  background: none repeat scroll 0 0 transparent;
+ }
+.approvallist_main{padding:5px 10px; font-weight:normal; background-color:#fff;}
+.padleftzero{padding-left:0;}
+.font-bold{font-weight:bold;}
+
+.comment_btts{padding:5px 10px; height:30px;}
+
+ </apex:page>

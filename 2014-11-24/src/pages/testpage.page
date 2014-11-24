@@ -1,0 +1,134 @@
+<apex:page >
+ 
+ 
+ 
+     <c:CommonLibraries /> 
+ 
+ 
+ <style>
+ 
+ #chart {
+    width: 400px;
+    height: 280px;
+}
+ 
+ </style>
+ 
+ 
+ <div id="chart" />
+ 
+ <div id="chart1"  onclick="loadChart()">123</div>
+ 
+ 
+ 
+ 
+ <script>
+ 
+ function loadChart () {
+     
+     
+     
+     
+     
+        var x= [
+      {
+          "date": "12/30/2011",
+          "close": 405,
+          "volume": 6414369,
+          "open": 403.51,
+          "high": 406.28,
+          "low": 403.49,
+          "symbol": "2. AAPL"
+      },
+      {
+          "date": "11/30/2011",
+          "close": 382.2,
+          "volume": 14464710,
+          "open": 381.29,
+          "high": 382.276,
+          "low": 378.3,
+          "symbol": "2. AAPL"
+      },
+      {
+          "date": "10/31/2011",
+          "close": 404.78,
+          "volume": 13762250,
+          "open": 402.42,
+          "high": 409.33,
+          "low": 401.05,
+          "symbol": "2. AAPL"
+      },
+      {
+          "date": "9/30/2011",
+          "close": 381.32,
+          "volume": 19553550,
+          "open": 387.12,
+          "high": 388.89,
+          "low": 381.18,
+          "symbol": "2. AAPL"
+      }];
+          var stocksDataSource = new kendo.data.DataSource({
+              data:x,
+
+              group: {
+                  field: "symbol"
+              },
+
+              sort: {
+                  field: "date",
+                  dir: "asc"
+              },
+
+              schema: {
+                  model: {
+                      fields: {
+                          date: {
+                              type: "date"
+                          }
+                      }
+                  }
+              }
+          });
+
+         
+              $("#chart").kendoChart({
+                  title: {
+                      text: "Closing stock prices"
+                  },
+                  dataSource: stocksDataSource,
+                  seriesDefaults: {
+                      type: "scatterLine",
+                      markers: {
+                          size: 6
+                      }
+                  },
+                  series: [{
+                      xField: "date",
+                      yField: "close"
+                  } ],
+                  yAxis: {
+                      labels: {
+                          format: "${0}",
+                          skip: 1
+                      }
+                  },
+                  tooltip: {
+                      visible: true,
+                      format: "{0:d}, ${1}"
+                  }
+              });
+         
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+};
+ </script>
+</apex:page>

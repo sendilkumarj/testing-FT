@@ -1,0 +1,1043 @@
+<apex:page id="pageId" standardController="Decision__c" tabStyle="Fingertip__tab" extensions="DecisionQuickCreate,DecisionView">
+<script>
+       //FT Favicon
+        (function() {
+            var link = document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = '{!$Resource.Favicon}';
+            document.getElementsByTagName('head')[0].appendChild(link);
+             $(document).prop('title', 'Decision');
+        }());
+        
+    </script>
+<html>
+    <head>        
+        <!--------- jQueryUI ----------->
+       <!-- <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jquery-1.8.3.js')}"/> 
+        <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs, '/tabs/jqueryui-1.9.1.js')}"/>  -->
+        <!--------- Tokeninput Scripts ------------------>
+        <!--<apex:includeScript value="{!URLFOR($Resource.TokenInput, '/TokenInput/Tokeninputjavascript1.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.TokenInput, '/TokenInput/TokenInput.css')}"/>-->
+        <apex:includeScript value="{!$Page.CommonScripts}" />
+       
+        <!--------- FT Stylesheets ----------->
+         <apex:stylesheet value="{!$Page.CommonStyles}" /> 
+        <apex:stylesheet value="{!$Page.DecisionStyles}" />
+       <apex:stylesheet value="{!$Page.OverrideStyles}" />
+        <apex:includeScript value="{!$Page.DecisionQuickCreateScripts}" /> 
+        <c:WalkMeAndSupportButton />
+        <c:CommonLibraries userLocaleSidKey="{!userLocaleSidKey}" />  
+        <script>
+         kendo.culture('{!userLocaleSidKey}'); // set kendo locale for  current user.
+         var dateFormat = '{0:'+kendo.culture().calendar.patterns.d+'}';  // Hold dateformat for kendo grids
+         var dateTimeFormat =  '{0:'+kendo.culture().calendar.patterns.g+'}'; // Hold datetime format for kedo grids
+         var redirecting = true;; // used to redirect from first popup to either 2nd popup or to previous page
+        
+          function forAccontable(userDataJSON){
+         // console.log('userDataJSON'+JSON.stringify(userDataJSON));
+            var loginId = '{!$user.Id}';
+            var usrname = '{!$User.FirstName}'+' {!$User.LastName}'
+              $("#demo-input-pre-populated-with-tokenlimit").kendoMultiSelect({
+                    dataTextField: "name",
+                    dataValueField: "id",
+                    autoBind: false,
+                    dataSource:userDataJSON,
+                    enable : false,
+                    maxSelectedItems: 1,
+                    filter: "contains"
+                   
+              });
+              
+              var Acc = $("#demo-input-pre-populated-with-tokenlimit").data("kendoMultiSelect");
+              Acc.value([loginId]);
+         }
+         
+         function forResponsible(userGruopDataJSON){
+            
+              $("#demo-input-local").kendoMultiSelect({
+                    dataTextField: "name",
+                    dataValueField: "id",
+                    autoBind: false,
+                    dataSource:userGruopDataJSON,
+                    select: onSelectRes,
+                    filter: "contains"
+                   
+              });
+         }
+         
+         function forConsulted(userGruopDataJSON){
+            
+              $("#demo-input-local2").kendoMultiSelect({
+                    dataTextField: "name",
+                    dataValueField: "id",
+                    autoBind: false,
+                    dataSource:userGruopDataJSON,
+                    select: onSelectCon,
+                    filter: "contains"
+                   
+              });
+         }
+         
+         function forInformed(userGruopDataJSON){
+            
+              $("#demo-input-local3").kendoMultiSelect({
+                    dataTextField: "name",
+                    dataValueField: "id",
+                    autoBind: false,
+                    dataSource:userGruopDataJSON,
+                    //select: onSelectInfo 
+                    filter: "contains"
+                   
+              });
+         }
+         
+         function onSelectRes(e) {
+                    var dataItem = this.dataSource.view()[e.item.index()];
+                     if(dataItem.id.indexOf('00G') == 0) {
+                     // console.log("event :: select (" + dataItem.name + " : " + dataItem.id + ")" );
+                        addedGroup(dataItem.id,'demo-input-local',dataItem, 'resposible');
+                    }
+         }
+         function onSelectCon(e) {
+                    var dataItem = this.dataSource.view()[e.item.index()];
+                     if(dataItem.id.indexOf('00G') == 0) {
+                     // console.log("event :: select (" + dataItem.name + " : " + dataItem.id + ")" );
+                        addedGroup(dataItem.id,'demo-input-local2',dataItem, 'consulted');
+                    }
+         }
+         function onSelectInfo(e) {
+                    var dataItem = this.dataSource.view()[e.item.index()];
+                     if(dataItem.id.indexOf('00G') == 0) {
+                    //  console.log("event :: select (" + dataItem.name + " : " + dataItem.id + ")" );
+                        addedGroup(dataItem.id,'demo-input-local3',dataItem, 'informed');
+                    }
+         }
+     </script>
+    </head>
+    <style>
+        .li.token-input-selected-token {
+            color : black !important;
+        }
+    </style>
+    <body>
+        <div class = "preloader"></div>     
+        <div class = "bg-fade"></div>
+        <apex:form id="qcdEditForm">
+            <!------------ Content -------------->
+        <div class = "wrapper qcd-modal-window" id = "QuickCreateWrap">
+                <!------------ Page Header --------------><!--
+            <div class = "page-head">
+                <div class = "object-icon ft-left">
+                    <img src = "{!URLFOR($Resource.Images, 'common/icon_decision_32.png')}" />
+                </div>
+                <div class = "headers ft-left">
+                    <span class = "page-subhead ft-left">Decision</span><br />
+                    <h2>New Decision</h2>
+                </div>
+                <a class="modal-close qcd-modal-close" onclick="cancel()" href="javascript: void(0);"></a>
+                
+            </div>-->
+                <!------------ End Page Header -------------->
+                <!------------ Page Block -------------->
+            <div class = "qcd-disable"></div>
+            <div class = " " id = "qcdContent" style="border-top-width:0px ;">
+                
+                <!------------ Page Block Head -------------->
+                <!--<div class = "page-block-head">
+                   <div class = "ft-left"><h3>Decision Edit</h3></div>
+                   <div class="page-head-btns btn-hold-width center"><button type = "button" onclick="saveDecision()">Save</button>
+                   <button type = "button" onclick="cancel()">Cancel</button></div>
+                </div>-->
+                <!------------ Page Block Body -------------->
+                
+                <div class = "">
+                    <!------------ General Section -------------->
+                    <div  style="margin-top:0.7em;">
+                       <div class = "section-head "><h3>Details</h3></div> 
+                    </div>
+                    <table cellspacing = "3" cellpadding = "0" class = "">
+                        <tr>
+                            <td class = "leftSideLabels  lableFonts">
+                               <div style = "margin-top: 5px;">Title</div> 
+                                <!--<img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The title of the decision can either be written as a question, or as a subject line." />-->
+                            </td>
+                            <td class = " inputDistanceLeft ">
+                                <div style = "  border-left: 2px solid #CC0000;margin-top: 5px;">
+                                <apex:inputField styleClass="qcd-input k-textbox" id="title" value="{!decision.Title__c}" style="margin: 0px;height: 2.4em;"/> 
+                                </div> 
+                            </td>                            
+                        </tr>  
+                                       
+                        <tr>
+                            <td class = " leftSideLabels lableFonts" style="vertical-align: top;">
+                                <div style="margin-top: 13px;">Description </div>
+                                <!--<img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Provide background for the Description. You can describe what needs to be taken into consideration when taking the decision. You can also state available alternatives to choose from." />-->
+                            </td>
+                            <td class = " inputDistanceLeft "> 
+                            <div style = "border-left: 2px solid #CC0000;margin-top: 8px;">
+                                <apex:inputField value="{!decision.Problem_Idea_Advice__c}" id="problemStatement" styleClass="qcd-textarea k-textbox" style="margin: 0px;"/>
+                                </div> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "leftSideLabels  lableFonts" style="vertical-align: top;">
+                                <div style="margin-top: 13px;">Decision</div>
+                                <!--<img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="State the actual decision that is taken and possibly the reasons why. This field is compulsory if you've checked the Approve Decision Immediately -checkbox" />-->
+                            </td>
+                            <td class = "inputDistanceLeft "> 
+                            <div style = "margin-top: 8px;">
+                               <apex:inputField value="{!decision.Decision_Taken__c}" id="decision" styleClass="qcd-textarea k-textbox"/>
+                               </div>
+                            </td>
+                        </tr>
+                        <tr>
+                        <td class = " ">
+                        
+                        </td>
+                        <td class = " ">
+                        <!-- Approve immediately checkbox --> 
+                            <div class = "qcd-head" id = "approveCheck"> 
+                                <div class = "floatLeft" >
+                                    <span class = "ft-left qcd-head-label lableFonts topMarginHoriFilters" style="margin-right: 10px;">Decision Due Date</span>
+                                    <input id="decisionDue" style="width: 13em;float:left;" />
+                                </div>                                       
+                                
+                                <div class="floatLeft" id="priorityDrop" style="margin-left: 50px;">
+                                <span class = "ft-left ">
+                                    <span class = "qcd-head-label lableFonts topMarginHoriFilters" >Priority</span>
+                                    <!--<img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="The priority of the decision prioritizes the decision on the Home page and other listings" />-->&nbsp;&nbsp;
+                                    <!--<span class="required-input"><apex:inputField value="{!decision.Priority__c}" id="decisionPriority"/></span>--> 
+                                    <select id="decisionPriority"  >
+                                        <option>High</option>
+                                        <option>Normal</option>
+                                        <option>Low</option>
+                                        </select>
+                                </span>   
+                                </div> 
+                                
+                                
+                                 
+                                 <!--<div class = "floatLeft" style="margin-left: 10px;">
+                                    <apex:inputCheckbox styleClass="ft-left"  id="proposedecision"/>&nbsp;
+                                    <span class = "ft-left qcd-head-label lableFonts topMarginHoriFilters"> Propose Decision  </span> 
+                                 </div>-->
+                                 
+                                 <div class="floatRight" style="margin-left: 10px;margin-right: -12px;">
+                                    <!--<img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="If the Title is marked as private, it will not show in the Chatter or any other place in Fingertip, except to those that are specifically allowed to access the decision." />-->    
+                                    <apex:inputCheckbox styleClass="ft-left" id="privateDecision" value="{!decision.Private__c}" style="margin-top: 5px;margin-right: 10px;"/>&nbsp;  
+                                    <span class = "ft-left qcd-head-label lableFonts topMarginHoriFilters" style="margin-top: 5px;">Private</span>
+                                </div>
+                                
+                                <div class = "floatRight" style="margin-left: 10px;">
+                                    <!--<img class = "ft-left qcd-head-img" src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Check this checkbox in order to approve this decision with immediate effect" />-->                 
+                                    <apex:inputCheckbox styleClass="ft-left" onclick="showInfoIcon();disableImmediateCheckBoxes(this,'pageId:qcdEditForm:approvalChecknBoxVal','pageId:qcdEditForm:proposedecision');" value="{!decision.SYS_From_Quick_Decision__c}" id="approvalChecknBoxVal" style="margin-top: 5px;margin-right: 10px;"/>&nbsp;
+                                    <!--<img class = "ft-left" id = "qcdInfo" src = "{!URLFOR($Resource.Images, 'common/icon-info-16x16.png')}" title="Note that checking this option implies that the decision field cannot be empty" />-->
+                                     <span class = "ft-left qcd-head-label lableFonts topMarginHoriFilters" style="margin-top: 5px;margin-right: 5px;">Approve Decision</span> 
+                                 </div>
+                                 
+                                 <div class = "floatRight" style="margin-left: 10px;">
+                                    <apex:inputCheckbox styleClass="ft-left" onclick="showInfoIcon();disableImmediateCheckBoxes(this,'pageId:qcdEditForm:proposedecision','pageId:qcdEditForm:approvalChecknBoxVal');" value="{!decision.Propose_Immediately__c}" id="proposedecision" style="margin-top: 5px;margin-right: 10px;"/>&nbsp;
+                                     <span class = "ft-left qcd-head-label lableFonts topMarginHoriFilters" style="margin-top: 5px;margin-right: 5px;">Propose Immediately</span> 
+                                 </div>
+                            </div>
+                        </td>
+                        
+                        </tr>
+                        </table>
+                        <!-- RACI fields -->
+                        
+                        <div class = "  topBorder" >
+                            <div class="section-head " style="margin-top: 0.5em;"><h3>People</h3></div>
+                        </div>
+                        <table cellspacing = "3" cellpadding = "0" class = "page-block-tbl" id="rolesSelection">
+                        <tr>
+                            <td class = "leftSideLabels  lableFonts"> <div>Accountable</div> </td>                        
+                                <td class = " inputDistanceLeft">
+                                <select type="text" class = "qcd-input" id="demo-input-pre-populated-with-tokenlimit" name="acc" required="True" ></select>
+                                    <script>
+                                        forAccontable($.parseJSON('{!JSENCODE(userGruopDataJSON)}'));
+                                    </script>
+                             </td>
+                        </tr>
+                        <tr>
+                            <td class = "leftSideLabels  lableFonts"> <div>Responsible</div> </td>
+                            <td class = " inputDistanceLeft"> 
+                                <select type="text" class = "qcd-input" id="demo-input-local" name="res" required="True" ></select>
+                                    <script>
+                                        forResponsible($.parseJSON('{!JSENCODE(userGruopDataJSON)}'));
+                                    </script>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class = "leftSideLabels  lableFonts"> <div>Consulted</div> </td>
+                            <td class = " inputDistanceLeft"> <select type="text" class = "qcd-input" id="demo-input-local2" name="con" required="True" ></select>
+                                    <script>
+                                        forConsulted($.parseJSON('{!JSENCODE(userGruopDataJSON)}'));
+                                    </script>
+                                </td>
+                        </tr>
+                        <tr>
+                            <td class = "leftSideLabels  lableFonts"><div>Informed</div> </td>
+                            <td class = " inputDistanceLeft"> <select type="text" class = "qcd-input" id="demo-input-local3" name="info" required="True" ></select>
+                                    <script>
+                                        forInformed($.parseJSON('{!JSENCODE(userGruopDataJSON)}'));
+                                    </script>
+                            </td>
+                        </tr>   
+                    </table>
+                    <!------------ End General Section -------------->
+                    
+                </div>
+                    <!------------ End Page Block Body -------------->
+                    <!------------ Page Block Bottom -------------->                
+                <div class = "page-block-bottom">         
+                    <div style="width:50%;margin-right: 1.7em;" class="floatRight">  
+                    <div class="floatLeft" style="margin-left: -3em;"> 
+                        <span>
+                            <button type = "button" onclick="saveDecision()" class="k-button">Save</button>
+                        </span>   <span style="margin-left: 1em;">
+                            <button type = "button" onclick="cancel()" class="k-button">Cancel</button></span>
+                           </div>  
+                            <div class="floatRight">    
+                            <button type= "button"  onclick="cloneDecisionWindow()" class="k-button">Copy Decision | Template</button>
+                         </div>  
+                    </div>  
+              </div>
+                <!------------ End Page Block Bottom --------------> 
+                
+                
+                 
+                <apex:outputPanel id="showstate"/>
+                </div> 
+             </div>
+             
+                <!------------ End Page Block -------------->  
+                
+                <apex:actionFunction name="save" action="{!saveDecision}"  oncomplete="hideLoaderAndFade();">
+                    <apex:param id="titleValue" name="titleValue" value="" />
+                     <apex:param id="ProblemStatementValue" name="ProblemStatementValue" value="" />
+                     <apex:param id="DecisionValue" name="DecisionValue" value="" />
+                    <apex:param id="Accoutable" name="Accoutable" value="" />
+                     <apex:param id="Responsible" name="Responsible" value="" />
+                     <apex:param id="Consulted" name="Consulted" value="" />
+                     <apex:param id="Informed" name="Informed" value="" />
+                     <apex:param id="privateCheckbox" name="privateCheckbox" value="" />
+                     <apex:param id="approvalCheckBox" name="approvalCheckBox" value="" />
+                     <apex:param id="priorityVal" name="priorityVal" value="" />
+                     <apex:param id="dueDate" name="dueDate" value="" />
+                     <apex:param id="proposeCheckBox" name="proposeCheckBox" value="" />
+                </apex:actionFunction>  
+               <apex:actionFunction name="cancel" action="{!cancelDecision}"/>     
+               
+        <!-- clone decision list pop up -->
+            <div id="cloneWindow" style="display:none;overflow: hidden;">
+            <div class="sf-page-block " style="border-top-width:0px ;">
+            <div class="floatLeft section-head"> <h3>Decision</h3></div>
+             <div class = "urgent-search">
+                <span class="k-textbox k-space-right" style="margin-left: 2.8em;">
+                        <input   id="searchDecision" type = "text" /> 
+                        <a href="#" class="k-icon k-i-search" onClick="changeText();">&nbsp;</a>
+                      </span>
+                        <script>
+                            $('#searchDecision').keypress(function(e){ 
+                                if (e.keyCode == '13'){
+                                  changeText();
+                                 return false;
+                                }
+                           }); 
+                        </script>
+                       <!--<a href="javascript:void(0);" onclick="changeText();" class="search-urgent ft-left" ></a>-->
+                    </div>
+               <div id="grid" style="clear:both;height:100%;float: left;margin: 1em 1em 1em 11em;"></div>
+              
+                
+               <div class="add-section  toClear topBorder" id="optionSection" style = "display:none">
+               <div class="floatLeft section-head"> <h3>Options</h3></div>
+                <div class="width100Per">
+                    <div class="floatLeft QcdOptionSec">
+                         <div class = "toClear QcdCheckBoxMargin" id="pepleCloneDiv">
+                             <input type="checkbox" id="pepleClone" checked="checked"  /> Copy People
+                         </div>
+                         <div class = "toClear QcdCheckBoxMargin" id="taskCloneDiv" >
+                              <input type="checkbox" id="taskClone" onclick="showRelationField('taskClone','assignTaskToMe');" /> Copy Tasks
+                          </div>
+                          <div class = "toClear  QcdCheckBoxMargin QcdReassignFilter" id="assignTaskToMe">                                
+                              <input type="checkbox" id="assignToMeChkBox"  /> Reassign all tasks to 
+                              <div class = "toClear;" style="margin: 0.3em 0em 0em 1.9em;"><apex:outputText value=" {!$User.FirstName}" /> <apex:outputText value=" {!$User.LastName}" /> </div>
+                          </div>
+                         <div class = "toClear QcdCheckBoxMargin" id="resetDateCloneDiv">
+                             <input type="checkbox" id="resetDateClone" checked="checked" /> Reset Dates                               
+                         </div>
+                    
+                    </div>
+                    <div class="floatLeft QcdOptionSec">
+                        
+                          <div class = "toClear QcdCheckBoxMargin" id="relationsCloneDiv">
+                           <input type="checkbox" id="relationsClone" /> Copy Relations
+                        </div>
+                        <div class = "toClear QcdCheckBoxMargin" id="relatedToDecisionDiv">
+                        <input type="checkbox" id="relatedToDecision"  onclick="showRelationField('relatedToDecision','showRelationValue');" /> Relate Copy to original object
+                    </div>
+                    
+                    <div class = "toClear QcdCheckBoxMargin QcdReassignFilter" id="showRelationValue" style="margin: 0.3em 0em 0em 1.9em;">                                
+                         Relation 
+                         <select id="relatedToRelation" >
+                             <option value=" ">--None--</option>
+                            <option value="Parent">Parent</option>
+                             <option value="Child">Child</option>
+                             <option value="Sibling">Sibling</option>
+                         </select>
+                    </div> 
+                    <div class = "toClear QcdCheckBoxMargin" id="attachmentsCloneDiv">
+                           <apex:outputPanel ><!--rendered="{!OR(attachmentCount > 0,feedattachmentCount == true)}"> -->
+                           <input type="checkbox" id="attachmentsClone" /> Copy Attachments
+                          </apex:outputPanel>
+                           <img src = "{!URLFOR($Resource.Images, 'common/icon-help-16x16.png')}" title="Select this to include the attachments in the copy. A copy of each attachment will be created." />
+                      </div>
+                    </div>
+                </div>
+                </div>                      
+                </div>
+             <div class="toClear page-block-bottom" >
+               <span style="margin-right: 1em;">
+                   <button type = "button" onclick="copyDecision()" class="k-button">Copy</button></span>
+                   <span> <button type = "button" onclick="copycancel()" class="k-button">Cancel</button></span>
+                </div>
+            </div>
+            
+
+            <script>
+              $(document).ready(function() {
+                //document.getElementById('searchDecision').placeholder = 'Search Decision...'; 
+                var searchText = '';
+                var selectedDecision;
+                    var cloneWindow = $("#cloneWindow")
+
+                    var onClose = function() {
+                         $('#QuickCreateWrap').data("kendoWindow").open();
+                         $('#cloneWindow').hide();
+                    }
+
+                   if (!cloneWindow.data("kendoWindow")) {
+                        cloneWindow.kendoWindow({
+                            width: "820px",
+                            title: "Copy Existing Decision",
+                           actions: [
+                                "Close"
+                            ],
+                            close: onClose
+                        });
+                        cloneWindow.data("kendoWindow").center();
+                        
+                    }
+                });
+                function copycancel(){
+                    $('#cloneWindow').data("kendoWindow").close();
+                    document.getElementById('searchDecision').value = ' ';
+                   // document.getElementById('searchDecision').placeholder = 'Search Decision...';
+                }
+                function changeText(){
+                     var searchValue = document.getElementById('searchDecision').value;
+                     DecisionQuickCreate.cloneDecisionWithSearch(searchValue,function(result, event) {
+                                         if (event.status) {
+                                             var urgentDecisionNew = removeQuotes(result);
+                                             grid = $("#grid").data("kendoGrid");
+                                             grid.dataSource.page(1);
+                                             viewModelUrgentDecision.ds.data(viewModelUrgentDecision.ds.options.schema.parse(urgentDecisionNew || []));
+                                             grid.dataSource.data(urgentDecisionNew);
+                                         }
+                                     }, {
+                                         buffer: false,
+                                         escape: false
+                                     })
+                
+                }
+                
+                function kendoUrgentDecisions(gridData) {
+                     function SortByValue1(x, y) {
+                         return x.Position - y.Position
+                     }
+                     data1 = gridData;
+                     if (data1 != null) {}
+                     
+                     var dataSource = new kendo.data.DataSource({
+                         data: data1,
+                         schema: {
+                             parse: function(response) {
+                                 $.each(response, function(idx, elem) {
+                                     if (typeof elem.lastModified === "string") {
+                                         elem.lastModified = kendo.parseDate(elem.lastModified)
+                                     }
+                                 });
+                                 return response
+                             },
+                             model: {
+                                 id: "Id",
+                                 fields: {
+                                     Id: {
+                                         type: "string",
+                                         editable: false
+                                     },
+                                     decisionId: {
+                                         type: "string",
+                                         editable: false
+                                     },
+                                     decisionTitle: {
+                                         type: "string",
+                                         editable: false
+                                     },
+                                     ownerId: {
+                                         type: "string"
+                                     },
+                                     ownerName: {
+                                         type: "string"
+                                     },
+                                     lastModified: {
+                                         type: "date"
+                                     },
+                                     selectDecision:{type: "boolean" }
+                                 }
+                             }
+                         },
+                         pageSize: 5
+                     });
+                     viewModelUrgentDecision = new kendo.observable({
+                         ds: dataSource
+                     });
+                     var grid = $("#grid").kendoGrid({
+                         dataSource: dataSource,
+                        scrollable: false,
+                         editable: false,
+                         sortable: true,
+                        // height: auto,
+                         pageable: true,
+                        // dataBound: onDataBound,
+                         //dataBinding: onDataBinding,
+                         columns: [
+                         {
+                             field: "selectDecision",
+                             title: "Select",
+                             template: '<div align="center"> <input type="radio" name="decision" class ="radioChk" onclick="selectDecFunc(\'#:decisionId#\')"></input></div>',
+                             width: 50
+                         },
+                         
+                         {
+                             field: "decisionTitle",
+                             title: "Decisions",
+                             template: '<a  class="decisionLink" href=/#:decisionId# target="_blank">#=decisionTitle#</a>'
+                         }, {
+                             field: "Owner",
+                             title: "Accountable",
+                             template: '<a href=/#:ownerId# target="_blank">#:ownerName#</a>'
+                         },
+                         {
+                             field: "lastModified",
+                             title: "Last Modified",
+                             format: dateTimeFormat,
+                             width: 130
+                         }],
+                     }).data("kendoGrid")
+                }
+                
+                function copyDecision(){
+                        var pepleClone = $("#pepleClone").prop('checked');
+                        var resetDateClone = $("#resetDateClone").prop('checked');
+                        var taskClone = $("#taskClone").prop('checked');
+                        var relationsClone = $("#relationsClone").prop('checked');
+                        var relatedToDecision = $("#relatedToDecision").prop('checked');
+                        var assignToMeChkBox = $("#assignToMeChkBox").prop('checked');
+                        var relatedToRelation =  $('#relatedToRelation').val();
+                        var attachmentsClone = $('#attachmentsClone').prop('checked');
+                
+                        //For relationship with Account
+                        var accountId = '{!$CurrentPage.parameters.recId}';  
+                        var objectType = '{!$CurrentPage.parameters.objType}';
+                        
+                    //console.log('selectedDecision'+selectedDecision);
+                     if (!$(".radioChk").is(":checked")) {  
+                           alert('Please Select atleast one Decision');
+                           return false;
+                     }else{
+                                            
+                    // Remote script to call decisionCopy method
+                        DecisionQuickCreate.decisionCopy(objectType,accountId,selectedDecision, convertStringToBoolean(pepleClone), convertStringToBoolean(resetDateClone), convertStringToBoolean(taskClone), convertStringToBoolean(relationsClone), convertStringToBoolean(relatedToDecision), convertStringToBoolean(assignToMeChkBox), relatedToRelation, convertStringToBoolean(attachmentsClone), function(result, event)
+                        {
+                            if (event.status)
+                            {
+                                if('{!$CurrentPage.parameters.fromDecisionTab}' == 'true'){
+                                    window.location ='/apex/DecisionTab';
+                                } else {    
+                                    window.location ='/' +result;
+                                }
+                            }
+                        }, {escape:true});
+                    }
+                }
+                
+            function selectDecFunc(decid){
+                selectedDecision = decid;
+                 var accountId = '{!$CurrentPage.parameters.recId}';
+                 DecisionQuickCreate.checkDecisionComponent(selectedDecision,function(result, event) {
+                           if (event.status) {
+                                var result = removeQuotes(result);
+                                   if(accountId.length > 1){
+                                    $("#relatedToDecision").attr("disabled", true);
+                                    $( "#relatedToDecision" ).prop( "checked", false );
+                                   }
+                                 // console.log('11'+JSON.stringify(result));
+                                  if(!result.chkAttachment){
+                                      $("#attachmentsClone").attr("disabled", true);
+                                      $( "#attachmentsClone" ).prop( "checked", false );
+                                  }else{
+                                    $("#attachmentsClone").attr("disabled", false);
+                                  }
+                                  
+                                  
+                                  if(!result.chkTask){
+                                      $("#taskClone").attr("disabled", true);
+                                      $( "#taskClone" ).prop( "checked", false );
+                                      $( "#assignTaskToMe").hide();
+                                  }else{
+                                     $("#taskClone").attr("disabled", false);  
+                                  }
+                                  
+                                  if(!result.chkRelation){
+                                      $("#relationsClone").attr("disabled", true);
+                                       $( "#relationsClone" ).prop( "checked", false );
+                                  }else{
+                                     $("#relationsClone").attr("disabled", false);
+                                  }
+                               $('.add-section').show();
+                                $("#cloneWindow").data("kendoWindow").center();
+                                
+                           }
+                       }, {
+                           buffer: false,
+                           escape: false
+                       })
+                
+            }
+            
+            
+             // Clone popup validation script
+                function showRelationField(chkFld,enableFld){
+                    if(document.getElementById(chkFld).checked == true){
+                        document.getElementById(enableFld).style.display = 'block';
+                    } else{
+                        document.getElementById(enableFld).style.display = 'none';
+                    }
+                }
+            
+            // convert string to boolean 
+                function convertStringToBoolean(srcValue) {
+                    
+                    var destinationValue;
+                    if(srcValue == 'true') {
+                        destinationValue = true;
+                    }
+                    else if (srcValue == 'True') {
+                        destinationValue = true;
+                    }
+                    else if  (srcValue == true) {
+                        destinationValue = true;
+                    }
+                    else if  (srcValue == '1') {
+                        destinationValue = true;
+                    }
+                    else if  (srcValue == '0') {
+                        destinationValue = false;
+                    }
+                    else if(srcValue == 'false') {
+                        destinationValue = false;
+                    }
+                    else if (srcValue == 'False') {
+                        destinationValue = false;
+                    }
+                    else if  (srcValue == false) {
+                        destinationValue = false;
+                    }
+                    return destinationValue;
+                } 
+                
+               
+            </script>
+            <script>
+             // --------------- New Decision QCD popup ------------------- added to convert to kendo popup --- sendil -- 19-09-2014 
+                    
+                    $(document).ready(function() {
+                       var QuickCreateWrap = $("#QuickCreateWrap");
+    
+                        var closeNewDecision = function() {
+                        if(redirecting){
+                            cancel();
+                            }
+                           $("#optionSection").hide();
+                            redirecting = true; 
+                        }
+    
+                      if (!QuickCreateWrap.data("kendoWindow")) {
+                            QuickCreateWrap.kendoWindow({
+                                width: "1020px",
+                                title:  kendo.template($("<div>New Decision</div>").html()),
+                                actions: [
+                                    "Close"
+                                ],  
+                                close: closeNewDecision
+                                
+                            });
+                        }
+                        QuickCreateWrap.data("kendoWindow").center();
+                        $('#decisionPriority').kendoDropDownList();
+                        $('#decisionPriority').data("kendoDropDownList").select(1);
+                        $(".k-window-title").prepend("<div class='TriSysPopupWindowIcon'></div>");
+                        $('#decisionDue').kendoDateTimePicker({});
+                    });
+                    
+                    
+                    $('#decisionDue').on("keypress keydown keyup", function(e) {
+                      if(e.keyCode == 8 || e.keyCode == 46) {
+                                    return true;
+                             }else{
+                                e.preventDefault();
+                         }
+                        });
+                    
+                    
+                    function cloneDecisionWindow(){
+                   redirecting = false;
+                        $('#QuickCreateWrap').data("kendoWindow").close();
+                        $('#cloneWindow').show();
+                        $("#cloneWindow").data("kendoWindow").center();
+                        
+                        var searchText = '';
+                        DecisionQuickCreate.cloneDecisionWithSearch(searchText,function(result, event) {
+                             if (event.status) {
+                                 var urgentDecisionNew = removeQuotes(result);
+                                         kendoUrgentDecisions(urgentDecisionNew);
+                                        $("#cloneWindow").data("kendoWindow").open(); 
+                                        $("#cloneWindow").data("kendoWindow").center(); 
+                             }
+                                })
+                                $("#cloneWindow").data("kendoWindow").center();
+                    }
+                    
+              // --------------- Ends New Decision QCD popup -------------------
+           </script>
+                
+           <style >
+            
+            .TriSysPopupWindowIcon
+            {
+               background: url("{!URLFOR($Resource.Images, 'common/decisionCardIcon-16x16.png')}");
+                background-size: 16px;
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                line-height: 16px;
+                vertical-align: middle;
+                margin-bottom: 6px;
+                margin-right: 5px;
+            }
+            .k-window-title{
+                font-size: 1.4em;
+                top: 11px;
+                font-weight:bold;
+                cursor:move;
+            }
+            .k-window-titlebar {
+                min-height: 26px;
+                border-top: 5px solid;
+                margin-top: -45px !important;
+                border-bottom-width: 2px;
+                border-bottom-color: #d8d5d1;
+            }
+            .k-window-titlebar .k-window-actions{
+                top: 6px;
+            }
+            .section-head h3 {
+                font-size: 15px;
+            }
+            input.k-textbox:hover, textarea.k-textbox:hover {
+                background-color: #fff !important;
+            }
+            input.k-textbox, textarea.k-textbox{
+                margin:0px 0px 0px 2px;
+                width: 71em;
+                /* max-width: 65em; */
+            }
+            textarea.k-textbox{
+                min-height:7em;
+                height:7em;
+                border-color:#ccc;
+            }
+            textarea.k-textbox:hover{
+                border-color:#ccc;
+                /* border-width: .2em; */
+            }
+            .qcd-head-label {
+                margin: 0px;
+                color: #4A4A56;
+                font-size: 11px;
+                font-weight: bold;
+                text-align: right;
+            }
+             #rolesSelection .k-header{
+                background-color: #fff !important;
+                width: 71em !important;
+            }
+            #rolesSelection  .k-floatwrap{
+               /* display: -webkit-inline-box;
+                display: inline-block;*/
+            }
+            .k-multiselect .k-input{
+                border:0px;
+            }
+            #grid{
+                width:55em;
+            }
+            .k-widget .k-dropdown-wrap, .k-widget .k-dropdown-wrap:hover {
+                /*background-color: #fff;*/
+                width: 6em;
+            }
+            span.k-dropdown{
+                width: 7.7em !important;
+            }
+            .k-list ul li, ol li{
+                margin-left: 0em;
+            }
+            .search-input{
+               height: 13px;
+            }
+            .search-urgent{
+                width: 32px;
+                height: 32px;
+                margin-right:5px;
+                background: url("{!URLFOR($Resource.Images, 'common/image-searchButton-sprite-32x64.png')}") 0 0 no-repeat;
+            }
+            .search-urgent:hover{
+                background-position: 0 -32px;
+            }
+            .add-section{
+                margin-top:0.2em;
+           }
+           .k-window-titlebar {
+            background-color: #fff !important;
+            cursor:move;
+           }
+           div.k-window-content{
+            background-color: #f2f1ef;
+            padding:0em;
+           }
+           .section-head{
+            padding: 2px 18px;
+           }
+           .lableFonts{
+            color: #84969e;
+            text-align: right;
+            font-weight: bold;
+            font-size: 0.9em;
+           }
+           .leftSideLabels {
+            width: 130px;
+           }
+           .inputDistanceLeft{
+            padding-left: 8px;
+           }
+           .topMarginHoriFilters{
+                margin-top: 6px;
+            
+            }
+            .qcd-head{
+                padding: 15px 10px 6px 12px;
+                border:0px;
+            }
+            .k-list-container{
+                border-color: #ccc !important;;
+                
+            }
+            #decisionPriority-list{
+                width: 7.6em !important;
+            
+            }
+            .k-list-container ul li{
+                margin-left: 0em;
+            }
+            .k-datetimepicker .k-picker-wrap{
+                height: 1.6em;
+            }
+            .page-block-bottom{
+                padding-top: 2em;
+                min-height: 4em;
+                overflow: hidden;
+                border-top: 1px solid #d8d5d1;
+                text-align: center;
+                background-color:#fff;
+            }
+            #qcdContent .k-button{
+                font-size: 0.9em;
+                padding: 2px 10px 2px 10px;
+                line-height: 2.2em;
+            }
+            .k-widget .k-multiselect{
+                border-radius: 3px !important;
+            }
+            .k-multiselect .k-input{
+                background-color: transparent;
+                height: 1.31em;
+                line-height: 1.31em;
+                padding: .18em 0;
+                text-indent: .33em;
+                border: 0;
+                margin: 1px 0 0;
+                float: left;
+            }
+            .k-multiselect .k-floatwrap{
+                display:block !important;
+            }
+            .k-pager-wrap{
+                background-image: none,linear-gradient(to bottom,rgba(255,255,255,.6) 0,rgba(255,255,255,.0) 68%);
+                background-position: 50% 50%;
+            }
+            #grid .k-header{
+                background-image: none,linear-gradient(to bottom,rgba(255,255,255,.6) 0,rgba(255,255,255,.0) 100%);
+                background-position: 50% 50%;
+            }
+            #grid ul li{
+                margin-left: 0.5em;
+            }
+                .k-state-selected, .k-list>.k-state-selected, .k-list>.k-state-focused, .k-panelbar .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover{
+                    background-color: #999;
+                    border-color: #999;
+                  }
+                  .k-dropdown-wrap.k-state-focused{
+                    border-color: #c5c5c5  !important;
+                  }
+             </style>
+                        <!--                      end clone decision list pop up -->
+
+            <!------------ Content -------------->   
+        </apex:form>  
+        <div class = "bg-fade show-fade"></div>          
+    </body>
+   <script type="text/javascript">
+         var loggedInUser = '{!JSENCODE(loggedInUserId)}';
+         $(document).ready(function() {
+            changeFooterText();
+            //alert('{!JSENCODE(userGruopDataJSON)}');
+         /*   $("#demo-input-local").tokenInput($.parseJSON('{!JSENCODE(userGruopDataJSON)}') , {
+                onAdd: function (item) {
+                    
+                    if(item.id.indexOf('005') == 0) {
+                        addResponsiable(item.id);
+                    }
+                    else {
+                        $("#demo-input-local3").tokenInput("add", item);
+                        addedGroup(item.id,'demo-input-local',item, 'resposible');
+                        
+                    }
+                },
+                onDelete: function (item) {
+                    removeResponsiable(item.id);
+                },
+                propertyToSearch: "name",
+                preventDuplicates: true,
+                resultsFormatter: function(item){ 
+                    
+                    return "<li>" + "<img src='" +  item.url + "' title='" +  htmlCustomEncode(item.name) + "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" +   (item.name) + "</div>"  
+               },
+               
+            });
+            
+            $("#demo-input-local2").tokenInput(  $.parseJSON('{!JSENCODE(userGruopDataJSON)}') , {
+                onAdd: function (item) {
+                   if(item.id.indexOf('005') == 0) {
+                        addConsulted(item.id);
+                    }
+                    else {
+                        $("#demo-input-local3").tokenInput("add", item);
+                        addedGroup(item.id,'demo-input-local2',item, 'consultant');
+                        
+                    }
+                },
+                onDelete: function (item) {
+                   removeConsulted(item.id);
+                },
+                propertyToSearch: "name",
+                  preventDuplicates: true,
+               resultsFormatter: function(item){ 
+                    return "<li>" + "<img src='" + encodeURI(item.url) + "' title='" + htmlCustomEncode(item.name) + "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" +   htmlCustomEncode(item.name) + "</div>"  
+               },
+               
+             
+            });
+            
+            $("#demo-input-local3").tokenInput( $.parseJSON('{!JSENCODE(userGruopDataJSON)}') , {
+                onAdd: function (item) {   
+                   addInformed(item.id);
+                },
+                onDelete: function (item) {
+                   removeInformed(item.id);
+                },
+                propertyToSearch: "name",
+                preventDuplicates: true,
+                resultsFormatter: function(item){ 
+                    return "<li>" + "<img src='" + encodeURI(item.url) + "' title='" + htmlCustomEncode(item.name) + "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" + htmlCustomEncode(item.name) + "</div>"  
+               },
+              
+            });*/
+          /*   $("#demo-input-pre-populated-with-tokenlimit").tokenInput(  $.parseJSON('{!JSENCODE(userDataJSON)}') , {
+                prePopulate: 
+                   $.parseJSON('{!JSENCODE(defaultUserJson)}') 
+                ,onAdd: function (item) {
+                   addAccountable(item.id);
+                },
+                onDelete: function (item) {
+                   removeAccountable(item.id);
+                },
+                tokenLimit: 1,
+               propertyToSearch: "name",
+                resultsFormatter: function(item){ 
+                    return "<li>" + "<img src='" + encodeURI(item.url) + "' title='" + htmlCustomEncode(item.name) + "' height='25px' width='25px' />" + "<div style='display: inline-block; padding-left: 10px;'>" + htmlCustomEncode(item.name) + "</div>"  
+               },
+               
+            });*/
+            
+            
+        });
+        
+        
+        
+        
+        // remove quate from json string 
+        function removeQuotes(mystring) {
+                
+            newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                 return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+            });
+            
+            var newJ= $.parseJSON(newString);
+            return newJ; 
+        }
+    </script>
+    <!-- Add People -->
+    <script type="text/javascript">
+    
+   function htmlCustomEncode(value){
+              
+             return $('<div/>').text(value).html();
+             
+    }
+    
+    var accountable, responsiable = [],  consulted  = [], informed = [];
+    
+    accountable = loggedInUser;
+       
+    </script>
+    
+     <!-- Delete People-->
+     <script type="text/javascript">
+        
+    </script> 
+</html>
+</apex:page>

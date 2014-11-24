@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2full.xsl"?><?xml-stylesheet type="text/css" media="screen" href="http://feeds.feedburner.com/~d/styles/itemcontent.css"?><rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" version="2.0">
+
+<channel>
+	<title>Salesforce Developers Blogs</title>
+	
+	<link>https://developer.salesforce.com/blogs</link>
+	<description>Elevating developer skills and connecting with the Salesforce Developers community</description>
+	<lastBuildDate>Wed, 19 Nov 2014 22:49:22 +0000</lastBuildDate>
+	<language>en-US</language>
+		<sy:updatePeriod>hourly</sy:updatePeriod>
+		<sy:updateFrequency>1</sy:updateFrequency>
+	
+	<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://feeds.feedburner.com/SforceBlog" rel="self" type="application/rss+xml"/><feedburner:info uri="sforceblog"/><atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://pubsubhubbub.appspot.com/" rel="hub"/><feedburner:emailServiceId>SforceBlog</feedburner:emailServiceId><feedburner:feedburnerHostname>https://feedburner.google.com</feedburner:feedburnerHostname><feedburner:feedFlare href="http://add.my.yahoo.com/rss?url=http%3A%2F%2Ffeeds.feedburner.com%2FSforceBlog" src="http://us.i1.yimg.com/us.yimg.com/i/us/my/addtomyyahoo4.gif">Subscribe with My Yahoo!</feedburner:feedFlare><feedburner:feedFlare href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=http%3A%2F%2Ffeeds.feedburner.com%2FSforceBlog" src="http://www.newsgator.com/images/ngsub1.gif">Subscribe with NewsGator</feedburner:feedFlare><feedburner:feedFlare href="http://feeds.my.aol.com/add.jsp?url=http%3A%2F%2Ffeeds.feedburner.com%2FSforceBlog" src="http://o.aolcdn.com/favorites.my.aol.com/webmaster/ffclient/webroot/locale/en-US/images/myAOLButtonSmall.gif">Subscribe with My AOL</feedburner:feedFlare><feedburner:feedFlare href="http://www.bloglines.com/sub/http://feeds.feedburner.com/SforceBlog" src="http://www.bloglines.com/images/sub_modern11.gif">Subscribe with Bloglines</feedburner:feedFlare><feedburner:feedFlare href="http://www.netvibes.com/subscribe.php?url=http%3A%2F%2Ffeeds.feedburner.com%2FSforceBlog" src="http://www.netvibes.com/img/add2netvibes.gif">Subscribe with Netvibes</feedburner:feedFlare><feedburner:feedFlare href="http://fusion.google.com/add?feedurl=http%3A%2F%2Ffeeds.feedburner.com%2FSforceBlog" src="http://buttons.googlesyndication.com/fusion/add.gif">Subscribe with Google</feedburner:feedFlare><feedburner:feedFlare href="http://www.pageflakes.com/subscribe.aspx?url=http%3A%2F%2Ffeeds.feedburner.com%2FSforceBlog" src="http://www.pageflakes.com/ImageFile.ashx?instanceId=Static_4&amp;fileName=ATP_blu_91x17.gif">Subscribe with Pageflakes</feedburner:feedFlare><item>
+		<title>Salesforce1 Mobile App Version 7.0: Better, Faster, Prettier!</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/YgzDdaf-B-U/salesforce1-mobile-app-version-7-0.html</link>
+		<comments>http://developer.salesforce.com/blogs/developer-relations/2014/11/salesforce1-mobile-app-version-7-0.html#comments</comments>
+		<pubDate>Wed, 19 Nov 2014 22:26:57 +0000</pubDate>
+		<dc:creator><![CDATA[Pat Patterson]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://26.90091</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/developer-relations/2014/11/salesforce1-mobile-app-version-7-0.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1416430593/S1_xxk3lh.jpg" class="alignright wp-post-image tfe" alt="" title="" /></a>Version 7.0 of the Salesforce1 Mobile App was recently released, featuring new functionality, better performance and usability improvements. This blog post focuses on the developer impact of Salesforce1 7.0.]]></description>
+				<content:encoded><![CDATA[<p><span style="line-height: 1.5em"><img class="alignleft wp-image-90101" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1416430593/S1_xxk3lh.jpg" width="175" height="175" />If you have your iPhone or iPad set to auto-update its apps, you might have already noticed that there&#8217;s a new release of the <a href="http://www.salesforce.com/mobile">Salesforce1 Mobile App</a>: Version 7.0. (If you don&#8217;t have your iOS device set to auto-update apps, go update Salesforce1 manually, right now!)</span></p>
+<p>For Android users, Salesforce1 7.0 will be coming to you in the next week or two (safe harbor), or, if you can&#8217;t wait, <a href="https://help.salesforce.com/apex/HTViewSolution?urlname=Android-v7-0-release-notification&amp;language=en_US">try out the beta</a>.</p>
+<p>This new release adds a number of sales and productivity features, such as Lead Conversion and a detailed Events view, but in this blog post I&#8217;ll focus on the changes most relevant to developers. For the full list, see <a href="https://itunes.apple.com/us/app/salesforce1/id404249815?mt=8">Salesforce 1 in iTunes</a> or the Google Play store (when it arrives there), or watch the <a href="http://salesforce.vidyard.com/watch/XKRw0LWqOdj9RDUychCNNQ">release readiness video</a>.</p>
+<h2 style="clear: both">Performance!</h2>
+<p>The first thing you&#8217;ll notice when you open the new version of the app is that it is MUCH faster and slicker. I don&#8217;t have a quantitative measure of the improvement, but it certainly feels to me like a significant improvement on the last version. Great job by the S1 Mobile team!</p>
+<h2>User Interface</h2>
+<h3>Action Bar</h3>
+<p>The next thing you&#8217;ll notice is the new <strong>Action Bar</strong> across the bottom of the screen, in place of the Publisher (&#8216;+&#8217;) icon.</p>
+<p style="text-align: left"><img class="wp-image-90111 aligncenter" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_320/v1416431199/Feed_rxglww.png" width="320" height="568" /><br />
+Now the most commonly used actions are immediately available, and more actions are visible when showing the list, reducing the number of taps required to get where you&#8217;re going.</p>
+<div style="clear: both">
+<p><img class="wp-image-90121 aligncenter" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_320/v1416431236/ActionList_xixxzq.png" width="320" height="568" /></p>
+</div>
+<h3 style="clear: both">Record Navigation</h3>
+<p>Gone are the cryptic &#8216;dots&#8217; on the record page representing the feed, details and related list panes; in their place: intuitive, descriptive labels.</p>
+<p style="text-align: center"><img class="wp-image-90131 aligncenter" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_320/v1416431282/Record_svpso7.png" width="320" height="568" /></p>
+<h3 style="clear: both">Row-Level Actions</h3>
+<p>Another time-saver &#8211; swipe left on any record in a related list to get to its actions.</p>
+<div style="width: 720px;margin-left: auto;margin-right: auto"><img class="alignleft wp-image-90141" style="margin-left: 20px;margin-right: 20px" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_320/v1416431925/RelatedList_bwi7ct.png" width="320" height="568" /><img class="alignleft wp-image-90151" style="margin-left: 20px;margin-right: 20px" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_320/v1416431943/RelatedListActions_keklrc.png" width="320" height="568" /></div>
+<p style="clear: both">The great thing about all of the above UI changes: your existing customizations will work just fine. Any custom actions defined on an object will now appear as row-level actions as well as on the record page.</p>
+<h2>Dashboards</h2>
+<p>More on the admin side, but it&#8217;s worth mentioning the slew of improvements in Dashboards on Salesforce1. You can now tap into a Dashboard and interact with your data, drill into the underlying report, see your 5 most recently used Dashboards while offline, and share Dashboards to the Chatter feed, right from the Salesforce1 Mobile App.</p>
+<div style="width: 780px;margin-left: auto;margin-right: auto"><img class="alignleft wp-image-90161" style="margin-left: 10px;margin-right: 10px" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1416434773/InteractiveDashboards_fpyjzn.png" width="236" height="422" /><img class="alignleft wp-image-90411" style="margin-left: 10px;margin-right: 10px" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1416435261/OfflineDashboards_fucbvd.png" width="236" height="422" /><img class="alignleft wp-image-90421" style="margin-left: 10px;margin-right: 10px" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1416435086/SharingDashboards_poq8nj.png" width="236" height="422" /></div>
+<h2 style="clear: both">Your Feedback Requested!</h2>
+<p>How is version 7.0 working for you? What would you like to see in future versions of the Salesforce1 Mobile App? Let us know in the comments!</p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=YgzDdaf-B-U:fkSjrdRsiAg:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=YgzDdaf-B-U:fkSjrdRsiAg:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=YgzDdaf-B-U:fkSjrdRsiAg:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=YgzDdaf-B-U:fkSjrdRsiAg:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=YgzDdaf-B-U:fkSjrdRsiAg:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=YgzDdaf-B-U:fkSjrdRsiAg:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=YgzDdaf-B-U:fkSjrdRsiAg:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/YgzDdaf-B-U" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/developer-relations/2014/11/salesforce1-mobile-app-version-7-0.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/developer-relations/2014/11/salesforce1-mobile-app-version-7-0.html</feedburner:origLink></item>
+		<item>
+		<title>Secure, Offline, Cross-Platform Apps with Salesforce Mobile SDK and Web Components</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/I7tQgJ6dlZY/cross-platform-apps-salesforce-mobile-sdk-web-components.html</link>
+		<comments>http://developer.salesforce.com/blogs/engineering/2014/11/cross-platform-apps-salesforce-mobile-sdk-web-components.html#comments</comments>
+		<pubDate>Wed, 19 Nov 2014 01:52:03 +0000</pubDate>
+		<dc:creator><![CDATA[Eugene Oksman]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[mobile]]></category>
+		<category><![CDATA[mobile sdk]]></category>
+		<category><![CDATA[polymer]]></category>
+		<category><![CDATA[salesforce]]></category>
+
+		<guid isPermaLink="false">http://25.32481</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/engineering/2014/11/cross-platform-apps-salesforce-mobile-sdk-web-components.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1416358566/polymer_apps2_k5xlyi.png" class="alignright wp-post-image tfe" alt="" title="" /></a>co-authored by Eugene Oksman (@oksman) and  Akhilesh Gupta (@akhileshgupta) &#160; Meeting Ever Exceeding Mobile Expectations  Building a mobile app? Get ready for an escalating list of requirements! Full Offline Support Focused User Interface Infinite Scrolling Cross-Platform Deployments Branding Enterprise mobile apps are now expected to solve some of the most complicated use cases. To help developers [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>co-authored by Eugene Oksman (<a href="https://twitter.com/oksman">@oksman</a>) and  <a href="https://developer.salesforce.com/blogs/engineering/author/akhelishgupta">Akhilesh Gupta</a> (<a href="https://twitter.com/akhileshgupta">@akhileshgupta</a>)</p>
+<p>&nbsp;</p>
+<h3>Meeting Ever Exceeding Mobile Expectations</h3>
+<p dir="ltr"> Building a mobile app? Get ready for an escalating list of requirements!</p>
+<ul>
+<li>
+<p dir="ltr">Full Offline Support</p>
+</li>
+<li>
+<p dir="ltr">Focused User Interface</p>
+</li>
+<li>
+<p dir="ltr">Infinite Scrolling</p>
+</li>
+<li>
+<p dir="ltr">Cross-Platform Deployments</p>
+</li>
+<li>
+<p dir="ltr">Branding</p>
+</li>
+</ul>
+<p dir="ltr">Enterprise mobile apps are now expected to solve some of the most complicated use cases. To help developers with those requirements, Salesforce has built a powerful, yet easy to use Mobile SDK with a vibrant developer community.</p>
+<p dir="ltr">With the upcoming launch of Mobile SDK 3.0, we have built a highly adaptable “Canonical Sample App,” designed to serve as the basis for a feature rich mobile app implementation. This sample app demonstrates the combination of various advanced features around Offline Data Synchronization of Salesforce objects. Developers can unlock a lot more potential by picking ideas or extending the app to suit their needs.</p>
+<p dir="ltr"><img class="aligncenter wp-image-32581" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1416358566/polymer_apps2_k5xlyi.png" width="600" height="373" /></p>
+<p><iframe width="500" height="375" src="//www.youtube.com/embed/jzTNJsGIXGg?feature=oembed" frameborder="0" allowfullscreen></iframe></p>
+<p dir="ltr">For an instant preview, just sign-in with your Salesforce credentials to the Heroku hosted version of this app <a href="https://sfdc-sobject-editor.herokuapp.com">https://sfdc-sobject-editor.herokuapp.com</a></p>
+<h3></h3>
+<h3>Salesforce Mobile SDK + Web Components</h3>
+<p dir="ltr">The Salesforce Mobile SDK provides APIs and implementations of the most essential building blocks for creating mobile apps. Core functionality like user identity, security, API wrappers, offline storage and containerization of web apps are instantly available out of the box to every Salesforce developer.</p>
+<p dir="ltr">Web Components is a set of new browser standards which let web developers build reusable widgets (also called components) using HTML, CSS and JavaScript. Polymer is a highly flexible and easy to use Javascript library that ships with hundreds of high quality web components, empowering web developers to create sophisticated mobile apps. To learn more about Polymer, check out the tutorial on <a href="https://www.polymer-project.org/">https://www.polymer-project.org/</a></p>
+<p dir="ltr">To help Developers build apps with these technologies, we’ve created the Polymer Developer Pack for Salesforce, an open-source project that integrates Salesforce API &amp; Mobile SDK with the Web Component standards. Instead of writing boilerplate code to authenticate, to fetch and update data using REST APIs, or to render the most common UI elements from Salesforce, developers can now dramatically reduce code by using the components from the Polymer Developer Pack and unleash the power of web components connected to the Salesforce architecture.</p>
+<p dir="ltr"><img class="wp-image-32601 aligncenter" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/r_4/v1416360519/architecture_cjqonc.png" width="600" height="338" /></p>
+<p>&nbsp;</p>
+<h3>From “Hello, Word” to an Enterprise App</h3>
+<p dir="ltr">With Polymer, sophisticated functionality can be encapsulated using Web Components. Here’s a brief list of few components that are provided as part of this Polymer developer pack.</p>
+<p dir="ltr">Force-signin: Never write boilerplate code to authenticate user into salesforce. This web component automatically handles complete OAuth flow inside a web browser or in a Mobile SDK based app. Usage:</p>
+<pre>&lt;force-signin consumerkey="key" callbackurl="url"&gt;&lt;/force-signin&gt;</pre>
+<p dir="ltr">Force-sobject-collection: Fetching a list of records from a sobject is as simple as adding an HTML tag on a web page. No more learning REST APIs or using Javascript to get your data. Usage:</p>
+<pre>&lt;force-sobject-collection sobject="Account" querytype="mru"&gt;&lt;/force-sobject-collection&gt;</pre>
+<p dir="ltr">Force-sobject: Fetching a record detail and storing it offline in just one line of HTML. Usage:</p>
+<pre>&lt;force-sobject sobject="Account" recordid="0010000000000AAA"&gt;&lt;/force-sobject&gt;</pre>
+<p dir="ltr">And many more for storing data offline to rendering detail UI of a record. Evolving a simple Hello, World app is just a matter of assembling and customizing components. With data driven components for the most common Salesforce elements developers can quickly build a working application.</p>
+<pre>&lt;force-signin consumerkey="key" callbackurl="url"&gt;&lt;/force-signin&gt;</pre>
+<pre>&lt;force-ui-app id="force_app" &gt;</pre>
+<pre>       &lt;force-ui-list id="force_ui_list" sobject="Account"&gt;&lt;/force-ui-list&gt;</pre>
+<pre>       &lt;force-ui-detail flex id="force_ui_detail" sobject="Account" recordid="{{$.force_ui_list.selected}}"&gt;&lt;/force-ui-detail&gt;</pre>
+<pre>&lt;/force-ui-app&gt;</pre>
+<h3>Getting Started… Very Quickly</h3>
+<p dir="ltr">For instant access to the Salesforce Mobile UI Elements, we&#8217;re hosting a slightly modified version of the Polymer Designer that includes the visual and data elements in the components section. Developers can login into Salesforce orgs: <a href="https://sfdc-designer.herokuapp.com/">https://sfdc-designer.herokuapp.com/</a></p>
+<p dir="ltr">It’s also simple to install the entire source code with the Salesforce elements on your machine, grab the code from our Github repository at<a href="https://github.com/ForceDotComLabs/mobile-ui-elements"> http://bit.ly/mobile-ui-elements</a> or run the following commands.</p>
+<p dir="ltr">sudo npm install -g grunt-cli</p>
+<p dir="ltr">$ git clone https://github.com/ForceDotComLabs/mobile-ui-elements.git</p>
+<p dir="ltr">$ cd mobile-ui-elements</p>
+<p dir="ltr">$ npm install</p>
+<p dir="ltr">$ bower install</p>
+<p dir="ltr">To build the project, execute:</p>
+<p dir="ltr">$ grunt</p>
+<p dir="ltr">To build the project for distribution, execute (all assets will be generated in dist directory):</p>
+<p dir="ltr">$ grunt dist</p>
+<p>&nbsp;</p>
+<h3>Additional Resources</h3>
+<p dir="ltr">Source Code for the Canonical Sample App<br />
+<a href="https://github.com/ForceDotComLabs/paper-sobject-editor">https://github.com/ForceDotComLabs/paper-sobject-editor</a></p>
+<p dir="ltr">Heroku Hosted Version of the Canonical Sample App<br />
+<a title="https://sfdc-sobject-editor.herokuapp.com/" href="https://sfdc-sobject-editor.herokuapp.com/">https://sfdc-sobject-editor.herokuapp.com/</a></p>
+<p dir="ltr">Polymer Developer Mobile Pack<br />
+<a href="https://github.com/ForceDotComLabs/mobile-ui-elements">https://github.com/ForceDotComLabs/mobile-ui-elements</a></p>
+<p dir="ltr">Polymer Designer populated with Salesforce Components<br />
+<a href="https://sfdc-designer.herokuapp.com/">https://sfdc-designer.herokuapp.com/</a></p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=I7tQgJ6dlZY:kcsw-u9tvqc:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=I7tQgJ6dlZY:kcsw-u9tvqc:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=I7tQgJ6dlZY:kcsw-u9tvqc:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=I7tQgJ6dlZY:kcsw-u9tvqc:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=I7tQgJ6dlZY:kcsw-u9tvqc:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=I7tQgJ6dlZY:kcsw-u9tvqc:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=I7tQgJ6dlZY:kcsw-u9tvqc:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/I7tQgJ6dlZY" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/engineering/2014/11/cross-platform-apps-salesforce-mobile-sdk-web-components.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/engineering/2014/11/cross-platform-apps-salesforce-mobile-sdk-web-components.html</feedburner:origLink></item>
+		<item>
+		<title>Teach Someone to Fish: DIY Salesforce Workshops</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/SvAzitkhMfo/teach-someone-fish-diy-salesforce-workshops.html</link>
+		<comments>http://developer.salesforce.com/blogs/developer-relations/2014/11/teach-someone-fish-diy-salesforce-workshops.html#comments</comments>
+		<pubDate>Tue, 18 Nov 2014 02:37:21 +0000</pubDate>
+		<dc:creator><![CDATA[Reid Carlberg]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[diy]]></category>
+		<category><![CDATA[trailhead]]></category>
+		<category><![CDATA[workshop]]></category>
+
+		<guid isPermaLink="false">http://26.89891</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/developer-relations/2014/11/teach-someone-fish-diy-salesforce-workshops.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_458/v1416276689/DIY-salesforce-workshops_trkone.png" class="alignright wp-post-image tfe" alt="" title="" /></a>The last few months have seen an incredible evolution in Salesforce1 Platform developer education.  In addition to the ground breaking Trailhead, now anyone can organize and lead their own Salesforce workshops.]]></description>
+				<content:encoded><![CDATA[<p>The last few months have seen an incredible evolution in Salesforce1 Platform developer education. One part of that is <a href="https://developer.salesforce.com/trailhead">Trailhead</a>, the self-service, self-paced online portal where literally anyone can go and learn more about the platform at their convenience. If you haven&#8217;t tried <a href="https://developer.salesforce.com/trailhead">Trailhead</a> yet <strong>STOP READING RIGHT NOW AND GO TRY IT</strong>.  Then come back.</p>
+<p>You&#8217;re back?  OK.</p>
+<p><strong>I&#8217;m also extremely excited about the four hands-on Salesforce workshops we debuted at Dreamforce. </strong></p>
+<p>I&#8217;m excited about these Salesforce workshops because they&#8217;re designed in such a way that anyone can deliver them. That&#8217;s right &#8212; anyone. In fact, we designed this brand new content during the late summer, and then tested it in front of user groups and at Elevate training events, with the specific goal of having people from the community deliver it at <a href="http://www.dreamforce.com">Dreamforce</a>.  And boy did they ever! Every session was full, and we had great feedback from attendees, all of whom got hands-on with technology they hadn&#8217;t used before.</p>
+<p><strong>Today, these hands-on workshops are ready for you &#8212; yes, YOU! &#8212; to deliver.</strong> Maybe you want to help your fellow user group attendees build their first custom app. Maybe you want to help your developer co-workers get their arms around what it&#8217;s like to work on the Salesforce1 Platform. Or maybe you want to help a group of experienced admin friends take the leap into writing triggers.</p>
+<p><strong>And delivering these is easy.</strong>  Check out the links for each of the workshops.  There is the workshop itself, leader slides and a sample video you can watch to see how someone else taught it.</p>
+<p style="padding-left: 30px"><strong>Introduction to Point-And-Click App Building </strong>Target audience: beginner admins who understand core apps like Sales Cloud and Service Cloud, but want to learn how to make their own custom apps. <a href="http://jr0cket.co.uk/salesforce-admin-workshop/">Workbook</a> | <a href="https://www.slideshare.net/secret/rSUPdA8nG1rdsF">Slides</a> | <a href="http://dreamforce.vidyard.com/watch/fRCVCcmgnV3Ua1xcEDhOJg">Sample Video</a></p>
+<p style="padding-left: 30px"><strong>Introduction to Coding for Admins and Non-Coders </strong>Target audience: intermediate admins who want to take their Salesforce knowledge to the next level. Assumes no knowledge of code or coding principles. <a href="http://jr0cket.co.uk/salesforce-apex-for-admins-workshop/">Workbook</a> | <a href="https://www.slideshare.net/secret/2l2e5tfjtKldhg">Slides</a> | <a href="http://dreamforce.vidyard.com/watch/AIpOFTPxhnsQNwuNQuGqng">Sample Video</a></p>
+<p style="padding-left: 30px"><strong>Introduction to Development on Force.com for Developers </strong>Target audience: developers with experience writing code and apps on other platforms, but who are new to The Salesforce1 Platform. <a href="http://ccoenraets.github.io/salesforce-developer-fasttrack/">Workbook</a> | <a href="https://www.slideshare.net/secret/NIojvBxDse6185">Slides</a> | <a href="http://dreamforce.vidyard.com/watch/HxEFvWUYfGQl7yZklEyXZQ">Sample Video</a></p>
+<p style="padding-left: 30px"><strong>Intermediate Development on Heroku and Force.com </strong>Target audience: developers with experience writing code and apps on other platforms, and who have some exposure to the Salesforce1 Platform, such as the introductory workshop above. <a href="http://ccoenraets.github.io/salesforce-developer-advanced/">Workbook</a> | <a href="https://www.slideshare.net/secret/AXcIKi6535tJuK">Slides</a> | <a href="http://dreamforce.vidyard.com/watch/VYz4-CUIKi92-JYzF692gw">Sample Video</a></p>
+<p><img class="aligncenter wp-image-89981" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_458/v1416276689/DIY-salesforce-workshops_trkone.png" width="458" height="255" /></p>
+<p>Whatever your reason, I would like encourage you to organize and hold your own workshop. <strong>Leading a workshop is a great way get deeper into your local community while solidfying your knowledge of Salesforce at the same time.</strong></p>
+<p>If I can help, please drop me a note via Twitter <a href="http://twitter.com/ReidCarlberg">@ReidCarlberg</a> or <a href="mailto:reid.carlberg@salesforce.com">email</a>. I&#8217;d love to hear about your plans and how your trainings go!</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=SvAzitkhMfo:z28HE-lRG4Q:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=SvAzitkhMfo:z28HE-lRG4Q:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=SvAzitkhMfo:z28HE-lRG4Q:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=SvAzitkhMfo:z28HE-lRG4Q:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=SvAzitkhMfo:z28HE-lRG4Q:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=SvAzitkhMfo:z28HE-lRG4Q:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=SvAzitkhMfo:z28HE-lRG4Q:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/SvAzitkhMfo" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/developer-relations/2014/11/teach-someone-fish-diy-salesforce-workshops.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/developer-relations/2014/11/teach-someone-fish-diy-salesforce-workshops.html</feedburner:origLink></item>
+		<item>
+		<title>Internet of Things at the Dreamforce 2014 Developer Zone – a Retrospective</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/H_o4iq77cK4/internet-of-things-dreamforce-2014-developer-zone-retrospective.html</link>
+		<comments>http://developer.salesforce.com/blogs/developer-relations/2014/11/internet-of-things-dreamforce-2014-developer-zone-retrospective.html#comments</comments>
+		<pubDate>Fri, 14 Nov 2014 20:04:36 +0000</pubDate>
+		<dc:creator><![CDATA[Pat Patterson]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[devzone]]></category>
+		<category><![CDATA[df14]]></category>
+		<category><![CDATA[dreamforce]]></category>
+		<category><![CDATA[iot]]></category>
+
+		<guid isPermaLink="false">http://26.89761</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/developer-relations/2014/11/internet-of-things-dreamforce-2014-developer-zone-retrospective.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415994171/Hoops_ad6uhv.jpg" class="alignright wp-post-image tfe" alt="" title="" /></a>At Dreamforce 2014, we brought together 26 partners, over a hundred Salesforce staff, and THOUSANDS of developers for an Internet of Things zone that was bigger than many standalone IoT conferences. Here are some of the highlights of the zone.]]></description>
+				<content:encoded><![CDATA[<p>At Dreamforce 2014, we brought together 26 partners, over a hundred Salesforce staff, and THOUSANDS of developers for an Internet of Things zone that was bigger than many standalone IoT conferences. Attendees got hands on in 48 workshops run by our partners, checked out <a href="http://www.arduino.cc/">Arduinos</a> and <a href="http://www.raspberrypi.org/">Raspberry Pis</a> to make their own&#8230; &#8216;things&#8217;, and even shot hoops in the 2 Point Challenge, powered by <a href="http://2lemetry.com/">2lemetry</a>:</p>
+<p><img class="alignnone wp-image-89801" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415994171/Hoops_ad6uhv.jpg" width="720" height="480" /></p>
+<p>Congratulations, by the way, to Brian from Peach New Media on winning one of the <a href="http://www.94fifty.com/">94Fifty</a> instrumented basketballs!</p>
+<p>Our Salesforce staffers demonstrated key IoT concepts via fun demos, including 3D printing and a robot activated by closing an opportunity in the Sales Cloud:</p>
+<p><img class="alignnone wp-image-89811" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_720/v1415994295/ShowNTell_u9rxzk.jpg" width="720" height="481" /></p>
+<p>Each of the sponsoring partners explained to attendees how their technology integrated with Salesforce. <a href="http://www.arm.com/">ARM</a> showed a connected house demo that, while it used a model house, was hooked up to a set of very neat prototyping boards:</p>
+<p><img class="alignnone wp-image-89821" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415994404/House_z23biw.jpg" width="720" height="480" /></p>
+<p>Over 500 developers got hands on with IoT technology in the partner workshops. Here&#8217;s Kris Moyse of <a href="http://www.proximityinsight.com/">ProximityInsight</a> leading a workshop on integrating <a href="https://developer.apple.com/ibeacon/">iBeacons</a> with a mobile app:</p>
+<p><img class="alignnone wp-image-89831" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_720/v1415994532/Workshop_qqdtae.jpg" width="720" height="481" /></p>
+<p>While <a href="https://twitter.com/ReidCarlberg">Reid</a> and I were the focal points of the Internet of Things zone, it was truly a team effort. Many, many thanks to the attendees, staff and our awesome partners who made the zone a stunning success!</p>
+<p><img class="alignnone wp-image-89771" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_720/v1415993645/IotSponsors_hfikpm.png" width="720" height="405" /></p>
+<p>What would you like to see in the Internet of Things zone at Dreamforce 2015? Let us know in the comments!</p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=H_o4iq77cK4:3TFYzQIijwE:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=H_o4iq77cK4:3TFYzQIijwE:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=H_o4iq77cK4:3TFYzQIijwE:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=H_o4iq77cK4:3TFYzQIijwE:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=H_o4iq77cK4:3TFYzQIijwE:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=H_o4iq77cK4:3TFYzQIijwE:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=H_o4iq77cK4:3TFYzQIijwE:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/H_o4iq77cK4" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/developer-relations/2014/11/internet-of-things-dreamforce-2014-developer-zone-retrospective.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/developer-relations/2014/11/internet-of-things-dreamforce-2014-developer-zone-retrospective.html</feedburner:origLink></item>
+		<item>
+		<title>#DF14 DevZone Video: Grow Developers. Grow Diversity.</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/A5GT3xIrHBk/df14-devzone-video-grow-developers-grow-diversity.html</link>
+		<comments>http://developer.salesforce.com/blogs/developer-relations/2014/11/df14-devzone-video-grow-developers-grow-diversity.html#comments</comments>
+		<pubDate>Fri, 14 Nov 2014 19:15:34 +0000</pubDate>
+		<dc:creator><![CDATA[Mary Scotton]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[diversity in tech]]></category>
+		<category><![CDATA[dreamforce 2014]]></category>
+		<category><![CDATA[women in tech]]></category>
+
+		<guid isPermaLink="false">http://26.89411</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/developer-relations/2014/11/df14-devzone-video-grow-developers-grow-diversity.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_300/v1415980983/JamesGovenor_d8b8ww.png" class="alignright wp-post-image tfe" alt="" title="" /></a>Dreamforce 2014 video of Elaine Marino's talk, "Growing Developers. Growing Diversity.", which was a topic of conversation on Cloudlife's Podcast #39, which was recorded at 35,000 feet as Matt Morris of Desynit and James Governor of RedMonk were returning to the UK from Dreamforce 2014. ]]></description>
+				<content:encoded><![CDATA[<p><img class="alignleft wp-image-89511" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_300/v1415980983/JamesGovenor_d8b8ww.png" width="300" height="132" />Yesterday, I enjoyed listening to <a title="39" href="http://www.desynit.com/cloudlife-podcast-39-8th-november-2014/" target="_blank">Cloudlife Podcast #39</a>, which was recorded at 35,000 feet as <a title="matt" href="https://twitter.com/matmorris" target="_blank">Matt Morris</a> of <a title="des" href="http://www.desynit.com/" target="_blank">Desynit</a> and <a title="monk" href="https://twitter.com/monkchips" target="_blank">James Governor</a> of <a title="red" href="http://redmonk.com/jgovernor/" target="_blank">RedMonk</a> were returning to the UK from Dreamforce 2014. James shared his views on diversity in tech, including how he sees women and underrepresented minorities as a &#8220;community that can do an amazing job technically&#8221; and as a &#8220;natural resource&#8221; that we should be leveraging to fill the jobs that we need to keep our businesses sustainable.</p>
+<p>Matt shared pieces of <a title="elaine" href="https://twitter.com/elaine_marino" target="_blank">Elaine Marino&#8217;s</a> <a title="df14" href="http://www.salesforce.com/dreamforce/DF14/" target="_blank">Dreamforce 2014</a> DevZone session, &#8220;<strong>Grow Developers. Grow Diversity</strong>.&#8221;, saying &#8220;I saw the most wonderful presentation in the community theater on Wed afternoon&#8230;&#8221; and recounting how Elaine shared her personal journey and then gave practical advice on how to make hiring practices more inclusive and increase diversity in our companies.</p>
+<p>A key piece of Elaine&#8217;s advice is about job descriptions. Rather than saying vague (and intimidating) things like &#8220;<em>Develop web applications based on complex scientific and engineering algorithms</em>,&#8221; be very clear about what you really need a developer to know:</p>
+<p><img class="aligncenter wp-image-89561" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_450/v1415978043/tellus_i2ap78.png" width="450" height="255" /></p>
+<p>Here&#8217;s the <a title="video" href="https://www.youtube.com/watch?v=z4RdMua9Br8&amp;feature=youtu.be" target="_blank">full video</a> &#8211; I&#8217;d love to keep this conversation going! (Note: I am working on uploading videos from all six of the <a title="luminary" href="https://developer.salesforce.com/blogs/developer-relations/2014/09/luminary-developer-sessions-dreamforce-2014.html" target="_blank">DevZone Luminary sessions</a>. Stay tuned!)</p>
+<p><img class="aligncenter wp-image-89711" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_300/v1415978789/Elaine1_d71g6t.png" width="300" height="327" /></p>
+<p><em>&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</em></p>
+<p><em>Looking for me on Twitter? I’m <a title="rockchick" href="https://twitter.com/rockchick322004" target="_blank">@rockchick322004</a>, and I tweet about the Salesforce1 Platform and Diversity in Tech.</em></p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=A5GT3xIrHBk:gqvhfpnxxJs:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=A5GT3xIrHBk:gqvhfpnxxJs:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=A5GT3xIrHBk:gqvhfpnxxJs:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=A5GT3xIrHBk:gqvhfpnxxJs:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=A5GT3xIrHBk:gqvhfpnxxJs:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=A5GT3xIrHBk:gqvhfpnxxJs:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=A5GT3xIrHBk:gqvhfpnxxJs:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/A5GT3xIrHBk" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/developer-relations/2014/11/df14-devzone-video-grow-developers-grow-diversity.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/developer-relations/2014/11/df14-devzone-video-grow-developers-grow-diversity.html</feedburner:origLink></item>
+		<item>
+		<title>Salesforce Anti-Patterns: A Cautionary Tale</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/dQGpV5ojqBE/salesforce-anti-patterns-a-cautionary-tale.html</link>
+		<comments>http://developer.salesforce.com/blogs/engineering/2014/11/salesforce-anti-patterns-a-cautionary-tale.html#comments</comments>
+		<pubDate>Fri, 14 Nov 2014 14:27:22 +0000</pubDate>
+		<dc:creator><![CDATA[Steve Bobrowski]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[architecture]]></category>
+
+		<guid isPermaLink="false">http://25.31381</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/engineering/2014/11/salesforce-anti-patterns-a-cautionary-tale.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_204/v1415745521/anti-pattern_utgzns.jpg" class="alignright wp-post-image tfe" alt="Salesforce anti-patterns and worst practices" title="Salesforce anti-patterns and worst practices" /></a>Don't let your Salesforce org suffer from anti-patterns that often emerge unknowingly as you customize your business needs. Read this fun fictitious story to learn how to avoid and recover from sub-optimal implementations. ]]></description>
+				<content:encoded><![CDATA[<h1>Disclaimer</h1>
+<p><em>The following story is based on experiences compiled from several real-world engagements with Salesforce users. The names of characters and companies in this story have been changed to protect their true identities&#8211;but you know who you are.   <img src="https://developer.salesforce.com/blogs/wp-includes/images/smilies/icon_smile.gif" alt=":-)" class="wp-smiley" /> </em></p>
+<h1><img class="alignright wp-image-31561" title="Salesforce anti-patterns and worst practices" alt="Salesforce anti-patterns and worst practices" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_204/v1415745521/anti-pattern_utgzns.jpg" width="204" height="128" />It Begins …</h1>
+<p>Mike&#8217;s company, XYZ, just purchased Salesforce licenses for all of their sales reps, and it&#8217;s his team&#8217;s job to manage the rollout of Salesforce as quickly as possible. Mike, Vijay, and Lydia all have years of experience managing and customizing XYZ&#8217;s on-premise CRM system. They quickly skim the Salesforce documentation, recognize most of the general application and database development/administration concepts they read about, and thus conclude that this transition to Salesforce will be straightforward without much training necessary.</p>
+<h1>Customizing the Salesforce Schema</h1>
+<p>Vijay has lots of experience with relational databases, so Mike asks Vijay to customize the Salesforce schema for XYZ&#8217;s needs. Vijay quickly learns that standard object customization (e.g., Accounts, Leads, Opportunities), custom object creation, object relationships, and data validation are a breeze to configure without writing any SQL thanks to the intuitive Salesforce Setup UI. In particular, Vijay falls in love with formula fields, and creates many of them to dynamically surface related child data in parent objects and vice versa, thinking such fields will make reports and queries easier to build later on because they won&#8217;t require users to join objects.</p>
+<h1>Loading Large Amounts of Data</h1>
+<p>XYZ&#8217;s on-premises CRM system has millions of Accounts, Contacts, Opportunities, etc. that all need to migrate to Salesforce. Lydia&#8217;s on it&#8211;she takes a quick lesson on the Salesforce Data Loader and decides this is the right tool for the job after loading a few records into a Salesforce Developer Edition org. The plan, she decides, is to wait until just before the CRM system switchover to extract data from the on-premises database into CSV files, then configure the Data Loader to use the Bulk API in parallel mode to pump the data into Salesforce as quickly as possible. The team&#8217;s under pressure for time, so Lydia doesn&#8217;t give her bulk data loading strategy another thought, and moves on to her next task &#8230;</p>
+<h1>Creating and Maintaining Local Database Backups</h1>
+<p>Even though XYZ is fully committed to their cloud strategy, they still want to maintain a local copy of their CRM data. Lydia rushes to meet this requirement next. Considering this task is the opposite of the data load she just devised, Lydia does a tad bit more training with the Data Loader and decides that this tool will also work to query and extract data from Salesforce to local CSV files on a nightly basis. The easiest way to meet this requirement, she decides, is to do simple full refresh of the local database every night.</p>
+<h1>Users and Feature Governance</h1>
+<p>Mike, meanwhile, has been working on a plan for user provisioning, data access, and feature governance. Here, Mike learns that there are some unique Salesforce concepts and features to understand, including record ownership and strategies for sharing private records. Mike takes his time gathering requirements and implementing a role hierarchy and a number of sharing rules on Accounts, Cases and Opportunities to meet them. Because they want users to have the appropriate visibility right away, Lydia and Mike decide to make the objects Private and implement the sharing rules before loading the data. He also makes a note that the sharing rules will need to be recalculated for the org every quarter, first thing Monday morning after the new sales account assignments are available. [X]</p>
+<p>Mike decides to enable users to help themselves whenever possible when it comes to certain Salesforce features. For example, creating Salesforce reports and dashboards are easy, so Mike decides to let sales reps create their own reports around their data access permissions. His reasoning: Why should he spend time researching requirements for reports and dashboards when users can build and maintain what they need themselves?</p>
+<h1>Business Process Configuration</h1>
+<p>Mike is also in charge of configuring various business processes for XYZ&#8217;s users. The first key requirement is to set up something that will drive workflow for Sales reps&#8211;what Leads to call next, in order of priority.</p>
+<p>Mike meets with Jamie in Sales, an experienced Salesforce user from before her time at XYZ, to discuss this key requirement and others. Jamie recommends an easy solution&#8211;that each sales rep create their own list view for Leads, and refresh the list view periodically so that they always see the latest Leads requiring attention. Mike loves the idea because he doesn&#8217;t have to implement anything to meet the requirement. Sweet!</p>
+<hr />
+<h1>Sidebar: Anti-Patterns</h1>
+<p>This fictitious, yet true to life, story demonstrates how some common anti-patterns emerge when implementing Salesforce. What&#8217;s an anti-pattern?</p>
+<p>Design patterns in the context of computer science are proven, highly-effective approaches to solving common challenges in software development. So it makes sense that an anti-pattern is the opposite of a design pattern: A software implementation of some sort that is suboptimal.</p>
+<p>Now let&#8217;s go back to the story and learn more about the anti-patterns that adversely affect the Salesforce implementation and how the team can recover from these problems.</p>
+<hr />
+<h1>Fast Forward … Data Loads Fail</h1>
+<p>It&#8217;s go time, ready to switch from on-premises to cloud. Lydia does a huge data dump from the on-premises CRM system, and transforms the data as necessary before attempting to load the data into Salesforce. She starts up the Data Loader and attempts to bulk load the data from the CSVs using the parallel loading feature.</p>
+<p>Some of the initial loads go very quickly&#8211;for example, the load of the parent Account object. However, subsequent loads of some related objects are plagued with lock contention errors causing batch retries, leading to painfully slow loads that often result in load failures. Lydia is extremely frustrated and starts to wonder if Salesforce can handle their data requirements.</p>
+<h2>Problem Diagnosis</h2>
+<p>Lydia doesn&#8217;t understand the Salesforce locking mechanisms and how those can affect her bulk data load. If she did, she could easily work around this by pre-sorting the child records by parent Id in her CSV file to lessen the chance of parent record lock contention among parallel load batches. Lydia also doesn’t realize that the sharing configuration that she and Mike set up prior to the data load is further contributing to the poor loading performance which is then magnifying her lock contention problems. By deferring the org’s sharing calculations until after her data load, she could significantly increase both the load and sharing calculation performance.</p>
+<h2>Related Reading</h2>
+<ul>
+<li><a title="Salesforce Record Locking Cheat Sheet" href="https://help.salesforce.com/help/pdfs/en/record_locking_cheatsheet.pdf">Salesforce Record Locking Cheat Sheet</a></li>
+<li><a title="The Salesforce Bulk API - Maximizing Parallelism and Throughput Performance When Integrating or Loading Large Data Volumes" href="https://developer.salesforce.com/page/The_Salesforce_Bulk_API_-_Maximizing_Parallelism_and_Throughput_Performance_When_Integrating_or_Loading_Large_Data_Volumes">The Salesforce Bulk API &#8211; Maximizing Parallelism and Throughput Performance When Integrating or Loading Large Data Volumes</a></li>
+<li><a title="Extreme Force.com Data Loading" href="https://developer.salesforce.com/blogs/engineering/2013/02/extreme-salesforce-data-loading-part-1-tune-your-data-model.html">Extreme Force.com Data Loading</a></li>
+</ul>
+<h1>Full Database Backups are Slow</h1>
+<p>Lydia is now doubly frustrated. Why? The nightly full data backups that she configured using the Data Loader take a lot of time to complete and sometimes slow down other jobs&#8211;every night.</p>
+<h2>Problem Diagnosis</h2>
+<p>Lydia is attempting to refresh the entire local database every night, doing more work than what&#8217;s necessary. This translates into long-running Bulk API jobs that unnecessarily hold onto asynchronous processing threads and delay other batch work from happening.</p>
+<p>Instead, Lydia should be doing nightly incremental data backups&#8211;only backing up the data that is new or updated since the previous incremental backup. When doing this, she should use queries that filter records using SystemModstamp (a standard field in all objects that has an index) rather than LastModifiedDate field (not indexed).</p>
+<h2>Related Reading</h2>
+<ul>
+<li><a title="Incremental Processing for Heavy Bulk API / DML Use Cases" href="https://help.salesforce.com/apex/HTViewSolution?urlname=Incremental-Processing-for-Heavy-Bulk-API-DML-Use-Cases-Ext&amp;language=en_US">Incremental Processing for Heavy Bulk API / DML Use Cases</a></li>
+<li><a title="Force.com SOQL Performance Tips: SystemModStamp vs. LastModifiedDate" href="https://developer.salesforce.com/blogs/engineering/2014/11/force-com-soql-performance-tips-systemmodstamp-vs-lastmodifieddate-2.html">Force.com SOQL Performance Tips: SystemModStamp vs. LastModifiedDate</a></li>
+</ul>
+<h1>Users Complain About Slow Reports</h1>
+<p>Mike&#8217;s decision to let sales reps create reports at will is coming back to haunt him. Every day, he gets complaints about reports that take a long time to complete, sometimes timing out and failing altogether. Salesforce Support is great at helping him diagnose the problems with each report as they come in, but it turns into nearly a full-time job to just manage the seemingly constant inflow of report problems.</p>
+<p>As Mike works with more and more problem reports, patterns begin to emerge. Most reports are suffering from the same ailment&#8211;inefficient reports with non-selective filters on unindexed fields. Even worse, Mike sees that every sales rep is creating virtually identical poorly performing reports, so he&#8217;s repeating the same work over and over again to tune each sales rep&#8217;s reports.</p>
+<h2>Problem Diagnosis</h2>
+<p>Mike didn&#8217;t properly anticipate the problems with allowing everyone to create reports, nor did he educate XYZ&#8217;s users on how to build efficient reports that can scale as the company&#8217;s database grows. Additionally, Mike didn&#8217;t take the time to consider a great alternative&#8211;creating a library of public, controlled, and optimized reports that meet the requirements of XYZ&#8217;s sales reps. Fewer reports to tune and maintain, plus high user satisfaction.</p>
+<h2>Related Reading</h2>
+<ul>
+<li><a title="Maximizing the Performance of Force.com SOQL, Reports, and List Views" href="https://developer.salesforce.com/blogs/engineering/2013/07/maximizing-the-performance-of-force-com-soql-reports-and-list-views.html">Maximizing the Performance of Force.com SOQL, Reports, and List Views</a></li>
+<li><a title="Webinar: Inside the Force.com Query Optimizer" href="https://developer.salesforce.com/page/Webinar:_Inside_the_Force.com_Query_Optimizer_(2013-Apr)">Webinar: Inside the Force.com Query Optimizer</a></li>
+<li><a title="Database Query &amp; Search Optimization Cheat Sheet" href="http://help.salesforce.com/help/pdfs/en/salesforce_query_search_optimization_developer_cheatsheet.pdf">Database Query &amp; Search Optimization Cheat Sheet</a></li>
+</ul>
+<h1>Formula Fields Unknowingly Slow Reports</h1>
+<p>Even after filter tuning, Mike observes that reports including many of those formula fields that Vijay built are still inefficient. How is this determined? Salesforce Support works through the cases with Mike and notes that such reports have five or more joins in the underlying query plan.</p>
+<h2>Problem Diagnosis</h2>
+<p>Report builders are including many of the formula fields that Vijay built to surface data from related records dynamically at report runtime. Consequently, Salesforce performs many joins in the underlying query to run the report.</p>
+<p>Formula fields are a great tool when used in the proper context while understanding the scalability and response time implications for their usage. However, without proper understanding of how they function, formula fields can sometimes come back to bite you.</p>
+<p>If Mike and Vijay had studied the formula fields more and understood that these formula fields had the potential to slow down many reports and queries, Vijay might have implemented the fields differently: For example, using a trigger to populate denormalized related fields that would facilitate blazing report/query performance without runtime joins.</p>
+<h2>Related Reading</h2>
+<ul>
+<li><a title="Force.com SOQL Best Practices: Nulls and Formula Fields" href="https://developer.salesforce.com/blogs/engineering/2013/02/force-com-soql-best-practices-nulls-and-formula-fields.html">Force.com SOQL Best Practices: Nulls and Formula Fields</a></li>
+<li><a title="Force.com Formula Fields, Indexes, and Performance Gotchas" href="https://developer.salesforce.com/blogs/engineering/2013/03/force-com-formula-fields-indexes-and-performance-gotchas.html">Force.com Formula Fields, Indexes, and Performance Gotchas</a></li>
+</ul>
+<h1>Sharing Recalculations Clobber Nightly Backups</h1>
+<p>The first sharing recalculation is due, so Mike kicks it off. Not only does the sharing recalculation take forever to complete, but Lydia calls Mike to explain that the nightly full backup also starts running slower than it already does. She has no idea why.</p>
+<h2>Problem Diagnosis</h2>
+<p>Sharing recalculations and Bulk API jobs both draw from the org&#8217;s available pool of asynchronous processing threads. This competition causes both jobs to go slower than if they were scheduled to happen apart from one another. Also, if the full backup was changed to a much faster incremental backup, the time requirement for the backup (and thread usage) would be much smaller, allowing more time for the sharing recalculation.</p>
+<h2>Related Reading</h2>
+<ul>
+<li><a title="4 Steps to Successful Asynchronous Processing with Force.com" href="https://developer.salesforce.com/blogs/engineering/2014/05/4-steps-successful-asynchronous-processing-in-force-com.html">4 Steps to Successful Asynchronous Processing with Force.com</a></li>
+</ul>
+<h1>Sales Reps Develop Productivity (and Eyesight) Issues</h1>
+<p>Refreshing reports constantly for hot, open Leads was easy to implement, but not well thought out in terms of user productivity. Each refresh forces a sales rep to scan the entire list of Leads again and again to pick targets that are new or changed since the most recent refresh.</p>
+<h2>Problem Diagnosis</h2>
+<p>Mike took the seemingly easy solution and didn&#8217;t consider the productivity of the end user when choosing the approach to implement. With a more thorough analysis, Mike would have seen that Salesforce has many easy-to-implement workflow solutions such as workflow rules for this type of process.</p>
+<h2>Related Reading</h2>
+<ul>
+<li><a title="Alert! Salesforce Event Notification Designs for Force.com Apps" href="https://developer.salesforce.com/page/Alert!_Salesforce_Event_Notification_Designs_for_Force.com_Apps">Alert! Salesforce Event Notification Designs for Force.com Apps</a></li>
+</ul>
+<h1>Summary</h1>
+<p>Mike, Vijay, and Lydia thought they were making the proper decisions when implementing Salesforce for XYZ. An overarching reason that they experienced so many problems is because, based on their experience working with on-premise systems, they made assumptions that led to Salesforce performance issues later. They could have considered how one part of the implementation might affect others and tested their design for scalability under planned workloads before going live into production. Lesson learned: A little time planning and testing upfront can save a lot of time addressing the technical debt afterward.</p>
+<p>The good news is that the links to the related information in each anti-pattern section provide solutions that the team read and implemented. Now XYZ&#8217;s implementation performs and scales well, and sales reps are super productive and closing lots of new deals with the new workflow solution.</p>
+<h1>About the Author</h1>
+<p><a title="Steve Bobrowski on Twitter" href="https://twitter.com/sbob909">Steve Bobrowski</a> is an Architect Evangelist within the Technical Enablement team of the salesforce.com Customer-Centric Engineering group. The team’s mission is to help customers understand how to implement technically sound Salesforce solutions. Check out all of the resources that this team maintains on the <a title="Architect Core Resources" href="http://developer.force.com/architect">Architect Core Resources</a> page of the Salesforce Developer network.</p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=dQGpV5ojqBE:TeeOcoqhQrk:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=dQGpV5ojqBE:TeeOcoqhQrk:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=dQGpV5ojqBE:TeeOcoqhQrk:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=dQGpV5ojqBE:TeeOcoqhQrk:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=dQGpV5ojqBE:TeeOcoqhQrk:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=dQGpV5ojqBE:TeeOcoqhQrk:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=dQGpV5ojqBE:TeeOcoqhQrk:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/dQGpV5ojqBE" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/engineering/2014/11/salesforce-anti-patterns-a-cautionary-tale.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/engineering/2014/11/salesforce-anti-patterns-a-cautionary-tale.html</feedburner:origLink></item>
+		<item>
+		<title>Building My First App on the AppExchange</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/0crbs6k7N3U/building-my-first-app-appexchange.html</link>
+		<comments>http://developer.salesforce.com/blogs/engineering/2014/11/building-my-first-app-appexchange.html#comments</comments>
+		<pubDate>Thu, 13 Nov 2014 22:13:24 +0000</pubDate>
+		<dc:creator><![CDATA[Bhavana Rehani]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[appexchange]]></category>
+		<category><![CDATA[Backbone.js]]></category>
+		<category><![CDATA[bootstrap]]></category>
+		<category><![CDATA[chatter]]></category>
+		<category><![CDATA[chatter connect api]]></category>
+		<category><![CDATA[github]]></category>
+		<category><![CDATA[ideaexchange]]></category>
+		<category><![CDATA[magpie]]></category>
+		<category><![CDATA[platform]]></category>
+
+		<guid isPermaLink="false">http://25.31701</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/engineering/2014/11/building-my-first-app-appexchange.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415912119/SF_Title-2_vfue1j.png" class="alignright wp-post-image tfe" alt="" title="" /></a>A few months ago, there was an announcement that went out to all employees about a Salesforce labs competition. The challenge was to build a mobile app, pass a security review, create a YouTube video to market it, and list it on AppExchange. This sounded like a great opportunity since I’d always wanted to build an app on the Salesforce platform, but I didn’t know how to start. What would I build? Did I have all the skills needed? Did I have the time? Should I ask someone for help? All these questions confounded me. Then a thought struck – maybe I could find fellow developers who had the skills I lacked.]]></description>
+				<content:encoded><![CDATA[<p><img class="aligncenter wp-image-31711" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415912119/SF_Title-2_vfue1j.png" width="1282" height="516" /></p>
+<p>A few months ago, there was an announcement that went out to all employees about a Salesforce labs competition. The challenge was to build a mobile app, pass a security review, create a YouTube video to market it, and list it on AppExchange. This sounded like a great opportunity since I’d always wanted to build an app on the Salesforce platform, but I didn’t know how to start. What would I build? Did I have all the skills needed? Did I have the time? Should I ask someone for help? All these questions confounded me. Then a thought struck – maybe I could find fellow developers who had the skills I lacked.</p>
+<p>I’ve worked on various teams within Salesforce over my 8 years here: applications, platforms, core services and most recently on Chatter. These varied areas have given me a good understanding of org administration, custom objects, Apex code, connect rest API and the Chatter feed. However, I did not have much experience with Visualforce. I had built a few pages, but didn’t know how to integrate these with my own custom JavaScript code.</p>
+<p>So I made a post on an internal Chatter group asking for help. Crickets. I registered myself for the competition anyway, hoping I would find a team later. A couple of weeks later, a developer on another team, Mark, made a post looking for team members. I hadn’t met Mark before and asked him if he knew Visualforce. He said he knew enough to be dangerous, which was exactly what I was looking for! Soon after, Kate, our office manager, and Erin, a doc writer on another team, also replied and asked if they could join. And there you have it, our little team of 4 was born. We needed a name, so clearly, “Best Team Ever” was suiting.</p>
+<p><img class="aligncenter wp-image-31721" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415912012/SF_Image1_wrfpec.png" width="1282" height="460" /></p>
+<p>Since we were all based in Seattle, we met weekly to brainstorm on our project. Coming up with the actual idea was hard! Erin did a detailed analysis about ideas posted and voted on in <a href="https://success.salesforce.com/ideaSearch">IdeaExchange</a> to help us select, reject, and shortlist ideas. Kate evaluated various existing apps to help us understand where we were headed. Shortly after, it came to us. We wanted to build a mobile app that lets you upload images into an album and share it on Chatter [insert applause here]. We called it <a href="https://appexchange.salesforce.com/listingDetail?listingId=a0N3000000B5Y6WEAV">Magpie</a> after a bird that likes to collect shiny objects. The name was Kate’s creative genius!</p>
+<p>Erin and Kate were the creative brains on our team and helped solidify the requirements, build wireframes, create the video script, etc. Mark helped us leap forward by evaluating different public libraries and employing his awesome development skills to create various prototypes. He not only built all the initial code, but also built the tools needed to deploy quickly to an organization. I was new to using a git repository, but Mark helped me get ramped up quickly. I also worked with the Chatter Connect API to build some key pieces.</p>
+<p><img class="alignright wp-image-31731" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415912003/SF_Image2_ifgdqe.png" width="300" height="300" />We decided to each put in at most 2 hours per week since this project was in addition to our regular work. As the deadlines approached, we had to break this rule and work some late nights of course!</p>
+<p>We used libraries such as <a href="http://backbonejs.org/">Backbone.js</a> to build our models, views and templates, and <a href="http://getbootstrap.com/">Bootstrap</a> for some of our CSS styling. Pushing code into a git repository helped Mark and I work together effectively. We spoke often to avoid duplication of work and stomping on each other’s code changes. We didn’t have too many conflicts since Mark worked late at night and I (mom of a toddler) preferred waking up to work in the wee hours of the morning. After a few days, we were mostly done with the code.</p>
+<p>Kate worked hard and sent us some beautiful app icons that made it complete and ready for security review. We passed the review and soon after, it was time to create the video and appexchange listing. Erin created the script for the video and Kate recorded the voiceover (we think she has a new calling!). I used Kate’s voiceover to create the video presentation and soon after it was public on the AppExchange. All in all, building my first app was hard work but the results were amazing and a lot of fun! Frankly, I did not think we would get that far in just three months. Most recently, we were also able to present Magpie at Dreamforce on the Demopalooza stage in costume.</p>
+<p>In short, we finally have an app on the Salesforce AppExchange, which would not have been possible without my amazing team. Here are a few insights:</p>
+<p><img class="aligncenter wp-image-31801" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415914696/SF_Image3_copy_ipbxzt.png" width="1282" height="382" />So my biggest takeaway? <b>If you cannot do it alone, then don’t. Form a team.</b></p>
+<p>Do us a favor and check out <a href="https://appexchange.salesforce.com/listingDetail?listingId=a0N3000000B5Y6WEAV">Magpie</a>!! We’d love your feedback so we can continue to improve it in the future!</p>
+<p><img class="aligncenter wp-image-31771" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/v1415912010/SF_Image4_k1vszt.png" width="1282" height="809" /></p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=0crbs6k7N3U:_dBBS8MJ8tM:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=0crbs6k7N3U:_dBBS8MJ8tM:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=0crbs6k7N3U:_dBBS8MJ8tM:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=0crbs6k7N3U:_dBBS8MJ8tM:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=0crbs6k7N3U:_dBBS8MJ8tM:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=0crbs6k7N3U:_dBBS8MJ8tM:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=0crbs6k7N3U:_dBBS8MJ8tM:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/0crbs6k7N3U" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/engineering/2014/11/building-my-first-app-appexchange.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/engineering/2014/11/building-my-first-app-appexchange.html</feedburner:origLink></item>
+		<item>
+		<title>MBKHack: Mentor and Make a Difference in Philly</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/-YMOb62ede8/mbkhack-mentor-make-difference-in-philly.html</link>
+		<comments>http://developer.salesforce.com/blogs/developer-relations/2014/11/mbkhack-mentor-make-difference-in-philly.html#comments</comments>
+		<pubDate>Tue, 11 Nov 2014 14:39:18 +0000</pubDate>
+		<dc:creator><![CDATA[Mary Scotton]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[diversity in tech]]></category>
+		<category><![CDATA[dreamforce 2014]]></category>
+		<category><![CDATA[hackathon]]></category>
+
+		<guid isPermaLink="false">http://26.88841</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/developer-relations/2014/11/mbkhack-mentor-make-difference-in-philly.html"><img align="right" hspace="5" width="150" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_300/v1415714579/DSC_0146_pdgrtz.jpg" class="alignright wp-post-image tfe" alt="" title="" /></a>As Developers, Administrators, and Business Leaders, you all have the opportunity to make a difference as youth mentors. I am attending MBKHack in Philly Nov 14-16, as a Designer Mentor, and if you are interested in a life-changing weekend, I highly recommend that you join me.]]></description>
+				<content:encoded><![CDATA[<p><img class="alignleft wp-image-88961" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_300/v1415714579/DSC_0146_pdgrtz.jpg" width="300" height="200" />At Dreamforce 2014, <a title="priforce" href="https://twitter.com/priforce" target="_blank">Kalimah Priforce</a>, Co-Founder of Qeyno Labs, and <a title="Bryan" href="https://twitter.com/BryanGoodson" target="_blank">Bryan Goodson</a>, Business Solution Sr. Consultant at Salesforce (who mentored at the <a title="ywc" href="http://www.yeswecode.org/" target="_blank">#YesWeCode</a> Hackathon at <a title="essence" href="http://www.essence.com/festival/yeswecode/" target="_blank">EssenceFest</a> in July 2014), spoke about the impact that mentoring youth has, both on the youth <em>and</em> the mentor. As Developers, Administrators, and Business Leaders, you all have the opportunity to make a difference in this way.</p>
+<p><a title="ayori" href="https://twitter.com/iayori" target="_blank">Ayori Selassie</a>, one of Salesforce&#8217;s <a title="boldforce" href="https://twitter.com/BoldForce" target="_blank">BoldForce</a> leaders, hosted the session. She said it best in her closing:</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<blockquote>
+<h3><strong><span style="color: #000080">&#8220;Having been involved myself, it is truly a life-changing experience. So, if you got a chill when you were watching this presentation, you will not be able to describe the experience you have when you actually participate.&#8221;</span></strong></h3>
+</blockquote>
+<h1>MBKHack Philly</h1>
+<p>November 14-16th, 2014, in Philadelphia, PA, Salesforce is<span style="line-height: 1.5em"> sponsoring #YesWeCode and <a title="qeyno" href="http://www.qeyno.com/" target="_blank">Qeyno Labs</a> as they deliver the first-ever hackathon for the White House initiative “<a title="mbk" href="http://www.whitehouse.gov/my-brothers-keeper" target="_blank">My Brother’s Keeper</a>.” The 3-day youth hackathon will take place at the String Theory Schools located at 1600 Vine Street in Philadelphia. Through community partnerships, #YesWeCode and Qeyno Labs will provide Philadelphia&#8217;s boys, girls, and transgender youth, ages 13-20, a safe-environment, mentors and technological tools needed to solve local community problems through designing and building apps.</span></p>
+<p><span style="line-height: 1.5em">In addition to youth participants, they have a need for volunteers, designers and developers. I am attending as a Designer Mentor, and if you are interested in a life-changing weekend, I highly recommend that you </span><a style="line-height: 1.5em" title="register" href="http://www.mbkhack.com/#register" target="_blank">join me</a><span style="line-height: 1.5em">.</span></p>
+<p><span style="line-height: 1.5em">Info and registration: <a title="mbkhack" href="http://www.mbkhack.com/" target="_blank">www.mbkhack.com</a></span></p>
+<p><img class="aligncenter wp-image-89041" alt="" src="http://res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_450/v1415715259/mbkhack_bgcfii.png" width="450" height="209" /></p>
+<h1>Tell Me More</h1>
+<p><a title="article" href="http://oaklandlocal.com/2014/02/startup-weekend-oaklandblack-male-achievement-produces-14-apps-lots-of-inspiration/" target="_blank">This article</a> is a summary of Qeyno&#8217;s first hackathon for Black Male Achievement in Oakland, CA, including an overview of the apps that were created.</p>
+<p>This video profiles George, one of the hackers from the Oakland hackathon:</p>
+<p><iframe width="500" height="281" src="//www.youtube.com/embed/5tnXsnAaEF4?feature=oembed" frameborder="0" allowfullscreen></iframe></p>
+<p><em style="line-height: 1.5em">Looking for me on Twitter? I’m <a title="rockchick" href="https://twitter.com/rockchick322004" target="_blank">@rockchick322004</a>, and I tweet about the Salesforce1 Platform and Diversity in Tech.</em></p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=-YMOb62ede8:PlLS6dMPVAw:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=-YMOb62ede8:PlLS6dMPVAw:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=-YMOb62ede8:PlLS6dMPVAw:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=-YMOb62ede8:PlLS6dMPVAw:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=-YMOb62ede8:PlLS6dMPVAw:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=-YMOb62ede8:PlLS6dMPVAw:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=-YMOb62ede8:PlLS6dMPVAw:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/-YMOb62ede8" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/developer-relations/2014/11/mbkhack-mentor-make-difference-in-philly.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/developer-relations/2014/11/mbkhack-mentor-make-difference-in-philly.html</feedburner:origLink></item>
+		<item>
+		<title>Nov 19: Experience the DevZone at the New York Salesforce World Tour</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/ieTnZ8Wt9-g/devzone-new-york-world-tour.html</link>
+		<comments>http://developer.salesforce.com/blogs/developer-relations/2014/11/devzone-new-york-world-tour.html#comments</comments>
+		<pubDate>Mon, 10 Nov 2014 20:58:51 +0000</pubDate>
+		<dc:creator><![CDATA[Kavindra Patel]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[developer]]></category>
+		<category><![CDATA[devzone]]></category>
+		<category><![CDATA[force.com]]></category>
+		<category><![CDATA[heroku]]></category>
+
+		<guid isPermaLink="false">http://26.88771</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/developer-relations/2014/11/devzone-new-york-world-tour.html"><img align="right" hspace="5" width="150" src="//res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_375/v1415308286/2014-11-06_12-46-03_nxud0g.png" class="alignright wp-post-image tfe" alt="" title="" /></a>I’m excited to invite you to join me at the Developer Zone in NYC during the FREE Salesforce World Tour on November 19. If you didn’t get a chance to experience the Developer Zone at Dreamforce this year, you do not want to miss it. Make sure to register now, while there is space! The [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p><img class="wp-image-38931 alignright" alt="" src="//res.cloudinary.com/hzxejch6p/image/upload/c_scale,w_375/v1415308286/2014-11-06_12-46-03_nxud0g.png" width="375" height="154" />I’m excited to invite you to join me at the Developer Zone in NYC during the FREE Salesforce World Tour on November 19. If you didn’t get a chance to experience the Developer Zone at Dreamforce this year, you do not want to miss it. Make sure to <a href="https://www.salesforce.com/events/details/worldtour-nyc/?d=70130000000lupw">register now</a>, while there is space!</p>
+<p>The Developer Zone is the place to be if you’re new to app building or looking to sharpen your technical skills on the Salesforce1 Platform. We’re planning a jam-packed agenda with lots of opportunities for new and experienced developers alike. At the Developer Zone, you can:</p>
+<ul>
+<li>
+<p dir="ltr">Watch Salesforce1 Platform Demos on Salesforce1 Lightning, Force.com, Heroku and Marketing Cloud</p>
+</li>
+<li>
+<p dir="ltr">Start building apps in 10 minutes with Salesforce1 Lightning, Marketing Cloud or Force.com Quick Starts</p>
+</li>
+<li>
+<p dir="ltr">Sign up for 1:1 code and design consultations with Force.com and User Experience experts</p>
+</li>
+<li>
+<p dir="ltr">Catch tech talks from Salesforce product managers and dev evangelists, and attend the developer breakout session on Architecting Engagement Apps</p>
+</li>
+<li>
+<p dir="ltr">Pick up FREE Salesforce1 Platform developer books, including the NEW Lightning Components Developer Guide and Marketing Cloud books</p>
+</li>
+</ul>
+<p dir="ltr">Many of the top Salesforce1 Platform Product Managers will be joining us in NYC. You’ll have the opportunity to connect and network with people like <a href="https://twitter.com/mtorres_tweet">@Marcus Torres</a>, Eric Jacobson, <a href="https://twitter.com/SkipSauls">@Skip Sauls</a>, <a href="https://twitter.com/extraidea">@Jay Hurst</a>, <a href="https://twitter.com/adam_g">@Adam Gross</a>, Chris Stolt, <a href="https://twitter.com/kellyjandrews">@Kelly Andrews</a> as well as our Developer Evangelists, <a href="https://twitter.com/_JamesWard">James Ward</a> and <a href="https://twitter.com/ccoenraets">Christopher Coenraets</a> who will be ready to answer your questions and share their experiences.</p>
+<p dir="ltr">Don’t miss out on this great opportunity by <a href="https://www.salesforce.com/events/details/worldtour-nyc/?d=70130000000lupw">registering now</a>! Also, save your 30min timeslot for a FREE 1:1 <a href="https://developer.secure.force.com/events/eventconsult?event=WTNY14">code consultation</a> and <a href="https://developer.secure.force.com/events/eventconsult?event=DCNY14">design consultation</a>.</p>
+<p dir="ltr">Do stop by the Admin Zone that will have great talks and networking with <a href="https://twitter.com/rockchick322004">Mary Scotton</a> from the Evangelism team and Salesforce MVPs.</p>
+<p dir="ltr">I’m looking forward to seeing many of you there!</p>
+<p>@kavindrapatel | #devzone</p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=ieTnZ8Wt9-g:xejU8tyFktA:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=ieTnZ8Wt9-g:xejU8tyFktA:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=ieTnZ8Wt9-g:xejU8tyFktA:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=ieTnZ8Wt9-g:xejU8tyFktA:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=ieTnZ8Wt9-g:xejU8tyFktA:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=ieTnZ8Wt9-g:xejU8tyFktA:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=ieTnZ8Wt9-g:xejU8tyFktA:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/ieTnZ8Wt9-g" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/developer-relations/2014/11/devzone-new-york-world-tour.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/developer-relations/2014/11/devzone-new-york-world-tour.html</feedburner:origLink></item>
+		<item>
+		<title>Force.com SOQL Performance Tips: LastModifiedDate vs SystemModStamp</title>
+		<link>http://feedproxy.google.com/~r/SforceBlog/~3/6jLZlHhoXgM/force-com-soql-performance-tips-systemmodstamp-vs-lastmodifieddate-2.html</link>
+		<comments>http://developer.salesforce.com/blogs/engineering/2014/11/force-com-soql-performance-tips-systemmodstamp-vs-lastmodifieddate-2.html#comments</comments>
+		<pubDate>Fri, 07 Nov 2014 13:00:04 +0000</pubDate>
+		<dc:creator><![CDATA[Daisuke Kawamoto]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[architecture]]></category>
+		<category><![CDATA[LDV]]></category>
+		<category><![CDATA[Performance]]></category>
+		<category><![CDATA[SOQL]]></category>
+
+		<guid isPermaLink="false">http://25.31331</guid>
+		<description><![CDATA[<a href="http://developer.salesforce.com/blogs/engineering/2014/11/force-com-soql-performance-tips-systemmodstamp-vs-lastmodifieddate-2.html"><img align="right" hspace="5" width="150" src="https://res.cloudinary.com/hzxejch6p/image/upload/v1415646356/stamp-s_fx8flg_ry5qhr.png" class="alignright wp-post-image tfe" alt="Force.com SOQL Performance Tips" title="Force.com SOQL Performance Tips" /></a>Help your Force.com application scale and perform by understanding differences between use of SystemModStamp and LastModifiedDate in SOQL filters.]]></description>
+				<content:encoded><![CDATA[<p><img class="alignright wp-image-31431" title="Force.com SOQL Performance Tips" alt="Force.com SOQL Performance Tips" src="https://res.cloudinary.com/hzxejch6p/image/upload/v1415646356/stamp-s_fx8flg_ry5qhr.png" width="148" height="148" />Do you have an integration that retrieves a set of records that were updated since the last integration job? Do you have a Visualforce page that lists records that have (or haven’t) been updated recently? Are you making conscious decisions when choosing LastModifiedDate over the SystemModStamp field to filter your queries? There are differences between SystemModStamp and LastModifiedDate that go beyond just being two separate system fields. To help your application scale and perform with large data volumes, it is important to understand the performance implications when choosing one field over the other as you use them in your SOQL filters.</p>
+<h2>What is the difference between LastModifiedDate and SystemModStamp?</h2>
+<p>Let’s recap what LastModifiedDate and SystemModStamp dates are. They are both <a href="http://www.salesforce.com/developer/docs/api/Content/system_fields.htm">system fields</a> that store date and time values for each record.</p>
+<ul>
+<li>LastModifiedDate is automatically updated whenever a user creates or updates the record. LastModifiedDate can be updated to any back-dated value if your business requires preserving original timestamps when migrating data into Salesforce.</li>
+<li>SystemModStamp is strictly read-only. Not only is it updated when a user updates the record, but also when automated system processes (such as triggers and workflows actions) update the record. Because of this behavior, it creates a difference in stored value where ‘LastModifiedDate &lt;= SystemModStamp’ but never ‘LastModifiedDate &gt; SystemModStamp’.</li>
+</ul>
+<p>&nbsp;</p>
+<h1>How can LastModifiedDate filters affect SOQL performance?</h1>
+<p>So, how does this affect performance of a SOQL query? Under the hood, the SystemModStamp is indexed, but LastModifiedDate is not. The Salesforce query optimizer will intelligently attempt to use the index on SystemModStamp even when the SOQL query filters on LastModifiedDate. However, the query optimizer cannot use the index if the SOQL query filter uses LastModifiedDate to determine the upper boundary of a date range because SystemModStamp can be greater (i.e., a later date) than LastModifiedDate. This is to avoid missing records that fall in between the two timestamps.</p>
+<p>Let&#8217;s work through an example to make this clear.</p>
+<p>The following queries will perform well, as long as the filters meet the <a href="http://help.salesforce.com/help/pdfs/en/salesforce_query_search_optimization_developer_cheatsheet.pdf">selectivity threshold</a> because the query optimizer will utilize the index on SystemModStamp:</p>
+<pre>Select Id, Name from Account where LastModifiedDate &gt; 2014-11-08T00:00:00Z</pre>
+<pre>Select Id, Name from Account where LastModifiedDate = CustomDate__c</pre>
+<p>The example below cannot be optimized for performance because the query optimizer cannot utilize the index on SystemModStamp.</p>
+<pre>Select Id, Name from Account where LastModifiedDate &lt; CutoffDate__c</pre>
+<p>The same logic applies when using <a href="http://www.salesforce.com/us/developer/docs/soql_sosl/Content/sforce_api_calls_soql_select_dateformats.htm">date literals</a>. As a reminder, if you have one or more selective filters in your SOQL, the query optimizer can use that as the leading filter, so your query will perform well even if you have a non-optimal LastModifiedDate filter defining the upper boundary of a date range.</p>
+<p>For more information on selectivity and how to tune your SOQL queries, I highly encourage you to read through the related resources below.</p>
+<h2>Options to optimize performance for LastModifiedDate</h2>
+<p>The most simple and effective solution to optimize performance is to use SystemModStamp instead of LastModifiedDate to filter data. However, SystemModStamp may not be available for the object you’re querying against or your business requirement may not allow you to simply substitute the two fields. You also may want to consider alternative approaches that would address other scalability concerns together. Here are some options that will help you optimize performance and scalability of your SOQL queries.</p>
+<ul>
+<li><strong>Use a custom date field:</strong> Use workflow field updates or triggers to copy the LastModifiedDate value, then contact Support to request adding a custom index on the custom field. Then, use that as your filter.</li>
+<li><strong>Add a skinny table:</strong> If you have performance issues due to large data volume, consider adding a <a href="https://developer.salesforce.com/blogs/engineering/2013/03/long-and-short-term-approaches-for-tuning-force-com-performance.html">skinny table</a>. Skinny tables include indexed LastModifiedDate by default.</li>
+<li><strong>Filter on LastActivityDate:</strong> If your business requirement is to list up Account or Contact records related to activities, and you have (or plan to have) a skinny table, contact Support to request an index on the LastActivityDate field.</li>
+<li><strong>Use the Data Replication API:</strong> For example, use <a href="http://www.salesforce.com/developer/docs/api/Content/sforce_api_calls_getupdated.htm">getUpdated()</a> to retrieve updated records. Under the hood, the API uses SystemModStamp to determine the matching records, and if it doesn’t exist it will automatically use LastModifiedDate or CreatedDate.</li>
+</ul>
+<p>Regardless of which approach you take, always keep in mind that you should carefully evaluate both your business requirements and possible performance implications when using LastModifiedDate over SystemModStamp.</p>
+<h1>Related Resources</h1>
+<ul>
+<li><a href="http://help.salesforce.com/help/pdfs/en/salesforce_query_search_optimization_developer_cheatsheet.pdf">Database Query &amp; Search Optimization Cheat Sheet</a></li>
+<li><a href="http://wiki.developerforce.com/page/Webinar:_Inside_the_Force.com_Query_Optimizer_(2013-Apr)">Webinar: Inside the Force.com Query Optimizer</a></li>
+<li><a href="http://blogs.developerforce.com/engineering/2013/07/maximizing-the-performance-of-force-com-soql-reports-and-list-views.html">Maximizing the Performance of Force.com SOQL, Reports, and List Views</a></li>
+<li><a href="http://blogs.developerforce.com/engineering/2013/02/force-com-soql-best-practices-nulls-and-formula-fields.html">Force.com SOQL Best Practices: Nulls and Formula Fields</a></li>
+<li><a href="https://developer.salesforce.com/blogs/engineering/2014/03/force-com-soql-best-practice-sort-optimization.html">Force.com SOQL Best Practices: Sort Optimization</a></li>
+<li><a href="https://developer.salesforce.com/page/Architect_Core_Resources">Architect Core Resources</a></li>
+</ul>
+<h2>About the Author and CCE Technical Enablement</h2>
+<p><a href="https://twitter.com/DaisukeSfdc">Daisuke Kawamoto</a> is an Architect Evangelist within the Technical Enablement team of the salesforce.com Customer-Centric Engineering group. The team’s mission is to help customers understand how to implement technically sound salesforce.com solutions. Check out all of the resources that this team maintains on the <a href="https://developer.salesforce.com/page/Architect_Core_Resources">Architect Core Resources</a> page.</p>
+<div class="feedflare">
+<a href="http://feeds.feedburner.com/~ff/SforceBlog?a=6jLZlHhoXgM:LRF54wJfLyc:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=yIl2AUoC8zA" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=6jLZlHhoXgM:LRF54wJfLyc:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=6jLZlHhoXgM:LRF54wJfLyc:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=6jLZlHhoXgM:LRF54wJfLyc:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=6jLZlHhoXgM:LRF54wJfLyc:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/SforceBlog?i=6jLZlHhoXgM:LRF54wJfLyc:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.feedburner.com/~ff/SforceBlog?a=6jLZlHhoXgM:LRF54wJfLyc:l6gmwiTKsz0"><img src="http://feeds.feedburner.com/~ff/SforceBlog?d=l6gmwiTKsz0" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/SforceBlog/~4/6jLZlHhoXgM" height="1" width="1"/>]]></content:encoded>
+			<wfw:commentRss>http://developer.salesforce.com/blogs/engineering/2014/11/force-com-soql-performance-tips-systemmodstamp-vs-lastmodifieddate-2.html/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://developer.salesforce.com/blogs/engineering/2014/11/force-com-soql-performance-tips-systemmodstamp-vs-lastmodifieddate-2.html</feedburner:origLink></item>
+	</channel>
+</rss>

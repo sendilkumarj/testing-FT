@@ -1,0 +1,100 @@
+<apex:component controller="WorkbenchPlanList">
+    <apex:outputPanel id="planList">
+    <div class="tabs-block border-pink">
+        <div class="tabs-block-head">
+            <div class="tabs-block-left"><h3 class="ft-left">Plans</h3></div>
+            <button type = "button" onclick="newPlan()">New Plan</button>
+            <div class = "tabs-block-right ft-right">
+                Search: <input type="text" id="searchText" />&nbsp;&nbsp;<button type="button" onclick="searchPlan()">Search</button>
+            </div>
+        </div>    
+        <apex:outputPanel id="planListKendo">
+            <div id="kendoPlanListView"></div>
+            <script>
+                $(document).ready(function () {
+                    var data1 = $.parseJSON('{!JSENCODE(planlListJson)}');
+                    var dataSource = new kendo.data.DataSource({
+                        data: data1,        
+                        schema: {
+                            model: {
+                                id: "id",
+                                fields: {
+                                    id: { type: "string" },
+                                    name: { type: "string" },
+                                    lastModifiedDate :  { type: "dateTime"},
+                                    owner: { type: "string"}
+                                   
+                                }
+                            }
+                        },
+                        pageSize: 7
+                    });
+                    var grid = $("#kendoPlanListView").kendoGrid({
+                        dataSource: dataSource, 
+                        filterable: true,
+                        sortable: true,
+                       pageable: true,
+                        selectable: "row",
+                        columns: [
+                            {
+                                field: "id",
+                                title: "Action",
+                                template: "<div class='grid-action-center' id='Select' title = 'Select Plan'><img src=/#:selectIcon# /></div></div>",
+                                width: 55,
+                                filterable: false,
+                                sortable: false
+                            },
+                            {
+                                field: "name",
+                                title: "Name",
+                                template: '<div>#:name#<div>',
+                            },
+                            {
+                                field: "lastModifiedDate",
+                                title: "Last Modified Date",
+                                width: 140,
+                                format:"{0:'{!JSENCODE(dateFormat)}' HH:mm}"
+                                
+                            },
+                             {
+                                field: "owner",
+                                title: "Owner",
+                                template: "#:owner#"
+                            }],
+                            change: function() {
+                                var text = "";
+                                var grid = this;                
+                                grid.select().each(function() {
+                                    var dataItem = grid.dataItem($(this));
+                                    planSeletedId(dataItem.id);
+                                });
+                            }
+                    }).data("kendoGrid");
+                   
+               }); 
+            </script>
+        </apex:outputPanel>
+        <script>
+        	$('#searchText').keypress(function(e){
+		    	if (e.keyCode == '13'){
+			      //alert(this.value);
+			      searchPlan();
+			      return false;
+			    }
+			});
+            function searchPlan(){
+                var searchText = document.getElementById('searchText').value;
+                searchMyPlan(searchText);
+            } 
+            
+            
+            function newPlan(){
+                window.location = '/apex/planNew?workbench=true&retURL=/apex/WorkbenchHomePage';
+            }   
+        </script> 
+    </div>
+    </apex:outputPanel>  
+    <apex:actionFunction name="searchMyPlan" action="{!searchPlan}" reRender="planListKendo"> 
+        <apex:param name="searchText" id="searchText" value="" />
+    </apex:actionFunction>  
+</apex:component>

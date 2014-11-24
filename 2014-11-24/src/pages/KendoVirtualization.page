@@ -1,0 +1,88 @@
+<apex:page showheader="false" sidebar="false" controller="VirtualController"> 
+ <head>
+     <style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+    <title></title>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryUITabs10, '/tabs/jquery-1.9.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetroNewLibrary, '/kendoMetroNewLibrary/kendo.all.min.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.KendoMetro, '/kendoNew/js/console.js')}"/></head>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/examples-offline.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.common.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.metro.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.KendoMetro, '/kendoNew/styles/kendo.dataviz.metro.min.css')}"/> 
+<body>
+    
+        <div id="example">
+            <div id="grid"> </div>
+            <script>  
+              var op = '';
+                $(document).ready(function() {
+                    $("#grid").kendoGrid({
+                        dataSource: {
+                            type:"odata",
+                            serverPaging: true,
+                            data:[{ "OrderID": "xys","CustomerID": "xxx1","ShipName": "zzzz","ShipAddress": "vvv","ShipCity": "nnn","ShipCountry": "bbbb"}],
+                            serverSorting: true,
+                            pageSize: 200,   
+                            transport: {
+                                read : function (options) { alert(1);
+                                    console.log(options);
+                                    VirtualController.VirtualControll(function (result,event) {
+                                            options.success(removeQuotes(result));
+                                        }); 
+                                }
+                            },
+                            schema: {       
+                                  model: {		
+										fields: {
+												OrderID: { type: "string" },
+												CustomerID: { type: "string" },
+												ShipName: { type: "string" },
+												ShipAddress: { type: "string" },
+												ShipCity: { type: "string" },
+												ShipCountry: { type: "string" }
+										}
+									}  ,                            
+                                   data: function (data) {                                         
+                                             return data;  
+                                  },
+                                  total: function (data) {
+                                     return data.length;
+                                  },
+                                  errors: function (data) {
+                                   console.log(JSON.stringify(data));
+                                  }
+                                }
+                            
+                        },
+                        height: 500,
+                        scrollable: { 
+                            virtual: true
+                        },
+                        sortable: true,
+                        columns: [
+                            { field: "OrderID", title: "Order ID", width: 70 },
+                            { field: "CustomerID", title: "Customer ID", width: 90},
+                            { field: "ShipName", title:"Ship Name", width: 220 },
+                            { field: "ShipAddress", title:"Ship Address" },
+                            { field: "ShipCity", title:"Ship City", width: 110 },
+                            { field: "ShipCountry", title:"Ship Country", width: 110 }
+                        ]
+                    });
+                });
+                
+                function removeQuotes(mystring) {
+                
+                        newString = mystring.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                            return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                        });
+                        
+                        //var newJ= $.parseJSON(newString);
+                        var  newJ = eval ("(" + newString+ ")");
+                        return newJ;
+                    }
+            </script>
+        </div>
+
+
+</body>
+</apex:page>
