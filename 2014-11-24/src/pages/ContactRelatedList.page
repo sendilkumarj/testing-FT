@@ -1,3 +1,0 @@
-<apex:page standardController="Contact" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="Contact" recId="{!Contact.Id}" recName="{!Contact.Name}"/>
-</apex:page>

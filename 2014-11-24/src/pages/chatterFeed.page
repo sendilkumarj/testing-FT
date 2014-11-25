@@ -1,3 +1,0 @@
-<apex:page showHeader="false" sidebar="false">
-  <chatter:feedWithFollowers id="chatterFeed" rendered="true" entityId="{!$CurrentPage.parameters.Id}" showHeader="true"/>
-</apex:page>

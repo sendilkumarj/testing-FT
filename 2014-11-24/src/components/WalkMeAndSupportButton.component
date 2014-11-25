@@ -1,6 +1,0 @@
-<apex:component >
-	<body>
-		<!-- Walkme script section -->
-		<script type="text/javascript">(function() {var walkme = document.createElement('script'); walkme.type = 'text/javascript'; walkme.async = true; walkme.src = 'https://d3b3ehuo35wzeh.cloudfront.net/users/3d4e7e29fbce4945a03495f309d755c1/test/walkme_3d4e7e29fbce4945a03495f309d755c1_https.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(walkme, s);})();</script>
-	</body>
-</apex:component>

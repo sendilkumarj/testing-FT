@@ -1,3 +1,0 @@
-<apex:page showHeader="false">
- <c:CommonLibraries />
-</apex:page>

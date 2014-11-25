@@ -1,3 +1,0 @@
-<apex:page showHeader="false" sidebar="true">
-	<c:NewTaskViewPopup ></c:NewTaskViewPopup>
-</apex:page>

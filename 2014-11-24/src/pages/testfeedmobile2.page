@@ -1,9 +1,0 @@
-<apex:page showHeader="false" sidebar="false">
-<script>
-function myFunction()
-{
-alert("Hello World!");
-}
-</script>
-  <chatter:feedWithFollowers id="chatterFeed" rendered="true" entityId="a069000000Or0Gs" onComplete="myFunction()" showHeader="false"/>
-</apex:page>

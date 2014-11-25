@@ -1,3 +1,0 @@
-<apex:page showHeader="false" contentType="application/json" sidebar="false" standardStylesheets="false"  controller="d3Filter">
-  {!autoCompleteData}
-</apex:page>

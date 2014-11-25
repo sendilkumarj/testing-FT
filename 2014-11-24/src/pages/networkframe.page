@@ -1,3 +1,0 @@
-<apex:page showHeader="false" controller="NetworkView">
-  <c:NetworkView />  
-</apex:page>

@@ -1,3 +1,0 @@
-<apex:page standardController="Case" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="Case" recId="{!Case.Id}" recName="{!Case.CaseNumber}"/>
-</apex:page>

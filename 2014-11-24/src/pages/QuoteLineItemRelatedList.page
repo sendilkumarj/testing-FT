@@ -1,3 +1,0 @@
-<apex:page standardController="QuoteLineItem" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="QuoteLineItem" recId="{!QuoteLineItem.Id}" recName="{!QuoteLineItem.LineNumber}"/>
-</apex:page>

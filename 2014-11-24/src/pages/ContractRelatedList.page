@@ -1,3 +1,0 @@
-<apex:page standardController="Contract" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="Contract" recId="{!Contract.Id}" recName="{!Contract.Name}"/>
-</apex:page>

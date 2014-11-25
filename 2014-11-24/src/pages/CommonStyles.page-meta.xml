@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>26.0</apiVersion>
-    <availableInTouch>true</availableInTouch>
-    <confirmationTokenRequired>false</confirmationTokenRequired>
-    <description>Stylesheet which contains common elements&apos; styles that can be used on all VF pages
-UI Style - Force.com</description>
-    <label>CommonStyles</label>
-</ApexPage>

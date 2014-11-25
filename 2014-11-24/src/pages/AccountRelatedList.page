@@ -1,3 +1,0 @@
-<apex:page standardController="Account" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="Account" recId="{!Account.Id}" recName="{!Account.Name}"/>
-</apex:page>

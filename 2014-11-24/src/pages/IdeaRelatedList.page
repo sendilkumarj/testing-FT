@@ -1,3 +1,0 @@
-<apex:page standardController="Idea" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="Idea" recId="{!Idea.Id}" />
-</apex:page>

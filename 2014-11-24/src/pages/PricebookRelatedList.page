@@ -1,3 +1,0 @@
-<apex:page standardController="Pricebook2" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="Pricebook2" recId="{!Pricebook2.Id}" recName="{!Pricebook2.Name}"/>
-</apex:page>

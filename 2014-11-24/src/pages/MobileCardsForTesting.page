@@ -1,6 +1,0 @@
-<apex:page standardController="Decision__c" extensions="DecisionController" showHeader="false" sidebar="false">
-    <apex:form >
-        <apex:inputField value="{!Decision__c.Name}"/>
-        <apex:outputText value="{!pendingTaskCount}"/>
-    </apex:form>
-</apex:page>

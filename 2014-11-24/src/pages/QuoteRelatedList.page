@@ -1,3 +1,0 @@
-<apex:page standardController="Quote" sidebar="false" showHeader="false">
-    <c:CustomRelatedList objType="Quote" recId="{!Quote.Id}" recName="{!Quote.Name}"/> 
-</apex:page>
